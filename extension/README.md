@@ -25,11 +25,19 @@ Transform your browser into a productivity powerhouse with real-time tab trackin
 
 ## 🎯 Usage
 
+### ⚠️ **IMPORTANT: Dashboard Access**
+**You MUST open the dashboard through the extension for synchronization to work properly.**
+
+1. Click the AI Time Doubler extension icon in your toolbar
+2. Click "Open Dashboard" to launch the web app
+3. This ensures the extension content script loads correctly for real-time sync
+
 ### Starting a Session
 1. Click the AI Time Doubler extension icon in your toolbar
 2. Click "Start New Session"
 3. Optionally enter a session title
 4. The extension will begin tracking your tab activity
+5. **Open the dashboard via the extension** to see real-time sync
 
 ### Managing Sessions
 - **Pause**: Temporarily stop tracking (useful for breaks)
@@ -44,7 +52,9 @@ Transform your browser into a productivity powerhouse with real-time tab trackin
 
 ## 🔧 Configuration
 
-The extension automatically detects your AI Time Doubler web app running on `localhost:5177`. If you're running on a different port, update the `webAppUrl` in `background.js`.
+The extension automatically detects your AI Time Doubler web app. By default, it connects to `localhost:5177`, but will work with other ports when opened through the extension's "Open Dashboard" button.
+
+**Note**: If your dev server runs on a different port (like `localhost:5180`), always use the "Open Dashboard" button in the extension popup to ensure proper synchronization.
 
 ## 📊 Data Collection
 

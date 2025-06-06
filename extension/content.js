@@ -5,7 +5,7 @@
   'use strict';
   
   // Only run on the AI Time Doubler web app
-  if (!window.location.href.includes('localhost:5177')) {
+  if (!window.location.href.includes('localhost:5180')) {
     return;
   }
 
@@ -44,6 +44,14 @@
       const { type, action, data } = event.data;
       
       if (type !== 'AI_TIME_DOUBLER_EXTENSION') return;
+      
+      console.log('Content script received message:', action);
+      
+      // Handle ping messages directly
+      if (action === 'ping') {
+        this.notifyWebApp('ping', { connected: true });
+        return;
+      }
       
       // Forward message to extension background script
       chrome.runtime.sendMessage({ action, ...data }, (response) => {

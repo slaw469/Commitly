@@ -1,6 +1,20 @@
 // AI Time Doubler - Background Service Worker
 // Handles real-time tab tracking and session management
 
+// Keep service worker alive
+let keepAliveInterval;
+
+function keepServiceWorkerAlive() {
+  keepAliveInterval = setInterval(() => {
+    chrome.runtime.getPlatformInfo(() => {
+      // This empty callback keeps the service worker active
+    });
+  }, 20000); // Every 20 seconds
+}
+
+// Start keep-alive mechanism
+keepServiceWorkerAlive();
+
 class TabTracker {
   constructor() {
     this.currentSession = null;
@@ -8,7 +22,7 @@ class TabTracker {
     this.lastActiveTime = Date.now();
     this.tabStartTimes = new Map();
     this.contextSwitches = 0;
-    this.webAppUrl = 'http://localhost:5177'; // Update based on your dev server
+    this.webAppUrl = 'http://localhost:5180'; // Updated to match current dev server
     
     this.init();
   }
@@ -31,7 +45,10 @@ class TabTracker {
     chrome.alarms.onAlarm.addListener(this.handleAlarm.bind(this));
     
     // Listen for messages from content scripts and popup
-    chrome.runtime.onMessage.addListener(this.handleMessage.bind(this));
+    chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+      this.handleMessage(request, sender, sendResponse);
+      return true; // Keep message channel open for async response
+    });
     
     // Initialize session data
     this.loadSession();
@@ -42,7 +59,17 @@ class TabTracker {
     if (result.currentSession) {
       this.currentSession = {
         ...result.currentSession,
-        startTime: new Date(result.currentSession.startTime)
+        startTime: new Date(result.currentSession.startTime),
+        endTime: result.currentSession.endTime ? new Date(result.currentSession.endTime) : undefined,
+        tabs: result.currentSession.tabs.map(tab => ({
+          ...tab,
+          lastActive: new Date(tab.lastActive)
+        })),
+        focusBlocks: result.currentSession.focusBlocks.map(block => ({
+          ...block,
+          startTime: new Date(block.startTime),
+          endTime: block.endTime ? new Date(block.endTime) : undefined
+        }))
       };
     }
   }
@@ -190,41 +217,48 @@ class TabTracker {
   }
 
   async handleMessage(request, sender, sendResponse) {
-    switch (request.action) {
-      case 'startSession':
-        await this.startSession(request.title);
-        sendResponse({ success: true, session: this.currentSession });
-        break;
-        
-      case 'endSession':
-        const endedSession = await this.endSession();
-        sendResponse({ success: true, session: endedSession });
-        break;
-        
-      case 'pauseSession':
-        await this.pauseSession();
-        sendResponse({ success: true, session: this.currentSession });
-        break;
-        
-      case 'resumeSession':
-        await this.resumeSession();
-        sendResponse({ success: true, session: this.currentSession });
-        break;
-        
-      case 'getCurrentSession':
-        sendResponse({ session: this.currentSession });
-        break;
-        
-      case 'addFocusBlock':
-        await this.addFocusBlock(request.type, request.description);
-        sendResponse({ success: true, session: this.currentSession });
-        break;
-        
-      default:
-        sendResponse({ error: 'Unknown action' });
-    }
+    console.log('Background received message:', request.action);
     
-    return true; // Keep message channel open for async response
+    try {
+      let result;
+      
+      switch (request.action) {
+        case 'startSession':
+          result = await this.startSession(request.title);
+          sendResponse({ success: true, session: result });
+          break;
+          
+        case 'endSession':
+          result = await this.endSession();
+          sendResponse({ success: true, session: result });
+          break;
+          
+        case 'pauseSession':
+          await this.pauseSession();
+          sendResponse({ success: true, session: this.currentSession });
+          break;
+          
+        case 'resumeSession':
+          await this.resumeSession();
+          sendResponse({ success: true, session: this.currentSession });
+          break;
+          
+        case 'getCurrentSession':
+          sendResponse({ success: true, session: this.currentSession });
+          break;
+          
+        case 'addFocusBlock':
+          await this.addFocusBlock(request.type, request.description);
+          sendResponse({ success: true, session: this.currentSession });
+          break;
+          
+        default:
+          sendResponse({ success: false, error: 'Unknown action' });
+      }
+    } catch (error) {
+      console.error('Error handling message:', error);
+      sendResponse({ success: false, error: error.message });
+    }
   }
 
   async startSession(title) {
@@ -263,6 +297,8 @@ class TabTracker {
     
     await this.saveSession();
     await this.sendToWebApp('sessionStarted', this.currentSession);
+    
+    return this.currentSession;
   }
 
   async endSession() {

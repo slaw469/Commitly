@@ -29,6 +29,20 @@ export default function Sidebar({ isOpen, currentView, onViewChange }: SidebarPr
     return hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
   };
 
+  const safeGetTime = (dateValue: any): number => {
+    if (!dateValue) return Date.now();
+    
+    if (typeof dateValue === 'string') {
+      return new Date(dateValue).getTime();
+    }
+    
+    if (dateValue instanceof Date) {
+      return dateValue.getTime();
+    }
+    
+    return Date.now();
+  };
+
   return (
     <aside className="fixed left-0 top-16 bottom-0 w-64 bg-white dark:bg-gray-800 border-r border-gray-200/50 dark:border-gray-700/50 z-40">
       <div className="p-6">
@@ -83,7 +97,7 @@ export default function Sidebar({ isOpen, currentView, onViewChange }: SidebarPr
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600 dark:text-gray-400">Duration</span>
                     <span className="font-medium text-gray-900 dark:text-white">
-                      {formatDuration(Math.round((Date.now() - currentSession.startTime.getTime()) / 1000 / 60))}
+                      {formatDuration(Math.round((Date.now() - safeGetTime(currentSession.startTime)) / 1000 / 60))}
                     </span>
                   </div>
                   <div className="flex justify-between text-sm">

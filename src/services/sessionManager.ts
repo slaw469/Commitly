@@ -14,6 +14,15 @@ export class SessionManager {
     this.loadCurrentSession();
     this.setupExtensionIntegration();
     this.startTracking();
+    
+    // Immediately check for extension and sync
+    setTimeout(() => {
+      if (extensionService.isAvailable()) {
+        console.log('Extension detected on startup, enabling extension mode');
+        this.isExtensionMode = true;
+        this.syncWithExtension();
+      }
+    }, 1000);
   }
 
   private setupExtensionIntegration(): void {
@@ -21,7 +30,18 @@ export class SessionManager {
     extensionService.onMessage('extensionConnected', () => {
       console.log('Chrome extension connected');
       this.isExtensionMode = true;
-      this.syncWithExtension();
+      // Don't sync here - wait for initialSessionSync
+    });
+
+    // Listen for initial session sync
+    extensionService.onMessage('initialSessionSync', (session: Session) => {
+      console.log('Initial session sync received:', session);
+      if (session) {
+        this.currentSession = this.deserializeSessionDates(session);
+        SessionStorageService.setCurrentSession(this.currentSession);
+        this.startSessionTimer();
+        this.notifyListeners();
+      }
     });
 
     // Listen for extension not found
@@ -51,8 +71,12 @@ export class SessionManager {
     try {
       const response = await extensionService.getCurrentSession();
       if (response?.session) {
-        this.currentSession = response.session;
+        // Deserialize dates that come as strings from extension
+        this.currentSession = this.deserializeSessionDates(response.session);
+        SessionStorageService.setCurrentSession(this.currentSession);
+        this.startSessionTimer();
         this.notifyListeners();
+        console.log('Successfully synced with extension:', this.currentSession);
       }
     } catch (error) {
       console.error('Failed to sync with extension:', error);
@@ -60,31 +84,36 @@ export class SessionManager {
   }
 
   private handleExtensionSessionUpdate(session: Session): void {
-    this.currentSession = session;
-    SessionStorageService.setCurrentSession(session);
+    // Deserialize dates that come as strings from extension
+    this.currentSession = this.deserializeSessionDates(session);
+    SessionStorageService.setCurrentSession(this.currentSession);
     this.notifyListeners();
   }
 
   private handleExtensionSessionStarted(session: Session): void {
-    this.currentSession = session;
-    SessionStorageService.setCurrentSession(session);
+    // Deserialize dates that come as strings from extension
+    this.currentSession = this.deserializeSessionDates(session);
+    SessionStorageService.setCurrentSession(this.currentSession);
     this.startSessionTimer();
     this.notifyListeners();
   }
 
   private async handleExtensionSessionEnded(session: Session): Promise<void> {
+    // Deserialize dates that come as strings from extension
+    const deserializedSession = this.deserializeSessionDates(session);
+    
     // Generate AI summary for completed session
-    if (session.duration && session.duration >= 10) {
+    if (deserializedSession.duration && deserializedSession.duration >= 10) {
       try {
-        const summary = await aiService.generateSessionSummary(session);
-        session.summary = summary;
+        const summary = await aiService.generateSessionSummary(deserializedSession);
+        deserializedSession.summary = summary;
       } catch (error) {
         console.error('Failed to generate AI summary:', error);
       }
     }
 
     // Save to permanent storage
-    SessionStorageService.saveSession(session);
+    SessionStorageService.saveSession(deserializedSession);
     SessionStorageService.setCurrentSession(null);
 
     // Update metrics
@@ -433,7 +462,19 @@ export class SessionManager {
 
   getSessionDuration(): number {
     if (!this.currentSession) return 0;
-    return Math.round((Date.now() - this.currentSession.startTime.getTime()) / 1000 / 60);
+    
+    // Ensure startTime is a Date object
+    let startTime = this.currentSession.startTime;
+    if (typeof startTime === 'string') {
+      startTime = new Date(startTime);
+    }
+    
+    if (!startTime || !(startTime instanceof Date) || isNaN(startTime.getTime())) {
+      console.warn('Invalid startTime in session:', this.currentSession.startTime);
+      return 0;
+    }
+    
+    return Math.round((Date.now() - startTime.getTime()) / 1000 / 60);
   }
 
   // Event Listeners
@@ -530,6 +571,25 @@ export class SessionManager {
     this.stopSessionTimer();
     this.stopTabTracking();
     this.listeners.clear();
+  }
+
+  private deserializeSessionDates(session: Session): Session {
+    if (!session) return session;
+    
+    return {
+      ...session,
+      startTime: typeof session.startTime === 'string' ? new Date(session.startTime) : session.startTime,
+      endTime: session.endTime && typeof session.endTime === 'string' ? new Date(session.endTime) : session.endTime,
+      tabs: session.tabs.map(tab => ({
+        ...tab,
+        lastActive: typeof tab.lastActive === 'string' ? new Date(tab.lastActive) : tab.lastActive
+      })),
+      focusBlocks: session.focusBlocks.map(block => ({
+        ...block,
+        startTime: typeof block.startTime === 'string' ? new Date(block.startTime) : block.startTime,
+        endTime: block.endTime && typeof block.endTime === 'string' ? new Date(block.endTime) : block.endTime
+      }))
+    };
   }
 }
 

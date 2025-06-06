@@ -54,7 +54,9 @@ class PopupController {
   async loadCurrentSession() {
     try {
       const response = await this.sendMessage('getCurrentSession');
-      this.currentSession = response.session;
+      if (response.success) {
+        this.currentSession = response.session;
+      }
       this.updateUI();
       this.hideLoading();
     } catch (error) {
@@ -126,10 +128,12 @@ class PopupController {
       if (response.success) {
         this.currentSession = response.session;
         this.updateUI();
+      } else {
+        throw new Error(response.error || 'Failed to start session');
       }
     } catch (error) {
       console.error('Failed to start session:', error);
-      alert('Failed to start session');
+      alert('Failed to start session: ' + error.message);
     }
   }
 
@@ -139,9 +143,12 @@ class PopupController {
       if (response.success) {
         this.currentSession = response.session;
         this.updateUI();
+      } else {
+        throw new Error(response.error || 'Failed to pause session');
       }
     } catch (error) {
       console.error('Failed to pause session:', error);
+      alert('Failed to pause session: ' + error.message);
     }
   }
 
@@ -151,9 +158,12 @@ class PopupController {
       if (response.success) {
         this.currentSession = response.session;
         this.updateUI();
+      } else {
+        throw new Error(response.error || 'Failed to resume session');
       }
     } catch (error) {
       console.error('Failed to resume session:', error);
+      alert('Failed to resume session: ' + error.message);
     }
   }
 
@@ -167,9 +177,12 @@ class PopupController {
       if (response.success) {
         this.currentSession = null;
         this.updateUI();
+      } else {
+        throw new Error(response.error || 'Failed to end session');
       }
     } catch (error) {
       console.error('Failed to end session:', error);
+      alert('Failed to end session: ' + error.message);
     }
   }
 
@@ -178,23 +191,31 @@ class PopupController {
     if (!description) return;
 
     try {
-      await this.sendMessage('addFocusBlock', {
+      const response = await this.sendMessage('addFocusBlock', {
         type: 'focus',
         description: description
       });
+      if (!response.success) {
+        throw new Error(response.error || 'Failed to add focus block');
+      }
     } catch (error) {
       console.error('Failed to add focus block:', error);
+      alert('Failed to add focus block: ' + error.message);
     }
   }
 
   async addBreakBlock() {
     try {
-      await this.sendMessage('addFocusBlock', {
+      const response = await this.sendMessage('addFocusBlock', {
         type: 'break',
         description: 'Break time'
       });
+      if (!response.success) {
+        throw new Error(response.error || 'Failed to add break block');
+      }
     } catch (error) {
       console.error('Failed to add break block:', error);
+      alert('Failed to add break block: ' + error.message);
     }
   }
 
@@ -227,7 +248,7 @@ class PopupController {
 
   openDashboard() {
     chrome.tabs.create({ 
-      url: 'http://localhost:5177',
+      url: 'http://localhost:5180',
       active: true 
     });
     window.close();
@@ -261,13 +282,52 @@ class PopupController {
 
   sendMessage(action, data = {}) {
     return new Promise((resolve, reject) => {
-      chrome.runtime.sendMessage({ action, ...data }, (response) => {
-        if (chrome.runtime.lastError) {
-          reject(new Error(chrome.runtime.lastError.message));
-        } else {
-          resolve(response);
-        }
-      });
+      let attempts = 0;
+      const maxAttempts = 3;
+      
+      const attemptSend = () => {
+        attempts++;
+        console.log(`Sending message (attempt ${attempts}):`, action);
+        
+        const timeout = setTimeout(() => {
+          if (attempts < maxAttempts) {
+            console.log(`Attempt ${attempts} timed out, retrying...`);
+            attemptSend();
+          } else {
+            reject(new Error('Request timeout - extension service worker may be inactive. Please try refreshing the extension.'));
+          }
+        }, 3000); // 3 second timeout per attempt
+
+        chrome.runtime.sendMessage({ action, ...data }, (response) => {
+          clearTimeout(timeout);
+          
+          if (chrome.runtime.lastError) {
+            console.error('Runtime error:', chrome.runtime.lastError.message);
+            if (attempts < maxAttempts) {
+              console.log(`Runtime error on attempt ${attempts}, retrying...`);
+              // Small delay before retry
+              setTimeout(attemptSend, 500);
+            } else {
+              reject(new Error(`Extension error: ${chrome.runtime.lastError.message}`));
+            }
+          } else if (!response) {
+            console.error('No response received');
+            if (attempts < maxAttempts) {
+              console.log(`No response on attempt ${attempts}, retrying...`);
+              setTimeout(attemptSend, 500);
+            } else {
+              reject(new Error('No response received from extension'));
+            }
+          } else if (!response.success) {
+            reject(new Error(response.error || 'Request failed'));
+          } else {
+            console.log('Message sent successfully:', response);
+            resolve(response);
+          }
+        });
+      };
+      
+      attemptSend();
     });
   }
 }

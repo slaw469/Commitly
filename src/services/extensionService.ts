@@ -18,6 +18,7 @@ class ExtensionService {
   private messageHandlers = new Map<string, Function>();
   private pendingRequests = new Map<string, { resolve: Function; reject: Function }>();
   private requestId = 0;
+  private initialSyncComplete = false;
 
   constructor() {
     this.init();
@@ -27,8 +28,25 @@ class ExtensionService {
     // Listen for messages from extension content script
     window.addEventListener('message', this.handleMessage.bind(this));
     
-    // Check if extension is available
+    // Check if extension is available immediately and periodically
     this.checkExtensionAvailability();
+    
+    // Set up periodic checks to ensure extension stays connected
+    setInterval(() => {
+      if (this.isExtensionAvailable) {
+        this.sendPing();
+      } else {
+        this.checkExtensionAvailability();
+      }
+    }, 5000);
+  }
+
+  private sendPing() {
+    window.postMessage({
+      type: 'AI_TIME_DOUBLER_EXTENSION',
+      action: 'ping',
+      data: {}
+    }, window.location.origin);
   }
 
   private handleMessage(event: MessageEvent) {
@@ -40,28 +58,38 @@ class ExtensionService {
     
     // Handle extension status updates
     if (action === 'extensionReady') {
+      console.log('Extension ready received');
       this.isExtensionAvailable = true;
       this.notifyHandlers('extensionConnected', data);
+      
+      // Immediately sync current session on first connection
+      if (!this.initialSyncComplete) {
+        this.initialSyncComplete = true;
+        setTimeout(() => this.requestCurrentSession(), 100);
+      }
       return;
     }
     
-    if (action === 'extensionHeartbeat') {
+    if (action === 'ping' || action === 'extensionHeartbeat') {
       this.isExtensionAvailable = true;
       return;
     }
     
     // Handle session updates from extension
     if (action === 'sessionUpdate') {
+      console.log('Session update received:', data);
       this.notifyHandlers('sessionUpdate', data);
       return;
     }
     
     if (action === 'sessionStarted') {
+      console.log('Session started received:', data);
       this.notifyHandlers('sessionStarted', data);
       return;
     }
     
     if (action === 'sessionEnded') {
+      console.log('Session ended received:', data);
       this.notifyHandlers('sessionEnded', data);
       return;
     }
@@ -111,6 +139,18 @@ class ExtensionService {
         this.notifyHandlers('extensionNotFound', {});
       }
     }, 2000);
+  }
+
+  private async requestCurrentSession() {
+    try {
+      const response = await this.getCurrentSession();
+      if (response?.session) {
+        console.log('Initial session sync:', response.session);
+        this.notifyHandlers('initialSessionSync', response.session);
+      }
+    } catch (error) {
+      console.error('Failed to get initial session:', error);
+    }
   }
 
   // Public API methods

@@ -8,7 +8,7 @@
 2. Enable "Developer mode" (toggle in top-right)
 3. Click "Load unpacked"
 4. Select the `extension` folder from your AI Time Doubler project
-5. The extension should appear with a puzzle piece icon (temporary)
+5. The extension should appear with a default puzzle piece icon
 
 ### 2. Test Basic Functionality
 
@@ -37,10 +37,18 @@
 - Look at Chrome extension console for errors
 - Ensure all files exist in extension folder
 
+**"Message port closed" error:**
+- This happens when the service worker becomes inactive
+- Go to `chrome://extensions/` and click "service worker" link next to your extension
+- If you see "Inactive", click it to activate
+- Reload the extension if needed
+- Try the action again quickly after activating
+
 **Communication not working:**
 - Open browser console on the web app
 - Look for extension-related messages
 - Check content script is injected
+- Inspect the service worker console for errors
 
 **Tab tracking not working:**
 - Verify extension permissions in chrome://extensions/
@@ -64,10 +72,27 @@
 
 ### 5. Development Tips
 
+- **Service Worker Issues**: Manifest V3 service workers can become inactive. If you get timeout errors, activate the service worker via chrome://extensions/
 - Reload extension after code changes: chrome://extensions/ → reload button
 - Use Chrome DevTools for extension debugging
 - Background script console: chrome://extensions/ → "service worker" link
 - Content script debugging: regular page console
+- If service worker is "Inactive", click it to wake it up before testing
+
+### 6. Common Solutions
+
+**If extension seems unresponsive:**
+1. Go to `chrome://extensions/`
+2. Find AI Time Doubler extension
+3. Click "service worker" link (it may show as "Inactive")
+4. If inactive, click to activate it
+5. Try your action again immediately
+
+**If still having issues:**
+1. Remove and reload the extension
+2. Clear browser cache
+3. Check for any console errors
+4. Ensure all required files are present
 
 ---
 
