@@ -4,11 +4,12 @@ import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import Dashboard from './components/Dashboard';
 import SessionHistory from './components/SessionHistory';
+import AIInsights from './components/AIInsights';
 import Integrations from './components/Integrations';
 import Settings from './components/Settings';
 import { ThemeProvider } from './components/theme-provider';
 
-type ViewType = 'landing' | 'dashboard' | 'sessions' | 'integrations' | 'settings';
+type ViewType = 'landing' | 'dashboard' | 'sessions' | 'ai-insights' | 'integrations' | 'settings';
 
 function App() {
   const [currentView, setCurrentView] = useState<ViewType>('landing');
@@ -30,6 +31,8 @@ function App() {
         return <Dashboard />;
       case 'sessions':
         return <SessionHistory />;
+      case 'ai-insights':
+        return <AIInsights />;
       case 'integrations':
         return <Integrations />;
       case 'settings':
