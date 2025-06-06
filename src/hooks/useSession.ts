@@ -21,12 +21,48 @@ export function useSession() {
     return unsubscribe;
   }, []);
 
+  const startSession = async (title?: string) => {
+    try {
+      return await sessionManager.startSession(title);
+    } catch (error) {
+      console.error('Error starting session:', error);
+      throw error;
+    }
+  };
+
+  const pauseSession = async () => {
+    try {
+      await sessionManager.pauseSession();
+    } catch (error) {
+      console.error('Error pausing session:', error);
+      throw error;
+    }
+  };
+
+  const resumeSession = async () => {
+    try {
+      await sessionManager.resumeSession();
+    } catch (error) {
+      console.error('Error resuming session:', error);
+      throw error;
+    }
+  };
+
   const endSession = async () => {
     try {
       return await sessionManager.endSession();
     } catch (error) {
       console.error('Error ending session:', error);
       return null;
+    }
+  };
+
+  const startFocusBlock = async (type: any, description?: string) => {
+    try {
+      await sessionManager.startFocusBlock(type, description);
+    } catch (error) {
+      console.error('Error starting focus block:', error);
+      throw error;
     }
   };
 
@@ -37,10 +73,10 @@ export function useSession() {
     isActive: sessionManager.isSessionActive(),
     duration: sessionManager.getSessionDuration(),
 
-    // Session actions
-    startSession: (title?: string) => sessionManager.startSession(title),
-    pauseSession: () => sessionManager.pauseSession(),
-    resumeSession: () => sessionManager.resumeSession(),
+    // Session actions (now async)
+    startSession,
+    pauseSession,
+    resumeSession,
     endSession,
 
     // Tab management
@@ -49,9 +85,8 @@ export function useSession() {
     updateActiveTab: (url: string) => sessionManager.updateActiveTab(url),
     removeTab: (url: string) => sessionManager.removeTab(url),
 
-    // Focus blocks
-    startFocusBlock: (type: any, description?: string) => 
-      sessionManager.startFocusBlock(type, description),
+    // Focus blocks (now async)
+    startFocusBlock,
     endFocusBlock: () => sessionManager.endFocusBlock(),
 
     // Metadata

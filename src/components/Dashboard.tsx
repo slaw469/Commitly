@@ -1,9 +1,10 @@
-import { useState } from 'react';
-import { Clock, Target, TrendingUp, Zap, Github, FileText, Calendar, Play, Pause, Square, Brain, Sparkles } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Clock, Target, TrendingUp, Zap, Github, FileText, Calendar, Play, Pause, Square, Brain, Sparkles, Chrome } from 'lucide-react';
 import SessionCard from './SessionCard';
 import MetricCard from './MetricCard';
 import { useSession, useSessionHistory } from '../hooks/useSession';
 import { Button } from './ui/button';
+import { extensionService } from '../services/extensionService';
 
 export default function Dashboard() {
   const { 
@@ -19,6 +20,26 @@ export default function Dashboard() {
   } = useSession();
   
   const { sessions: recentSessions, metrics } = useSessionHistory();
+  const [isExtensionConnected, setIsExtensionConnected] = useState(false);
+
+  useEffect(() => {
+    // Check initial extension status
+    setIsExtensionConnected(extensionService.isAvailable());
+
+    // Listen for extension status changes
+    extensionService.onMessage('extensionConnected', () => {
+      setIsExtensionConnected(true);
+    });
+
+    extensionService.onMessage('extensionNotFound', () => {
+      setIsExtensionConnected(false);
+    });
+
+    return () => {
+      extensionService.offMessage('extensionConnected');
+      extensionService.offMessage('extensionNotFound');
+    };
+  }, []);
 
   // Get last 3 completed sessions for display
   const completedSessions = recentSessions
@@ -32,12 +53,14 @@ export default function Dashboard() {
     const title = `Focus Session ${new Date().toLocaleTimeString()}`;
     startSession(title);
     
-    // Add some demo tabs to simulate activity
-    setTimeout(() => {
-      addTab('React Documentation - Components', 'https://react.dev/learn/your-first-component', '📚');
-      addTab('GitHub - AI Time Doubler', 'https://github.com/user/ai-time-doubler', '🔗');
-      addTab('Notion - Project Notes', 'https://notion.so/project-notes', '📝');
-    }, 1000);
+    // Add some demo tabs to simulate activity (only if extension not connected)
+    if (!isExtensionConnected) {
+      setTimeout(() => {
+        addTab('React Documentation - Components', 'https://react.dev/learn/your-first-component', '📚');
+        addTab('GitHub - AI Time Doubler', 'https://github.com/user/ai-time-doubler', '🔗');
+        addTab('Notion - Project Notes', 'https://notion.so/project-notes', '📝');
+      }, 1000);
+    }
   };
 
   const handleFocusBlock = (type: string) => {
@@ -59,6 +82,16 @@ export default function Dashboard() {
           <p className="text-gray-600 dark:text-gray-300 mt-1">Ready to pick up where you left off?</p>
         </div>
         <div className="flex items-center space-x-3">
+          {/* Extension Status Indicator */}
+          <div className={`flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium ${
+            isExtensionConnected 
+              ? 'bg-success-100 dark:bg-success-900/20 text-success-800 dark:text-success-300' 
+              : 'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-300'
+          }`}>
+            <Chrome size={16} />
+            <span>{isExtensionConnected ? 'Extension Connected' : 'Extension Not Found'}</span>
+          </div>
+          
           {metrics.averageProductivity > 0 && (
             <div className="px-4 py-2 bg-success-100 dark:bg-success-900/20 text-success-800 dark:text-success-300 rounded-lg font-medium text-sm">
               ✨ {metrics.averageProductivity.toFixed(1)}/5 avg productivity
@@ -66,6 +99,30 @@ export default function Dashboard() {
           )}
         </div>
       </div>
+
+      {/* Extension Notice */}
+      {!isExtensionConnected && (
+        <div className="bg-yellow-50 dark:bg-yellow-900/10 border border-yellow-200 dark:border-yellow-800 rounded-2xl p-4">
+          <div className="flex items-start space-x-3">
+            <Chrome size={20} className="text-yellow-600 dark:text-yellow-400 mt-0.5" />
+            <div className="flex-1">
+              <h3 className="font-semibold text-yellow-800 dark:text-yellow-200">Chrome Extension Recommended</h3>
+              <p className="text-yellow-700 dark:text-yellow-300 text-sm mt-1">
+                For real browser tab tracking, install the AI Time Doubler Chrome extension. 
+                Currently showing simulated data for demonstration.
+              </p>
+              <div className="flex items-center space-x-3 mt-3">
+                <Button size="sm" variant="outline" className="border-yellow-300 text-yellow-700 hover:bg-yellow-100">
+                  Install Extension
+                </Button>
+                <span className="text-xs text-yellow-600 dark:text-yellow-400">
+                  Load from extension/ folder in Developer Mode
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* AI Insights Quick Access */}
       {sessionsWithSummaries.length > 0 && (

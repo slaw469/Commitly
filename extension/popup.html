@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Time Doubler</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      width: 350px;
+      min-height: 400px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .header {
+      padding: 20px;
+      text-align: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .tagline {
+      font-size: 12px;
+      opacity: 0.8;
+    }
+
+    .session-status {
+      padding: 20px;
+      text-align: center;
+    }
+
+    .status-indicator {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 8px;
+    }
+
+    .status-active { background: #10b981; }
+    .status-paused { background: #f59e0b; }
+    .status-inactive { background: #6b7280; }
+
+    .session-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .session-duration {
+      font-size: 14px;
+      opacity: 0.9;
+      margin-bottom: 5px;
+    }
+
+    .session-stats {
+      font-size: 12px;
+      opacity: 0.7;
+    }
+
+    .controls {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .btn {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+    }
+
+    .btn-primary {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .btn-primary:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.2);
+      color: white;
+      border: 1px solid rgba(239, 68, 68, 0.5);
+    }
+
+    .btn-danger:hover {
+      background: rgba(239, 68, 68, 0.3);
+    }
+
+    .quick-actions {
+      padding: 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .quick-actions h3 {
+      font-size: 14px;
+      margin-bottom: 10px;
+      opacity: 0.9;
+    }
+
+    .action-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .action-btn {
+      padding: 8px 12px;
+      font-size: 12px;
+      border-radius: 6px;
+    }
+
+    .footer {
+      padding: 15px 20px;
+      text-align: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .footer-link {
+      color: rgba(255, 255, 255, 0.7);
+      text-decoration: none;
+      font-size: 12px;
+    }
+
+    .footer-link:hover {
+      color: white;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px 20px;
+    }
+
+    .spinner {
+      width: 24px;
+      height: 24px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top: 2px solid white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 15px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">AI Time Doubler</div>
+    <div class="tagline">Eliminate context switching</div>
+  </div>
+
+  <div id="loading" class="loading">
+    <div class="spinner"></div>
+    <div>Loading session data...</div>
+  </div>
+
+  <div id="main-content" class="hidden">
+    <div class="session-status">
+      <div class="session-title">
+        <span id="status-indicator" class="status-indicator status-inactive"></span>
+        <span id="session-title">No Active Session</span>
+      </div>
+      <div id="session-duration" class="session-duration">--:--</div>
+      <div id="session-stats" class="session-stats">
+        <span id="tab-count">0 tabs</span> • 
+        <span id="context-switches">0 switches</span>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button id="start-session" class="btn btn-primary">Start New Session</button>
+      <button id="pause-session" class="btn btn-secondary hidden">Pause Session</button>
+      <button id="resume-session" class="btn btn-secondary hidden">Resume Session</button>
+      <button id="end-session" class="btn btn-danger hidden">End Session</button>
+    </div>
+
+    <div class="quick-actions">
+      <h3>Quick Actions</h3>
+      <div class="action-grid">
+        <button id="add-focus" class="btn btn-secondary action-btn">Add Focus Block</button>
+        <button id="add-break" class="btn btn-secondary action-btn">Add Break</button>
+        <button id="view-stats" class="btn btn-secondary action-btn">View Stats</button>
+        <button id="export-data" class="btn btn-secondary action-btn">Export Data</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <a href="#" id="open-dashboard" class="footer-link">Open Dashboard</a>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html> 

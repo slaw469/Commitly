@@ -1,23 +1,123 @@
 import { Session, Tab, FocusBlock } from '../types/session';
 import { SessionStorageService } from './sessionStorage';
 import { aiService } from './aiService';
+import { extensionService } from './extensionService';
 
 export class SessionManager {
   private currentSession: Session | null = null;
   private sessionTimer: NodeJS.Timeout | null = null;
   private tabTracker: NodeJS.Timeout | null = null;
   private listeners: Set<(session: Session | null) => void> = new Set();
+  private isExtensionMode = false;
 
   constructor() {
     this.loadCurrentSession();
+    this.setupExtensionIntegration();
     this.startTracking();
   }
 
+  private setupExtensionIntegration(): void {
+    // Listen for extension connection
+    extensionService.onMessage('extensionConnected', () => {
+      console.log('Chrome extension connected');
+      this.isExtensionMode = true;
+      this.syncWithExtension();
+    });
+
+    // Listen for extension not found
+    extensionService.onMessage('extensionNotFound', () => {
+      console.log('Chrome extension not found, using simulated data');
+      this.isExtensionMode = false;
+    });
+
+    // Listen for session updates from extension
+    extensionService.onMessage('sessionUpdate', (session: Session) => {
+      this.handleExtensionSessionUpdate(session);
+    });
+
+    // Listen for session lifecycle events
+    extensionService.onMessage('sessionStarted', (session: Session) => {
+      this.handleExtensionSessionStarted(session);
+    });
+
+    extensionService.onMessage('sessionEnded', (session: Session) => {
+      this.handleExtensionSessionEnded(session);
+    });
+  }
+
+  private async syncWithExtension(): Promise<void> {
+    if (!extensionService.isAvailable()) return;
+
+    try {
+      const response = await extensionService.getCurrentSession();
+      if (response?.session) {
+        this.currentSession = response.session;
+        this.notifyListeners();
+      }
+    } catch (error) {
+      console.error('Failed to sync with extension:', error);
+    }
+  }
+
+  private handleExtensionSessionUpdate(session: Session): void {
+    this.currentSession = session;
+    SessionStorageService.setCurrentSession(session);
+    this.notifyListeners();
+  }
+
+  private handleExtensionSessionStarted(session: Session): void {
+    this.currentSession = session;
+    SessionStorageService.setCurrentSession(session);
+    this.startSessionTimer();
+    this.notifyListeners();
+  }
+
+  private async handleExtensionSessionEnded(session: Session): Promise<void> {
+    // Generate AI summary for completed session
+    if (session.duration && session.duration >= 10) {
+      try {
+        const summary = await aiService.generateSessionSummary(session);
+        session.summary = summary;
+      } catch (error) {
+        console.error('Failed to generate AI summary:', error);
+      }
+    }
+
+    // Save to permanent storage
+    SessionStorageService.saveSession(session);
+    SessionStorageService.setCurrentSession(null);
+
+    // Update metrics
+    const allSessions = SessionStorageService.getAllSessions();
+    SessionStorageService.updateMetrics(allSessions);
+
+    this.currentSession = null;
+    this.stopSessionTimer();
+    this.notifyListeners();
+  }
+
   // Session Lifecycle
-  startSession(title?: string): Session {
+  async startSession(title?: string): Promise<Session> {
+    // Use extension if available
+    if (this.isExtensionMode && extensionService.isAvailable()) {
+      try {
+        const response = await extensionService.startSession(title);
+        if (response?.session) {
+          this.currentSession = response.session;
+          this.startSessionTimer();
+          this.notifyListeners();
+          return response.session;
+        }
+      } catch (error) {
+        console.error('Failed to start session via extension:', error);
+        // Fall back to local mode
+      }
+    }
+
+    // Local mode (fallback or when extension not available)
     // End current session if exists
     if (this.currentSession) {
-      this.endSession();
+      await this.endSession();
     }
 
     const session: Session = {
@@ -38,14 +138,29 @@ export class SessionManager {
     SessionStorageService.setCurrentSession(session);
     this.notifyListeners();
     this.startSessionTimer();
-    this.startTabTracking();
+    
+    // Only start local tab tracking if extension is not available
+    if (!this.isExtensionMode) {
+      this.startTabTracking();
+    }
 
     return session;
   }
 
-  pauseSession(): void {
+  async pauseSession(): Promise<void> {
     if (!this.currentSession) return;
 
+    // Use extension if available
+    if (this.isExtensionMode && extensionService.isAvailable()) {
+      try {
+        await extensionService.pauseSession();
+        return; // Extension will handle the update
+      } catch (error) {
+        console.error('Failed to pause session via extension:', error);
+      }
+    }
+
+    // Local mode
     this.currentSession.status = 'paused';
     this.stopSessionTimer();
     this.stopTabTracking();
@@ -53,12 +168,25 @@ export class SessionManager {
     this.notifyListeners();
   }
 
-  resumeSession(): void {
+  async resumeSession(): Promise<void> {
     if (!this.currentSession || this.currentSession.status !== 'paused') return;
 
+    // Use extension if available
+    if (this.isExtensionMode && extensionService.isAvailable()) {
+      try {
+        await extensionService.resumeSession();
+        return; // Extension will handle the update
+      } catch (error) {
+        console.error('Failed to resume session via extension:', error);
+      }
+    }
+
+    // Local mode
     this.currentSession.status = 'active';
     this.startSessionTimer();
-    this.startTabTracking();
+    if (!this.isExtensionMode) {
+      this.startTabTracking();
+    }
     SessionStorageService.setCurrentSession(this.currentSession);
     this.notifyListeners();
   }
@@ -66,6 +194,19 @@ export class SessionManager {
   async endSession(): Promise<Session | null> {
     if (!this.currentSession) return null;
 
+    // Use extension if available
+    if (this.isExtensionMode && extensionService.isAvailable()) {
+      try {
+        const response = await extensionService.endSession();
+        if (response?.session) {
+          return response.session; // Extension handles the complete flow
+        }
+      } catch (error) {
+        console.error('Failed to end session via extension:', error);
+      }
+    }
+
+    // Local mode
     const endTime = new Date();
     const duration = Math.round((endTime.getTime() - this.currentSession.startTime.getTime()) / 1000 / 60);
 
@@ -182,9 +323,20 @@ export class SessionManager {
   }
 
   // Focus Blocks
-  startFocusBlock(type: FocusBlock['type'], description?: string): void {
+  async startFocusBlock(type: FocusBlock['type'], description?: string): Promise<void> {
     if (!this.currentSession) return;
 
+    // Use extension if available
+    if (this.isExtensionMode && extensionService.isAvailable()) {
+      try {
+        await extensionService.addFocusBlock(type, description || '');
+        return; // Extension will handle the update
+      } catch (error) {
+        console.error('Failed to start focus block via extension:', error);
+      }
+    }
+
+    // Local mode
     // End current focus block if exists
     if (this.currentSession.currentFocusBlock) {
       this.endFocusBlock();
