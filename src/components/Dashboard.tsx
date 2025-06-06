@@ -112,7 +112,12 @@ export default function Dashboard() {
                 Currently showing simulated data for demonstration.
               </p>
               <div className="flex items-center space-x-3 mt-3">
-                <Button size="sm" variant="outline" className="border-yellow-300 text-yellow-700 hover:bg-yellow-100">
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  className="border-yellow-300 text-yellow-700 hover:bg-yellow-100"
+                  onClick={() => window.open('https://github.com/slaw469/AI-Time-Doubler/blob/main/extension/README.md', '_blank')}
+                >
                   Install Extension
                 </Button>
                 <span className="text-xs text-yellow-600 dark:text-yellow-400">
