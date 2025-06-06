@@ -30,7 +30,7 @@ export default function Sidebar({ isOpen, currentView, onViewChange }: SidebarPr
   };
 
   return (
-    <aside className="fixed left-0 top-16 bottom-0 w-64 bg-white dark:bg-gradient-to-b dark:from-gray-900 dark:to-gray-800 border-r border-gray-200 dark:border-gray-700/50 z-40">
+    <aside className="fixed left-0 top-16 bottom-0 w-64 bg-white dark:bg-gray-800 border-r border-gray-200/50 dark:border-gray-700/50 z-40">
       <div className="p-6">
         {/* Extension Status */}
         {currentSession && (
@@ -73,7 +73,7 @@ export default function Sidebar({ isOpen, currentView, onViewChange }: SidebarPr
 
         {/* Quick Stats */}
         {(metrics.totalSessions > 0 || currentSession) && (
-          <div className="mt-8 p-4 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-200/50 dark:border-gray-700/50">
+          <div className="mt-8 p-4 rounded-xl bg-gray-50 dark:bg-gray-700/50 border border-gray-200/50 dark:border-gray-600/50">
             <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">
               {currentSession ? 'Current Session' : 'Overview'}
             </h3>
