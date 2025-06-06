@@ -1,78 +1,32 @@
 import React, { useState } from 'react';
 import { Search, Filter, Calendar, Clock, Target } from 'lucide-react';
 import SessionCard from './SessionCard';
+import { useSessionHistory } from '../hooks/useSession';
 
 export default function SessionHistory() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedFilter, setSelectedFilter] = useState('all');
+  
+  // Use real session data from the hook
+  const { sessions: allSessions, metrics, isLoading } = useSessionHistory();
 
-  const sessions = [
-    {
-      id: '1',
-      title: 'React Component Refactoring',
-      summary: 'Working on breaking down the UserProfile component into smaller, reusable pieces. Currently focusing on extracting the avatar and contact info sections.',
-      startTime: new Date(Date.now() - 2 * 60 * 60 * 1000),
-      duration: 134,
-      status: 'active' as const,
-      tabs: [
-        { title: 'UserProfile.tsx - VS Code', url: 'vscode://file/project/src/components/UserProfile.tsx', favicon: '🔧' },
-        { title: 'React Documentation', url: 'https://react.dev/learn', favicon: '📚' },
-        { title: 'GitHub PR #234', url: 'https://github.com/company/project/pull/234', favicon: '🔗' }
-      ]
-    },
-    {
-      id: '2',
-      title: 'API Integration Debug',
-      summary: 'Investigated authentication timeout issues with the payment gateway. Found the root cause in token refresh logic and implemented a fix.',
-      startTime: new Date(Date.now() - 4 * 60 * 60 * 1000),
-      duration: 90,
-      status: 'completed' as const
-    },
-    {
-      id: '3',
-      title: 'Database Schema Design',
-      summary: 'Designed new user preferences table structure. Added proper indexes for performance optimization and foreign key constraints.',
-      startTime: new Date(Date.now() - 6 * 60 * 60 * 1000),
-      duration: 120,
-      status: 'completed' as const
-    },
-    {
-      id: '4',
-      title: 'Client Presentation Prep',
-      summary: 'Created comprehensive slides for quarterly review meeting. Gathered performance metrics, user engagement data, and growth projections.',
-      startTime: new Date(Date.now() - 8 * 60 * 60 * 1000),
-      duration: 75,
-      status: 'completed' as const
-    },
-    {
-      id: '5',
-      title: 'Code Review & Testing',
-      summary: 'Reviewed pull requests from team members. Focused on security best practices and performance optimizations in the authentication module.',
-      startTime: new Date(Date.now() - 24 * 60 * 60 * 1000),
-      duration: 60,
-      status: 'completed' as const
-    },
-    {
-      id: '6',
-      title: 'Documentation Writing',
-      summary: 'Updated API documentation for the new user management endpoints. Added examples and improved error handling descriptions.',
-      startTime: new Date(Date.now() - 26 * 60 * 60 * 1000),
-      duration: 45,
-      status: 'completed' as const
-    }
-  ];
-
-  const filteredSessions = sessions.filter(session => {
+  const filteredSessions = allSessions.filter(session => {
     const matchesSearch = session.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         session.summary.toLowerCase().includes(searchTerm.toLowerCase());
+                         (session.summary?.content || '').toLowerCase().includes(searchTerm.toLowerCase());
     
     if (selectedFilter === 'all') return matchesSearch;
     return matchesSearch && session.status === selectedFilter;
   });
 
-  const totalSessions = sessions.length;
-  const totalTime = sessions.reduce((acc, session) => acc + (session.duration || 0), 0);
-  const avgSessionTime = Math.round(totalTime / totalSessions);
+  const totalSessions = allSessions.length;
+  const totalTime = allSessions.reduce((acc, session) => acc + (session.duration || 0), 0);
+  const avgSessionTime = totalSessions > 0 ? Math.round(totalTime / totalSessions) : 0;
+
+  const formatDuration = (minutes: number) => {
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    return hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
+  };
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -120,7 +74,7 @@ export default function SessionHistory() {
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200/50">
           <div className="flex items-center space-x-3 mb-2">
             <Clock className="text-success-500" size={20} />
-            <span className="text-2xl font-bold text-gray-900">{Math.round(totalTime / 60)}h</span>
+            <span className="text-2xl font-bold text-gray-900">{formatDuration(totalTime)}</span>
           </div>
           <p className="text-sm text-gray-600">Total Focus Time</p>
         </div>
@@ -128,7 +82,7 @@ export default function SessionHistory() {
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200/50">
           <div className="flex items-center space-x-3 mb-2">
             <Calendar className="text-accent-500" size={20} />
-            <span className="text-2xl font-bold text-gray-900">{avgSessionTime}m</span>
+            <span className="text-2xl font-bold text-gray-900">{formatDuration(avgSessionTime)}</span>
           </div>
           <p className="text-sm text-gray-600">Avg Session</p>
         </div>
@@ -136,9 +90,11 @@ export default function SessionHistory() {
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200/50">
           <div className="flex items-center space-x-3 mb-2">
             <Filter className="text-red-500" size={20} />
-            <span className="text-2xl font-bold text-gray-900">94%</span>
+            <span className="text-2xl font-bold text-gray-900">
+              {metrics.averageProductivity > 0 ? `${metrics.averageProductivity.toFixed(1)}/5` : 'No data'}
+            </span>
           </div>
-          <p className="text-sm text-gray-600">Efficiency Score</p>
+          <p className="text-sm text-gray-600">Avg Productivity</p>
         </div>
       </div>
 
@@ -150,20 +106,43 @@ export default function SessionHistory() {
           </h2>
         </div>
 
-        {filteredSessions.length === 0 ? (
+        {isLoading ? (
+          <div className="text-center py-12">
+            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
+              <Clock size={24} className="text-gray-400" />
+            </div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">Loading sessions...</h3>
+            <p className="text-gray-600">Please wait while we fetch your session history</p>
+          </div>
+        ) : filteredSessions.length === 0 ? (
           <div className="text-center py-12">
             <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <Search size={24} className="text-gray-400" />
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No sessions found</h3>
-            <p className="text-gray-600">Try adjusting your search or filter criteria</p>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
+              {allSessions.length === 0 ? 'No sessions yet' : 'No sessions found'}
+            </h3>
+            <p className="text-gray-600">
+              {allSessions.length === 0 
+                ? 'Start your first productivity session to see it here' 
+                : 'Try adjusting your search or filter criteria'
+              }
+            </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredSessions.map((session) => (
               <SessionCard 
                 key={session.id} 
-                session={session} 
+                session={{
+                  id: session.id,
+                  title: session.title,
+                  summary: session.summary?.content || `Worked for ${formatDuration(session.duration || 0)} with ${session.tabs.length} tabs active`,
+                  startTime: session.startTime,
+                  duration: session.duration,
+                  status: session.status,
+                  aiSummary: session.summary
+                }} 
                 showResume={session.status === 'completed'} 
               />
             ))}

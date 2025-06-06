@@ -52,15 +52,6 @@ export default function Dashboard() {
   const handleStartSession = () => {
     const title = `Focus Session ${new Date().toLocaleTimeString()}`;
     startSession(title);
-    
-    // Add some demo tabs to simulate activity (only if extension not connected)
-    if (!isExtensionConnected) {
-      setTimeout(() => {
-        addTab('React Documentation - Components', 'https://react.dev/learn/your-first-component', '📚');
-        addTab('GitHub - AI Time Doubler', 'https://github.com/user/ai-time-doubler', '🔗');
-        addTab('Notion - Project Notes', 'https://notion.so/project-notes', '📝');
-      }, 1000);
-    }
   };
 
   const handleFocusBlock = (type: string) => {
@@ -109,7 +100,7 @@ export default function Dashboard() {
               <h3 className="font-semibold text-yellow-800 dark:text-yellow-200">Chrome Extension Recommended</h3>
               <p className="text-yellow-700 dark:text-yellow-300 text-sm mt-1">
                 For real browser tab tracking, install the AI Time Doubler Chrome extension. 
-                Currently showing simulated data for demonstration.
+                Without the extension, session tracking will work with manual tab management only.
               </p>
               <div className="flex items-center space-x-3 mt-3">
                 <Button 
