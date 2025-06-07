@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Search, Filter, Calendar, Clock, Target } from 'lucide-react';
 import SessionCard from './SessionCard';
-import { useSessionHistory } from '../hooks/useSession';
+import { useSessionHistory, useSession } from '../hooks/useSession';
 
 export default function SessionHistory() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -9,6 +9,18 @@ export default function SessionHistory() {
   
   // Use real session data from the hook
   const { sessions: allSessions, metrics, isLoading } = useSessionHistory();
+  const { startSession } = useSession();
+
+  const handleResumeSession = async (sessionId: string) => {
+    const sessionToResume = allSessions.find(s => s.id === sessionId);
+    if (sessionToResume) {
+      try {
+        await startSession(`Resume: ${sessionToResume.title}`);
+      } catch (error) {
+        console.error('Failed to resume session:', error);
+      }
+    }
+  };
 
   const filteredSessions = allSessions.filter(session => {
     const matchesSearch = session.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -144,6 +156,7 @@ export default function SessionHistory() {
                   aiSummary: session.summary
                 }} 
                 showResume={session.status === 'completed'} 
+                onResume={handleResumeSession}
               />
             ))}
           </div>

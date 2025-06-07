@@ -1,12 +1,16 @@
 import { useState, useEffect } from 'react';
-import { Clock, Target, TrendingUp, Zap, Github, FileText, Calendar, Play, Pause, Square, Brain, Sparkles, Chrome } from 'lucide-react';
+import { Clock, Target, TrendingUp, Zap, Github, FileText, Calendar, Play, Pause, Square, Brain, Sparkles, Chrome, Star, Info } from 'lucide-react';
 import SessionCard from './SessionCard';
 import MetricCard from './MetricCard';
 import { useSession, useSessionHistory } from '../hooks/useSession';
 import { Button } from './ui/button';
 import { extensionService } from '../services/extensionService';
 
-export default function Dashboard() {
+interface DashboardProps {
+  onNavigate?: (view: 'sessions' | 'ai-insights') => void;
+}
+
+export default function Dashboard({ onNavigate }: DashboardProps) {
   const { 
     currentSession, 
     isActive, 
@@ -16,11 +20,15 @@ export default function Dashboard() {
     resumeSession, 
     endSession,
     addTab,
-    startFocusBlock 
+    startFocusBlock,
+    updateProductivity 
   } = useSession();
   
   const { sessions: recentSessions, metrics } = useSessionHistory();
   const [isExtensionConnected, setIsExtensionConnected] = useState(false);
+  const [showProductivityModal, setShowProductivityModal] = useState(false);
+  const [showProductivityInfo, setShowProductivityInfo] = useState(false);
+  const [pendingSessionId, setPendingSessionId] = useState<string | null>(null);
 
   useEffect(() => {
     // Check initial extension status
@@ -52,6 +60,25 @@ export default function Dashboard() {
   const handleStartSession = () => {
     const title = `Focus Session ${new Date().toLocaleTimeString()}`;
     startSession(title);
+  };
+
+  const handleEndSession = async () => {
+    if (!currentSession) return;
+    
+    const completedSession = await endSession();
+    if (completedSession && completedSession.duration && completedSession.duration >= 5) {
+      // Show productivity rating modal for sessions longer than 5 minutes
+      setPendingSessionId(completedSession.id);
+      setShowProductivityModal(true);
+    }
+  };
+
+  const handleProductivityRating = (rating: number) => {
+    if (pendingSessionId) {
+      updateProductivity(rating);
+    }
+    setShowProductivityModal(false);
+    setPendingSessionId(null);
   };
 
   const handleFocusBlock = (type: string) => {
@@ -135,7 +162,7 @@ export default function Dashboard() {
                 </p>
               </div>
             </div>
-            <Button variant="outline" className="bg-white/10 border-white/20 text-white hover:bg-white/20">
+            <Button variant="outline" className="bg-white/10 border-white/20 text-white hover:bg-white/20" onClick={() => onNavigate?.('ai-insights')}>
               <Sparkles size={16} className="mr-2" />
               View Insights
             </Button>
@@ -147,7 +174,7 @@ export default function Dashboard() {
       {!currentSession ? (
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200/50 dark:border-gray-700/50 p-6 text-center">
           <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Start a New Session</h2>
-          <p className="text-gray-600 dark:text-gray-300 mb-6">Begin tracking your focus time and eliminate context switching</p>
+          <p className="text-gray-600 dark:text-gray-300 mb-6">Track your work context so you can quickly pick up where you left off</p>
           <Button onClick={handleStartSession} className="mr-4">
             <Play size={16} className="mr-2" />
             Start Session
@@ -179,7 +206,7 @@ export default function Dashboard() {
                   Resume
                 </Button>
               )}
-              <Button variant="outline" size="sm" onClick={endSession}>
+              <Button variant="outline" size="sm" onClick={handleEndSession}>
                 <Square size={14} className="mr-1" />
                 End
               </Button>
@@ -230,6 +257,15 @@ export default function Dashboard() {
           icon={TrendingUp}
           color="accent"
         />
+        <div className="text-center mt-2">
+          <button 
+            onClick={() => setShowProductivityInfo(true)}
+            className="text-xs text-primary-600 dark:text-primary-400 hover:underline flex items-center justify-center mx-auto"
+          >
+            <Info size={12} className="mr-1" />
+            How is this calculated?
+          </button>
+        </div>
         <MetricCard
           title="Context Switches"
           value={currentSession ? currentSession.contextSwitches.toString() : "0"}
@@ -355,7 +391,7 @@ export default function Dashboard() {
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200/50 dark:border-gray-700/50 p-6">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Recent Sessions</h2>
-            <button className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 text-sm font-medium">
+            <button className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 text-sm font-medium" onClick={() => onNavigate?.('sessions')}>
               View All Sessions →
             </button>
           </div>
@@ -376,6 +412,66 @@ export default function Dashboard() {
                 showResume={true} 
               />
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* Productivity Rating Modal */}
+      {showProductivityModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 max-w-md w-full mx-4">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Rate Your Session</h2>
+            <p className="text-gray-600 dark:text-gray-300 mb-6">How productive did you feel during this session?</p>
+            <div className="flex items-center justify-center space-x-2 mb-6">
+              {[1, 2, 3, 4, 5].map((rating) => (
+                <button
+                  key={rating}
+                  className="text-3xl transition-colors hover:scale-110 transform"
+                  onClick={() => handleProductivityRating(rating)}
+                >
+                  <Star 
+                    size={32} 
+                    className={rating <= (currentSession?.productivity || 0) ? 'text-yellow-400 fill-current' : 'text-gray-300 hover:text-yellow-300'} 
+                  />
+                </button>
+              ))}
+            </div>
+            <div className="flex space-x-3">
+              <Button
+                variant="outline"
+                onClick={() => setShowProductivityModal(false)}
+                className="flex-1"
+              >
+                Skip Rating
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Productivity Info Modal */}
+      {showProductivityInfo && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 max-w-lg w-full mx-4">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Productivity Score Explained</h2>
+            <div className="space-y-4 text-gray-600 dark:text-gray-300">
+              <p><strong>Your productivity score (1-5 stars) is calculated from:</strong></p>
+              <ul className="space-y-2 list-disc list-inside">
+                <li><strong>Session Duration:</strong> Longer focused sessions score higher</li>
+                <li><strong>Context Recovery:</strong> How quickly you get back into flow state</li>
+                <li><strong>Focus Blocks:</strong> Using dedicated focus modes boosts your score</li>
+                <li><strong>Self-Rating:</strong> Your personal assessment after each session</li>
+              </ul>
+              <div className="mt-4 p-4 bg-primary-50 dark:bg-primary-900/20 rounded-lg">
+                <p className="text-sm"><strong>Tip:</strong> The goal isn't to avoid switching tasks, but to minimize the time it takes to get back into the zone when you do!</p>
+              </div>
+            </div>
+            <Button
+              onClick={() => setShowProductivityInfo(false)}
+              className="mt-6 w-full"
+            >
+              Got it!
+            </Button>
           </div>
         </div>
       )}

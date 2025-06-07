@@ -103,7 +103,7 @@ export default function LandingPage({ onLogin }: LandingPageProps) {
               </div>
               <div>
                 <h1 className="text-xl font-bold text-gray-900 dark:text-white">AI Time Doubler</h1>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Eliminate context switching</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Remember where you left off</p>
               </div>
             </div>
             
@@ -141,7 +141,7 @@ export default function LandingPage({ onLogin }: LandingPageProps) {
             </h1>
             
             <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
-              Eliminate the time lost when returning to work. AI Time Doubler automatically summarizes your last session and prepares your next one, so you can pick up exactly where you left off.
+              Never lose your train of thought again. AI Time Doubler automatically captures your work context and provides intelligent summaries, so you can instantly remember where you left off and dive back in.
             </p>
             
             <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4 mb-12">
@@ -238,7 +238,7 @@ export default function LandingPage({ onLogin }: LandingPageProps) {
               Everything you need to stay focused
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-              Our AI-powered platform eliminates context switching and helps you maintain deep focus throughout your workday.
+              Our AI-powered platform helps you remember where you left off and quickly get back into the zone.
             </p>
           </div>
 
@@ -331,7 +331,7 @@ export default function LandingPage({ onLogin }: LandingPageProps) {
             Ready to double your productivity?
           </h2>
           <p className="text-xl text-primary-100 mb-8 max-w-2xl mx-auto">
-            Start using AI Time Doubler today and eliminate context switching from your workflow.
+            Start using AI Time Doubler today and never lose track of where you left off again.
           </p>
           
           <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4 mb-8">
@@ -374,7 +374,7 @@ export default function LandingPage({ onLogin }: LandingPageProps) {
                 <span className="text-lg font-bold">AI Time Doubler</span>
               </div>
               <p className="text-gray-400">
-                Eliminate context switching and double your productivity with AI-powered session management.
+                Remember where you left off and get back into the zone faster with AI-powered session management.
               </p>
             </div>
             

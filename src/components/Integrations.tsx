@@ -1,59 +1,85 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Github, FileText, Calendar, Chrome, Slack, Check, AlertCircle, Plus } from 'lucide-react';
+import { extensionService } from '../services/extensionService';
+import { useSession, useSessionHistory } from '../hooks/useSession';
 
 export default function Integrations() {
+  const [isExtensionConnected, setIsExtensionConnected] = useState(false);
+  const { currentSession } = useSession();
+  const { sessions, metrics } = useSessionHistory();
+
+  useEffect(() => {
+    // Check initial extension status
+    setIsExtensionConnected(extensionService.isAvailable());
+
+    // Listen for extension status changes
+    extensionService.onMessage('extensionConnected', () => {
+      setIsExtensionConnected(true);
+    });
+
+    extensionService.onMessage('extensionNotFound', () => {
+      setIsExtensionConnected(false);
+    });
+
+    return () => {
+      extensionService.offMessage('extensionConnected');
+      extensionService.offMessage('extensionNotFound');
+    };
+  }, []);
+
   const integrations = [
+    {
+      id: 'chrome',
+      name: 'Chrome Extension',
+      description: 'Track browser activity and tab management',
+      icon: Chrome,
+      status: isExtensionConnected ? 'connected' : 'available',
+      data: isExtensionConnected && currentSession ? {
+        activeTabs: currentSession.tabs.length,
+        contextSwitches: currentSession.contextSwitches,
+        timeTracked: `${Math.floor((Date.now() - new Date(currentSession.startTime).getTime()) / 1000 / 60)}m`
+      } : null,
+      lastSync: isExtensionConnected ? 'Live' : null
+    },
+    {
+      id: 'ai-insights',
+      name: 'AI Insights',
+      description: 'Generate productivity summaries and recommendations',
+      icon: Github, // Using Github icon as placeholder for AI
+      status: 'connected',
+      data: {
+        totalSessions: sessions.length,
+        avgProductivity: metrics.averageProductivity.toFixed(1),
+        totalFocusTime: `${Math.floor(metrics.totalFocusTime / 60)}h`
+      },
+      lastSync: sessions.length > 0 ? 'Recently' : 'No data'
+    },
     {
       id: 'github',
       name: 'GitHub',
-      description: 'Track commits, PRs, and branches automatically',
+      description: 'Track commits, PRs, and development activity',
       icon: Github,
-      status: 'connected',
-      data: {
-        repositories: 12,
-        commits: 156,
-        pullRequests: 23
-      },
-      lastSync: '5 minutes ago'
+      status: 'available',
+      data: null,
+      lastSync: null
     },
     {
       id: 'notion',
       name: 'Notion',
       description: 'Sync tasks, notes, and project documentation',
       icon: FileText,
-      status: 'connected',
-      data: {
-        pages: 89,
-        databases: 6,
-        lastUpdate: '2 hours ago'
-      },
-      lastSync: '1 hour ago'
+      status: 'available',
+      data: null,
+      lastSync: null
     },
     {
       id: 'calendar',
       name: 'Google Calendar',
       description: 'Align sessions with your meeting schedule',
       icon: Calendar,
-      status: 'connected',
-      data: {
-        events: 24,
-        focusBlocks: 8,
-        meetings: 16
-      },
-      lastSync: '15 minutes ago'
-    },
-    {
-      id: 'chrome',
-      name: 'Chrome Extension',
-      description: 'Track browser activity and tab management',
-      icon: Chrome,
-      status: 'connected',
-      data: {
-        activeTabs: 8,
-        domains: 12,
-        timeTracked: '6.2 hours'
-      },
-      lastSync: 'Live'
+      status: 'available',
+      data: null,
+      lastSync: null
     },
     {
       id: 'slack',
@@ -65,6 +91,17 @@ export default function Integrations() {
       lastSync: null
     }
   ];
+
+  const connectedIntegrations = integrations.filter(i => i.status === 'connected');
+  const totalDataPoints = connectedIntegrations.reduce((acc, integration) => {
+    if (integration.id === 'chrome' && integration.data) {
+      return acc + integration.data.activeTabs + integration.data.contextSwitches;
+    }
+    if (integration.id === 'ai-insights' && integration.data) {
+      return acc + integration.data.totalSessions;
+    }
+    return acc;
+  }, 0);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -88,6 +125,43 @@ export default function Integrations() {
     }
   };
 
+  const handleConnect = (integrationId: string) => {
+    switch (integrationId) {
+      case 'github':
+        // In a real app, this would initiate OAuth flow
+        alert('GitHub integration coming soon! This would typically open an OAuth dialog to connect your GitHub account for automatic commit and PR tracking.');
+        break;
+      case 'notion':
+        alert('Notion integration coming soon! This would connect to your Notion workspace to sync tasks, notes, and project documentation.');
+        break;
+      case 'calendar':
+        alert('Google Calendar integration coming soon! This would sync your calendar events to align focus sessions with your meeting schedule.');
+        break;
+      case 'slack':
+        alert('Slack integration coming soon! This would monitor your team communications and mentions during focus sessions.');
+        break;
+      case 'chrome':
+        // For Chrome extension, provide installation instructions
+        if (confirm('Chrome Extension needed! Would you like to open the installation instructions?')) {
+          window.open('https://github.com/slaw469/AI-Time-Doubler/blob/main/extension/README.md', '_blank');
+        }
+        break;
+      default:
+        alert('Integration setup coming soon!');
+    }
+  };
+
+  const handleConfigure = (integrationId: string) => {
+    alert(`Configure ${integrationId} settings - feature coming soon!`);
+  };
+
+  const handleDisconnect = (integrationId: string) => {
+    if (confirm(`Are you sure you want to disconnect ${integrationId}? This will stop data syncing.`)) {
+      // In a real app, this would revoke OAuth tokens and clean up
+      alert(`${integrationId} disconnected successfully!`);
+    }
+  };
+
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Header */}
@@ -104,20 +178,20 @@ export default function Integrations() {
       {/* Integration Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200/50">
-          <div className="text-2xl font-bold text-gray-900 mb-1">4</div>
+          <div className="text-2xl font-bold text-gray-900 mb-1">{connectedIntegrations.length}</div>
           <div className="text-sm text-gray-600">Connected</div>
         </div>
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200/50">
-          <div className="text-2xl font-bold text-gray-900 mb-1">156</div>
+          <div className="text-2xl font-bold text-gray-900 mb-1">{totalDataPoints}</div>
           <div className="text-sm text-gray-600">Data Points Today</div>
         </div>
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200/50">
-          <div className="text-2xl font-bold text-gray-900 mb-1">98%</div>
-          <div className="text-sm text-gray-600">Sync Success Rate</div>
+          <div className="text-2xl font-bold text-gray-900 mb-1">{isExtensionConnected ? '100%' : '0%'}</div>
+          <div className="text-sm text-gray-600">Extension Status</div>
         </div>
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200/50">
-          <div className="text-2xl font-bold text-gray-900 mb-1">5min</div>
-          <div className="text-sm text-gray-600">Avg Sync Time</div>
+          <div className="text-2xl font-bold text-gray-900 mb-1">{isExtensionConnected ? 'Live' : 'N/A'}</div>
+          <div className="text-sm text-gray-600">Sync Status</div>
         </div>
       </div>
 
@@ -177,16 +251,25 @@ export default function Integrations() {
                 <div className="flex space-x-2 ml-auto">
                   {integration.status === 'connected' && (
                     <>
-                      <button className="px-3 py-1 text-xs bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+                      <button 
+                        className="px-3 py-1 text-xs bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                        onClick={() => handleConfigure(integration.id)}
+                      >
                         Configure
                       </button>
-                      <button className="px-3 py-1 text-xs bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors">
+                      <button 
+                        className="px-3 py-1 text-xs bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors"
+                        onClick={() => handleDisconnect(integration.name)}
+                      >
                         Disconnect
                       </button>
                     </>
                   )}
                   {integration.status === 'available' && (
-                    <button className="px-3 py-1 text-xs bg-primary-100 text-primary-700 rounded-lg hover:bg-primary-200 transition-colors">
+                    <button 
+                      className="px-3 py-1 text-xs bg-primary-100 text-primary-700 rounded-lg hover:bg-primary-200 transition-colors"
+                      onClick={() => handleConnect(integration.id)}
+                    >
                       Connect
                     </button>
                   )}

@@ -28,7 +28,7 @@ function App() {
 
     switch (currentView) {
       case 'dashboard':
-        return <Dashboard />;
+        return <Dashboard onNavigate={setCurrentView} />;
       case 'sessions':
         return <SessionHistory />;
       case 'ai-insights':
@@ -38,7 +38,7 @@ function App() {
       case 'settings':
         return <Settings />;
       default:
-        return <Dashboard />;
+        return <Dashboard onNavigate={setCurrentView} />;
     }
   };
 
@@ -53,7 +53,7 @@ function App() {
   return (
     <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
-        <Header onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
+        <Header onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} onNavigate={setCurrentView} />
         
         <div className="flex">
           <Sidebar 

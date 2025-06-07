@@ -18,9 +18,10 @@ interface Session {
 interface SessionCardProps {
   session: Session;
   showResume: boolean;
+  onResume?: (sessionId: string) => void;
 }
 
-export default function SessionCard({ session, showResume }: SessionCardProps) {
+export default function SessionCard({ session, showResume, onResume }: SessionCardProps) {
   const formatDuration = (minutes: number) => {
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;
@@ -90,7 +91,7 @@ export default function SessionCard({ session, showResume }: SessionCardProps) {
       )}
 
       {showResume && (
-        <button className="w-full flex items-center justify-center space-x-2 py-2 px-4 bg-gradient-to-r from-primary-500 to-accent-500 text-white rounded-lg hover:from-primary-600 hover:to-accent-600 transition-all duration-200 text-sm font-medium">
+        <button className="w-full flex items-center justify-center space-x-2 py-2 px-4 bg-gradient-to-r from-primary-500 to-accent-500 text-white rounded-lg hover:from-primary-600 hover:to-accent-600 transition-all duration-200 text-sm font-medium" onClick={() => onResume?.(session.id)}>
           <Play size={14} />
           <span>Resume Session</span>
         </button>
