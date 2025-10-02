@@ -77,10 +77,10 @@
 
 ## 7) Docs & DevEx
 
-- [ ] README (below) with clear Quickstart, CLI usage, and live demo link placeholder
-- [ ] Changelog via Changesets (optional for Track A; keep ready for npm publish)
-- [ ] Issue templates: bug/feature request (optional)
-- [ ] License (MIT)
+- [x] README (below) with clear Quickstart, CLI usage, and live demo link placeholder
+- [x] Changelog via Changesets (optional for Track A; keep ready for npm publish)
+- [x] Issue templates: bug/feature request (optional)
+- [x] License (MIT)
 
 ## 8) Definition of Done (MVP)
 
