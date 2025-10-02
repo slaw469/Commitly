@@ -152,8 +152,8 @@ export default function Playground({ defaultMessage = demoMessage }: Props): JSX
         });
       }
 
-      // Cmd/Ctrl + Shift + F - Apply auto-fix
-      if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === 'F') {
+      // Cmd/Ctrl + K - Apply auto-fix
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault();
         handleApplyFix();
       }
@@ -182,7 +182,7 @@ export default function Playground({ defaultMessage = demoMessage }: Props): JSX
             <Button
               variant="ghost"
               size="sm"
-              title="Keyboard shortcuts: Cmd/Ctrl+Enter to validate, Cmd/Ctrl+Shift+F to auto-fix"
+              title="Keyboard shortcuts: Cmd/Ctrl+Enter to validate, Cmd/Ctrl+K to auto-fix"
               className="h-9 w-9 p-0"
             >
               <Keyboard className="h-4 w-4" />
