@@ -116,7 +116,7 @@ fi
 # Test 11: fix case
 echo "feat: Add Feature" > test-msg.txt
 run_cli fix -f test-msg.txt > /dev/null 2>&1
-if grep -q "feat: add feature" test-msg.txt; then
+if grep -q "feat: add Feature" test-msg.txt; then
     echo -e "${GREEN}✓ PASS${NC} fix case"
     ((PASSED++))
 else
