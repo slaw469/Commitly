@@ -9,6 +9,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea, Label } from '@/components/ui/input';
 import { toast } from '@/hooks/use-toast';
+import { useValidationHistory } from '@/hooks/use-validation-history';
+import { HistoryPanel } from '@/components/HistoryPanel';
 
 interface Props {
   defaultMessage?: string;
@@ -42,10 +44,16 @@ const exampleTemplates = [
 export default function Playground({ defaultMessage = demoMessage }: Props): JSX.Element {
   const [inputMessage, setInputMessage] = useState<string>(defaultMessage);
   const [copiedFixed, setCopiedFixed] = useState<boolean>(false);
+  const { history, addToHistory, clearHistory, removeItem } = useValidationHistory();
 
   const validationResult: ValidationResult = useMemo(() => {
-    return validate(inputMessage);
-  }, [inputMessage]);
+    const result = validate(inputMessage);
+    // Add to history when validation changes (debounced by useMemo)
+    if (inputMessage.trim()) {
+      addToHistory(inputMessage, result);
+    }
+    return result;
+  }, [inputMessage, addToHistory]);
 
   const fixedMessage = useMemo(() => {
     return suggestFix(inputMessage);
@@ -177,7 +185,7 @@ export default function Playground({ defaultMessage = demoMessage }: Props): JSX
 
       <main className="container mx-auto px-6 py-8">
         <div className="max-w-7xl mx-auto grid grid-cols-1 xl:grid-cols-12 gap-6">
-          {/* Left Column - Templates */}
+          {/* Left Column - Templates & History */}
           <aside className="xl:col-span-3 space-y-4">
             <Card>
               <CardHeader>
@@ -246,6 +254,20 @@ export default function Playground({ defaultMessage = demoMessage }: Props): JSX
                 </div>
               </CardContent>
             </Card>
+
+            <HistoryPanel
+              history={history}
+              onClearHistory={clearHistory}
+              onRemoveItem={removeItem}
+              onLoadMessage={(message) => {
+                setInputMessage(message);
+                toast({
+                  variant: 'default',
+                  title: 'Message loaded',
+                  description: 'Loaded from history',
+                });
+              }}
+            />
           </aside>
 
           {/* Center Column - Editor & Diff */}
