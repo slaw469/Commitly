@@ -52,19 +52,23 @@ export function formatValidationResult(result: ValidationResult): string {
 
   // Suggestion
   if (result.suggestion && result.suggestion !== result.parsed.raw) {
-    parts.push(`\n${  chalk.cyan.bold('Suggested fix:')}`);
+    parts.push(`\n${chalk.cyan.bold('Suggested fix:')}`);
     parts.push(chalk.cyan(result.suggestion));
   }
 
   // Summary
   const summary = [];
   if (result.errors.length > 0) {
-    summary.push(chalk.red(`${result.errors.length} error${result.errors.length !== 1 ? 's' : ''}`));
+    summary.push(
+      chalk.red(`${result.errors.length} error${result.errors.length !== 1 ? 's' : ''}`)
+    );
   }
   if (result.warnings.length > 0) {
-    summary.push(chalk.yellow(`${result.warnings.length} warning${result.warnings.length !== 1 ? 's' : ''}`));
+    summary.push(
+      chalk.yellow(`${result.warnings.length} warning${result.warnings.length !== 1 ? 's' : ''}`)
+    );
   }
-  
+
   if (summary.length > 0) {
     parts.push(`\n${summary.join(', ')}`);
   }
@@ -80,9 +84,9 @@ export function formatValidationResult(result: ValidationResult): string {
  */
 export function formatDiff(original: string, fixed: string): string {
   const lines: string[] = [chalk.bold('\nDiff:')];
-  
-  lines.push(chalk.red(`- ${  original.split('\n').join('\n- ')}`));
-  lines.push(chalk.green(`+ ${  fixed.split('\n').join('\n+ ')}`));
+
+  lines.push(chalk.red(`- ${original.split('\n').join('\n- ')}`));
+  lines.push(chalk.green(`+ ${fixed.split('\n').join('\n+ ')}`));
 
   return lines.join('\n');
 }
@@ -110,4 +114,3 @@ export function printError(message: string): void {
 export function printInfo(message: string): void {
   console.log(chalk.blue('ℹ'), message);
 }
-

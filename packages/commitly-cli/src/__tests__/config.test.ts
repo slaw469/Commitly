@@ -23,11 +23,11 @@ describe('Config Loading', () => {
         requireScope: true,
         maxHeaderLength: 80,
       };
-      
+
       await writeFile(configPath, JSON.stringify(configData), 'utf-8');
-      
+
       const config = await loadConfig(tmpDir);
-      
+
       expect(config).not.toBeNull();
       expect(config?.types).toEqual(['custom', 'special']);
       expect(config?.requireScope).toBe(true);
@@ -44,11 +44,11 @@ types:
 requireScope: false
 maxHeaderLength: 72
 `;
-      
+
       await writeFile(configPath, yamlConfig, 'utf-8');
-      
+
       const config = await loadConfig(tmpDir);
-      
+
       expect(config).not.toBeNull();
       expect(config?.types).toContain('custom');
     });
@@ -62,11 +62,11 @@ maxHeaderLength: 72
           maxHeaderLength: 60,
         },
       };
-      
+
       await writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2), 'utf-8');
-      
+
       const config = await loadConfig(tmpDir);
-      
+
       expect(config).not.toBeNull();
       expect(config?.types).toEqual(['package-type']);
       expect(config?.maxHeaderLength).toBe(60);
@@ -83,11 +83,11 @@ maxHeaderLength: 72
         maxHeaderLength: 100,
         // Other fields should use defaults
       };
-      
+
       await writeFile(configPath, JSON.stringify(partialConfig), 'utf-8');
-      
+
       const config = await loadConfig(tmpDir);
-      
+
       expect(config).not.toBeNull();
       expect(config?.maxHeaderLength).toBe(100);
       // Note: Zod will apply defaults when fully parsing
@@ -96,9 +96,9 @@ maxHeaderLength: 72
     it('should handle invalid JSON gracefully', async () => {
       const configPath = join(tmpDir, '.commitlyrc.json');
       await writeFile(configPath, '{ invalid json }', 'utf-8');
-      
+
       const config = await loadConfig(tmpDir);
-      
+
       // Should return null or handle error gracefully
       expect(config).toBeNull();
     });
@@ -109,11 +109,11 @@ maxHeaderLength: 72
         types: 'not-an-array', // Should be array
         maxHeaderLength: -1, // Should be positive
       };
-      
+
       await writeFile(configPath, JSON.stringify(invalidConfig), 'utf-8');
-      
+
       const config = await loadConfig(tmpDir);
-      
+
       // Should handle validation errors
       expect(config).toBeNull();
     });
@@ -129,9 +129,9 @@ maxHeaderLength: 72
         }),
         'utf-8'
       );
-      
+
       const config = await loadConfig(tmpDir);
-      
+
       // Should load from package.json since it's in search order
       expect(config?.types).toEqual(['package-type']);
     });
@@ -150,11 +150,11 @@ maxHeaderLength: 72
         footerLeadingBlank: true,
         blockedWords: ['wip', 'todo'],
       };
-      
+
       await writeFile(configPath, JSON.stringify(fullConfig), 'utf-8');
-      
+
       const config = await loadConfig(tmpDir);
-      
+
       expect(config).not.toBeNull();
       expect(config?.types).toEqual(['feat', 'fix', 'docs', 'custom']);
       expect(config?.requireScope).toBe(true);
@@ -170,11 +170,11 @@ maxHeaderLength: 72
         types: ['custom'],
         maxHeaderLength: 90,
       };
-      
+
       await writeFile(configPath, JSON.stringify(configData), 'utf-8');
-      
+
       const config = await loadConfigFromFile(configPath);
-      
+
       expect(config).not.toBeNull();
       expect(config?.types).toEqual(['custom']);
       expect(config?.maxHeaderLength).toBe(90);
@@ -188,11 +188,11 @@ maxHeaderLength: 72
     it('should handle various file extensions', async () => {
       const configPath = join(tmpDir, '.commitlyrc');
       const configData = { types: ['test'] };
-      
+
       await writeFile(configPath, JSON.stringify(configData), 'utf-8');
-      
+
       const config = await loadConfigFromFile(configPath);
-      
+
       expect(config).not.toBeNull();
       expect(config?.types).toEqual(['test']);
     });
@@ -202,9 +202,9 @@ maxHeaderLength: 72
     it('should handle empty config object', async () => {
       const configPath = join(tmpDir, '.commitlyrc.json');
       await writeFile(configPath, '{}', 'utf-8');
-      
+
       const config = await loadConfig(tmpDir);
-      
+
       // Empty config should be valid (use all defaults)
       expect(config).not.toBeNull();
     });
@@ -216,11 +216,11 @@ maxHeaderLength: 72
         unknownField: 'should be ignored',
         anotherUnknown: 123,
       };
-      
+
       await writeFile(configPath, JSON.stringify(configData), 'utf-8');
-      
+
       const config = await loadConfig(tmpDir);
-      
+
       expect(config).not.toBeNull();
       expect(config?.types).toEqual(['feat', 'fix']);
     });
@@ -231,26 +231,22 @@ maxHeaderLength: 72
         types: ['feat'],
         requireScope: null, // null not allowed for boolean field
       };
-      
+
       await writeFile(configPath, JSON.stringify(configData), 'utf-8');
-      
+
       const config = await loadConfig(tmpDir);
-      
+
       // Should reject invalid config
       expect(config).toBeNull();
     });
 
     it('should handle config with different subjectCase values', async () => {
       const testCases: Array<'lower' | 'sentence' | 'any'> = ['lower', 'sentence', 'any'];
-      
+
       for (const subjectCase of testCases) {
         const configPath = join(tmpDir, `.commitlyrc-${subjectCase}.json`);
-        await writeFile(
-          configPath,
-          JSON.stringify({ subjectCase }),
-          'utf-8'
-        );
-        
+        await writeFile(configPath, JSON.stringify({ subjectCase }), 'utf-8');
+
         const config = await loadConfigFromFile(configPath);
         expect(config?.subjectCase).toBe(subjectCase);
       }
@@ -261,11 +257,11 @@ maxHeaderLength: 72
       const configData = {
         subjectCase: 'invalid-case',
       };
-      
+
       await writeFile(configPath, JSON.stringify(configData), 'utf-8');
-      
+
       const config = await loadConfig(tmpDir);
-      
+
       // Should fail validation
       expect(config).toBeNull();
     });
@@ -275,11 +271,11 @@ maxHeaderLength: 72
       const configData = {
         blockedWords: [],
       };
-      
+
       await writeFile(configPath, JSON.stringify(configData), 'utf-8');
-      
+
       const config = await loadConfig(tmpDir);
-      
+
       expect(config).not.toBeNull();
       expect(config?.blockedWords).toEqual([]);
     });
@@ -289,14 +285,13 @@ maxHeaderLength: 72
       const configData = {
         types: [],
       };
-      
+
       await writeFile(configPath, JSON.stringify(configData), 'utf-8');
-      
+
       const config = await loadConfig(tmpDir);
-      
+
       expect(config).not.toBeNull();
       expect(config?.types).toEqual([]);
     });
   });
 });
-

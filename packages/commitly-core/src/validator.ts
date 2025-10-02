@@ -100,7 +100,7 @@ function validateParsedCommit(parsed: ParsedCommit, config: Config): ValidationI
   // Validate body format
   if (parsed.body) {
     const bodyLines = parsed.body.split('\n');
-    
+
     // Check for leading blank line
     if (config.bodyLeadingBlank) {
       const firstLineAfterHeader = parsed.raw.split('\n')[1];
@@ -152,10 +152,7 @@ function validateParsedCommit(parsed: ParsedCommit, config: Config): ValidationI
  * @param userConfig - Optional partial configuration
  * @returns Complete validation result
  */
-export function validateCommit(
-  message: string,
-  userConfig?: Partial<Config>
-): ValidationResult {
+export function validateCommit(message: string, userConfig?: Partial<Config>): ValidationResult {
   // Parse and validate config
   const config = ConfigSchema.parse({ ...userConfig });
 
@@ -176,4 +173,3 @@ export function validateCommit(
     suggestion: null, // Will be filled by autofix
   };
 }
-

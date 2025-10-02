@@ -11,6 +11,7 @@ This document validates that all MVP requirements are met and the system is prod
 **Requirement:** CLI lints and blocks bad commits via commit-msg hook
 
 **Validation Steps:**
+
 - [ ] CLI builds successfully without errors
 - [ ] `commitly lint` command validates commit messages
 - [ ] `commitly fix` command auto-fixes messages
@@ -23,6 +24,7 @@ This document validates that all MVP requirements are met and the system is prod
 - [ ] Exit codes are correct (0 for success, 1 for failure)
 
 **Test Commands:**
+
 ```bash
 # Build CLI
 cd packages/commitly-cli && pnpm build
@@ -53,6 +55,7 @@ commitly init-hooks
 **Requirement:** Web playground validates & shows auto-fix suggestion with diff
 
 **Validation Steps:**
+
 - [ ] Web app builds successfully for production
 - [ ] Development server starts without errors
 - [ ] Landing page loads and displays correctly
@@ -69,6 +72,7 @@ commitly init-hooks
 - [ ] Accessibility features work (keyboard nav, screen readers)
 
 **Test Commands:**
+
 ```bash
 # Build web app
 cd apps/commitly-web && pnpm build
@@ -80,6 +84,7 @@ pnpm dev
 ```
 
 **Manual Tests:**
+
 1. Enter: "Add new feature" → Should show errors and suggest "feat: add new feature"
 2. Enter: "feat: Add Feature." → Should show case and period errors
 3. Enter: "feat: valid message" → Should show success
@@ -93,6 +98,7 @@ pnpm dev
 **Requirement:** Presets persist locally; export/import works
 
 **Validation Steps:**
+
 - [ ] Presets page loads correctly
 - [ ] Can create new preset with custom config
 - [ ] Preset saves to localStorage
@@ -107,6 +113,7 @@ pnpm dev
 - [ ] Preset configuration applies to validation
 
 **Manual Tests:**
+
 1. Create preset with custom types: ["custom", "special"]
 2. Save preset as "Custom Config"
 3. Reload page
@@ -121,6 +128,7 @@ pnpm dev
 **Requirement:** Complete documentation with README, Changelog, License
 
 **Validation Steps:**
+
 - [ ] README.md is comprehensive and clear
 - [ ] CHANGELOG.md exists with version history
 - [ ] LICENSE file exists (MIT)
@@ -135,6 +143,7 @@ pnpm dev
 **Requirement:** Ready to deploy on Vercel with proper configuration
 
 **Validation Steps:**
+
 - [ ] vercel.json exists with correct configuration
 - [ ] Build output is optimized
 - [ ] All assets are properly bundled
@@ -298,4 +307,3 @@ pnpm lint
 ---
 
 **This validation ensures Commitly meets all MVP requirements and is production-ready.**
-

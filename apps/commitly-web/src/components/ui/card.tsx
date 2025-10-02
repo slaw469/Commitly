@@ -35,11 +35,7 @@ interface CardHeaderProps extends React.HTMLAttributes<HTMLElement> {
 export const CardHeader = React.forwardRef<HTMLElement, CardHeaderProps>(
   ({ className, children, ...props }, ref) => {
     return (
-      <header
-        ref={ref}
-        className={cn('flex flex-col gap-2 mb-4', className)}
-        {...props}
-      >
+      <header ref={ref} className={cn('flex flex-col gap-2 mb-4', className)} {...props}>
         {children}
       </header>
     );
@@ -75,11 +71,7 @@ interface CardDescriptionProps extends React.HTMLAttributes<HTMLParagraphElement
 export const CardDescription = React.forwardRef<HTMLParagraphElement, CardDescriptionProps>(
   ({ className, children, ...props }, ref) => {
     return (
-      <p
-        ref={ref}
-        className={cn('text-sm text-muted-foreground', className)}
-        {...props}
-      >
+      <p ref={ref} className={cn('text-sm text-muted-foreground', className)} {...props}>
         {children}
       </p>
     );
@@ -123,4 +115,3 @@ export const CardFooter = React.forwardRef<HTMLElement, CardFooterProps>(
 );
 
 CardFooter.displayName = 'CardFooter';
-

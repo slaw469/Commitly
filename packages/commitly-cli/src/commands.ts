@@ -13,14 +13,11 @@ import {
 /**
  * Lint command - validates a commit message
  */
-export async function lintCommand(options: {
-  file?: string;
-  message?: string;
-}): Promise<number> {
+export async function lintCommand(options: { file?: string; message?: string }): Promise<number> {
   try {
     // Get message from file or option
     let message: string;
-    
+
     if (options.message) {
       message = options.message;
     } else if (options.file) {
@@ -41,7 +38,7 @@ export async function lintCommand(options: {
 
     // Validate
     const result = validateCommit(message.trim(), config);
-    
+
     // Add suggestion
     const suggestion = suggestFix(message.trim(), config);
     result.suggestion = suggestion;
@@ -61,10 +58,7 @@ export async function lintCommand(options: {
 /**
  * Fix command - auto-fixes a commit message in place
  */
-export async function fixCommand(options: {
-  file?: string;
-  message?: string;
-}): Promise<number> {
+export async function fixCommand(options: { file?: string; message?: string }): Promise<number> {
   try {
     let message: string;
     let targetFile: string | null = null;
@@ -102,11 +96,11 @@ export async function fixCommand(options: {
 
     // Write back if file mode
     if (targetFile) {
-      await writeFile(targetFile, `${fixed  }\n`, 'utf-8');
+      await writeFile(targetFile, `${fixed}\n`, 'utf-8');
       printSuccess(`Fixed commit message written to ${targetFile}`);
     } else {
       // Just print fixed version
-      console.log(`\n${  fixed}`);
+      console.log(`\n${fixed}`);
     }
 
     return 0;
@@ -125,11 +119,11 @@ export async function checkCommand(message: string): Promise<number> {
   try {
     const config = (await loadConfig()) ?? undefined;
     const result = validateCommit(message.trim(), config);
-    
+
     result.suggestion = suggestFix(message.trim(), config);
-    
+
     console.log(formatValidationResult(result));
-    
+
     return result.valid ? 0 : 1;
   } catch (error) {
     if (error instanceof Error) {
@@ -148,7 +142,7 @@ export async function initHooksCommand(): Promise<number> {
     const { join } = await import('path');
 
     const hooksDir = resolve(process.cwd(), '.git/hooks');
-    
+
     // Create hooks directory if it doesn't exist
     await mkdir(hooksDir, { recursive: true });
 
@@ -177,4 +171,3 @@ exit $?
     return 1;
   }
 }
-

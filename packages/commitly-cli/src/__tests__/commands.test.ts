@@ -68,7 +68,7 @@ describe('CLI Commands Integration Tests', () => {
     });
 
     it('should reject message exceeding max header length', async () => {
-      const longMessage = `feat: ${  'a'.repeat(100)}`;
+      const longMessage = `feat: ${'a'.repeat(100)}`;
       const exitCode = await lintCommand({
         message: longMessage,
       });
@@ -80,7 +80,7 @@ describe('CLI Commands Integration Tests', () => {
       const exitCode = await lintCommand({
         message: 'feat: this should pass with default config',
       });
-      
+
       // Should pass with default conventional commit types
       expect(exitCode).toBe(0);
     });
@@ -91,7 +91,7 @@ describe('CLI Commands Integration Tests', () => {
 This commit adds user authentication with OAuth support.
 
 Closes #123`;
-      
+
       await createCommitMsgFile(tmpDir, message);
       const exitCode = await lintCommand({
         file: join(tmpDir, '.git', 'COMMIT_EDITMSG'),
@@ -126,12 +126,12 @@ Closes #123`;
     it('should fix a message with trailing period', async () => {
       const originalMsg = 'feat: add feature.';
       await createCommitMsgFile(tmpDir, originalMsg);
-      
+
       const filePath = join(tmpDir, '.git', 'COMMIT_EDITMSG');
       const exitCode = await fixCommand({ file: filePath });
-      
+
       expect(exitCode).toBe(0);
-      
+
       const fixed = await readFile(filePath, 'utf-8');
       expect(fixed.trim()).toBe('feat: add feature');
     });
@@ -139,12 +139,12 @@ Closes #123`;
     it('should fix message case', async () => {
       const originalMsg = 'feat: Add feature';
       await createCommitMsgFile(tmpDir, originalMsg);
-      
+
       const filePath = join(tmpDir, '.git', 'COMMIT_EDITMSG');
       const exitCode = await fixCommand({ file: filePath });
-      
+
       expect(exitCode).toBe(0);
-      
+
       const fixed = await readFile(filePath, 'utf-8');
       expect(fixed.trim()).toBe('feat: add feature');
     });
@@ -152,12 +152,12 @@ Closes #123`;
     it('should infer type from verb', async () => {
       const originalMsg = 'Add new authentication feature';
       await createCommitMsgFile(tmpDir, originalMsg);
-      
+
       const filePath = join(tmpDir, '.git', 'COMMIT_EDITMSG');
       const exitCode = await fixCommand({ file: filePath });
-      
+
       expect(exitCode).toBe(0);
-      
+
       const fixed = await readFile(filePath, 'utf-8');
       expect(fixed.trim()).toMatch(/^feat:/);
     });
@@ -166,17 +166,17 @@ Closes #123`;
       const exitCode = await fixCommand({
         message: 'Fix bug in parser.',
       });
-      
+
       expect(exitCode).toBe(0);
     });
 
     it('should return 0 when no fixes are needed', async () => {
       const originalMsg = 'feat: perfect message';
       await createCommitMsgFile(tmpDir, originalMsg);
-      
+
       const filePath = join(tmpDir, '.git', 'COMMIT_EDITMSG');
       const exitCode = await fixCommand({ file: filePath });
-      
+
       expect(exitCode).toBe(0);
     });
 
@@ -184,15 +184,15 @@ Closes #123`;
       const words = 'word '.repeat(30); // Create text with words to wrap
       const originalMsg = `feat: add feature\n\n${words}`;
       await createCommitMsgFile(tmpDir, originalMsg);
-      
+
       const filePath = join(tmpDir, '.git', 'COMMIT_EDITMSG');
       const exitCode = await fixCommand({ file: filePath });
-      
+
       expect(exitCode).toBe(0);
-      
+
       const fixed = await readFile(filePath, 'utf-8');
       const lines = fixed.split('\n');
-      
+
       // Check that body lines exist and are wrapped (or no fix if already acceptable)
       // Body text wrapping should be applied if present
       expect(lines.length).toBeGreaterThan(0);
@@ -201,22 +201,22 @@ Closes #123`;
     it('should preserve scope when fixing', async () => {
       const originalMsg = 'feat(auth): Add login.';
       await createCommitMsgFile(tmpDir, originalMsg);
-      
+
       const filePath = join(tmpDir, '.git', 'COMMIT_EDITMSG');
       const exitCode = await fixCommand({ file: filePath });
-      
+
       expect(exitCode).toBe(0);
-      
+
       const fixed = await readFile(filePath, 'utf-8');
       expect(fixed.trim()).toBe('feat(auth): add login');
     });
 
     it('should handle empty message gracefully', async () => {
       await createCommitMsgFile(tmpDir, '');
-      
+
       const filePath = join(tmpDir, '.git', 'COMMIT_EDITMSG');
       const exitCode = await fixCommand({ file: filePath });
-      
+
       expect(exitCode).toBe(0);
     });
   });
@@ -239,7 +239,7 @@ This commit fixes an issue where certain edge cases in commit
 message parsing would fail to detect the correct type.
 
 Closes #456`;
-      
+
       const exitCode = await checkCommand(message);
       expect(exitCode).toBe(0);
     });
@@ -268,7 +268,7 @@ Closes #456`;
       const message = `feat: add feature
 
 BREAKING CHANGE: This removes the old API`;
-      
+
       const exitCode = await checkCommand(message);
       expect(exitCode).toBe(0);
     });
@@ -297,7 +297,7 @@ BREAKING CHANGE: This removes the old API`;
     it('should handle very long messages', async () => {
       const longBody = 'Long line. '.repeat(200);
       const message = `feat: add feature\n\n${longBody}`;
-      
+
       const exitCode = await checkCommand(message);
       expect(exitCode).toBe(0);
     });
@@ -308,4 +308,3 @@ BREAKING CHANGE: This removes the old API`;
     });
   });
 });
-

@@ -127,7 +127,12 @@ export default function AddProject({
                 strokeWidth={2}
                 d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
               />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+              />
             </svg>
             Settings
           </a>
@@ -160,7 +165,9 @@ export default function AddProject({
         {/* Header */}
         <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-sm border-b border-border">
           <div className="container mx-auto px-6 py-4">
-            <h2 className="text-2xl font-bold font-display text-foreground">Connect a Repository</h2>
+            <h2 className="text-2xl font-bold font-display text-foreground">
+              Connect a Repository
+            </h2>
           </div>
         </header>
 
@@ -174,7 +181,10 @@ export default function AddProject({
                   <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
                     {/* Repository URL Input */}
                     <div>
-                      <label htmlFor="repo-url" className="block text-sm font-medium text-foreground mb-2">
+                      <label
+                        htmlFor="repo-url"
+                        className="block text-sm font-medium text-foreground mb-2"
+                      >
                         Repository URL or Local Path
                       </label>
                       <input
@@ -189,7 +199,10 @@ export default function AddProject({
 
                     {/* Git Provider Select */}
                     <div>
-                      <label htmlFor="git-provider" className="block text-sm font-medium text-foreground mb-2">
+                      <label
+                        htmlFor="git-provider"
+                        className="block text-sm font-medium text-foreground mb-2"
+                      >
                         Git Provider
                       </label>
                       <select
@@ -230,7 +243,9 @@ export default function AddProject({
                       {/* CI/CD Pipeline Toggle */}
                       <div className="flex items-center justify-between">
                         <div className="flex-1">
-                          <h4 className="font-medium text-foreground">Enable CI/CD Pipeline Integration</h4>
+                          <h4 className="font-medium text-foreground">
+                            Enable CI/CD Pipeline Integration
+                          </h4>
                           <p className="text-sm text-muted-foreground">
                             Fail builds with non-compliant commit messages.
                           </p>
@@ -253,7 +268,9 @@ export default function AddProject({
               {/* Summary Section - 1/3 width */}
               <div className="md:col-span-1">
                 <div className="glassmorphism rounded-lg p-6 flex flex-col h-full">
-                  <h3 className="font-bold text-lg font-display text-foreground mb-4">Integration Summary</h3>
+                  <h3 className="font-bold text-lg font-display text-foreground mb-4">
+                    Integration Summary
+                  </h3>
 
                   {/* Integration Status Items */}
                   <div className="space-y-3 flex-grow">
@@ -279,7 +296,9 @@ export default function AddProject({
                       <Rocket className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
                       <div>
                         <p className="text-sm font-medium text-foreground">CI/CD Pipeline</p>
-                        <p className="text-xs text-muted-foreground">{defaultCIEnabled ? 'Enabled' : 'Disabled'}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {defaultCIEnabled ? 'Enabled' : 'Disabled'}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -308,4 +327,3 @@ export default function AddProject({
     </div>
   );
 }
-

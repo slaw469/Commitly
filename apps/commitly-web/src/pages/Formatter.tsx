@@ -191,7 +191,12 @@ export default function Formatter({
                 strokeWidth={2}
                 d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
               />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+              />
             </svg>
             Settings
           </a>
@@ -224,7 +229,9 @@ export default function Formatter({
         {/* Header */}
         <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-sm border-b border-border">
           <div className="container mx-auto px-6 py-4 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
-            <h2 className="text-2xl font-bold font-display text-foreground">Commit Message Formatter</h2>
+            <h2 className="text-2xl font-bold font-display text-foreground">
+              Commit Message Formatter
+            </h2>
             <div className="flex items-center gap-2">
               <label htmlFor="auto-apply-toggle" className="text-sm text-muted-foreground">
                 Apply Rules Automatically
@@ -290,9 +297,7 @@ export default function Formatter({
                     )}
                   </div>
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <span>
-                      {charCount}/72
-                    </span>
+                    <span>{charCount}/72</span>
                   </div>
                 </div>
 
@@ -300,8 +305,15 @@ export default function Formatter({
                 {(validationResult.errors.length > 0 || validationResult.warnings.length > 0) && (
                   <div className="space-y-2 text-sm" role="list" aria-label="Validation issues">
                     {validationResult.errors.map((error, index) => (
-                      <div key={`error-${index}`} className="flex items-start gap-2" role="listitem">
-                        <AlertCircle className="h-4 w-4 text-destructive mt-0.5 flex-shrink-0" aria-hidden="true" />
+                      <div
+                        key={`error-${index}`}
+                        className="flex items-start gap-2"
+                        role="listitem"
+                      >
+                        <AlertCircle
+                          className="h-4 w-4 text-destructive mt-0.5 flex-shrink-0"
+                          aria-hidden="true"
+                        />
                         <div className="flex-1">
                           <p className="text-foreground">{error.message}</p>
                           <p className="text-muted-foreground font-mono text-xs mt-0.5">
@@ -311,8 +323,15 @@ export default function Formatter({
                       </div>
                     ))}
                     {validationResult.warnings.map((warning, index) => (
-                      <div key={`warning-${index}`} className="flex items-start gap-2" role="listitem">
-                        <AlertTriangle className="h-4 w-4 text-warning mt-0.5 flex-shrink-0" aria-hidden="true" />
+                      <div
+                        key={`warning-${index}`}
+                        className="flex items-start gap-2"
+                        role="listitem"
+                      >
+                        <AlertTriangle
+                          className="h-4 w-4 text-warning mt-0.5 flex-shrink-0"
+                          aria-hidden="true"
+                        />
                         <div className="flex-1">
                           <p className="text-foreground">{warning.message}</p>
                           <p className="text-muted-foreground font-mono text-xs mt-0.5">
@@ -327,7 +346,10 @@ export default function Formatter({
             </section>
 
             {/* Output Panel - Auto-Fixed Message (Diff) */}
-            <section className="glassmorphism rounded-lg flex flex-col" aria-label="Auto-fixed message">
+            <section
+              className="glassmorphism rounded-lg flex flex-col"
+              aria-label="Auto-fixed message"
+            >
               <header className="p-4 border-b border-border/50">
                 <h3 className="font-semibold text-foreground">Auto-Fixed Message (Diff)</h3>
               </header>
@@ -435,17 +457,19 @@ export default function Formatter({
                       <span className="font-mono text-primary">fix</span>: A bug fix
                     </li>
                     <li>
-                      <span className="font-mono text-primary">docs</span>: Documentation only changes
+                      <span className="font-mono text-primary">docs</span>: Documentation only
+                      changes
                     </li>
                     <li>
                       <span className="font-mono text-primary">style</span>: Code style changes
                     </li>
                     <li>
-                      <span className="font-mono text-primary">refactor</span>: A code change that neither fixes a bug
-                      nor adds a feature
+                      <span className="font-mono text-primary">refactor</span>: A code change that
+                      neither fixes a bug nor adds a feature
                     </li>
                     <li>
-                      <span className="font-mono text-primary">chore</span>: Build process or auxiliary tool changes
+                      <span className="font-mono text-primary">chore</span>: Build process or
+                      auxiliary tool changes
                     </li>
                   </ul>
                 </div>
@@ -468,4 +492,3 @@ export default function Formatter({
     </div>
   );
 }
-

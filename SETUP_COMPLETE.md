@@ -32,6 +32,7 @@ Commitly/
 ### ✅ Packages Implemented
 
 #### @commitly/core (packages/commitly-core)
+
 - ✅ Message parser with type/scope/subject extraction
 - ✅ Validator with configurable rules (zod schema)
 - ✅ Auto-fix engine with type inference
@@ -40,6 +41,7 @@ Commitly/
 - ✅ Full TypeScript types exported
 
 **Files:**
+
 - `src/types.ts` - Zod schemas and TypeScript types
 - `src/parser.ts` - Commit message parsing logic
 - `src/validator.ts` - Validation rules engine
@@ -47,6 +49,7 @@ Commitly/
 - `src/index.ts` - Public API exports
 
 #### @commitly/cli (packages/commitly-cli)
+
 - ✅ Commander.js command framework
 - ✅ `commitly lint` - Validate messages
 - ✅ `commitly fix` - Auto-fix in place
@@ -57,12 +60,14 @@ Commitly/
 - ✅ Formatted diffs and error tables
 
 **Files:**
+
 - `src/index.ts` - CLI entry point with commands
 - `src/commands.ts` - Command implementations
 - `src/config.ts` - Configuration loading
 - `src/formatter.ts` - Output formatting
 
 #### @commitly/web (apps/commitly-web)
+
 - ✅ Vite + React + SWC configuration
 - ✅ Tailwind CSS with custom theme
 - ✅ TypeScript with path aliases
@@ -134,6 +139,7 @@ pnpm dev
 ```
 
 Then implement:
+
 - Landing page
 - Playground with live validator
 - Presets management
@@ -206,4 +212,3 @@ The project structure is complete and all dependencies are configured. You can n
 5. Add more features to core library
 
 No AI bloat, no premature abstractions, just a clean foundation ready for development.
-

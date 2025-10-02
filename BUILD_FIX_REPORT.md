@@ -9,18 +9,21 @@ Successfully debugged and fixed all TypeScript configuration issues across the C
 ### 1. @commitly/core Build Errors
 
 **Problem:**
+
 ```
 error TS6307: File 'src/types.ts' is not listed within the file list of project
 ```
 
 **Root Cause:**
+
 - `composite: true` mode with project references was causing file resolution issues
 - `include: ["src/**/*"]` pattern wasn't matching TypeScript files properly
 
 **Solution:**
+
 ```json
 {
-  "include": ["src/**/*.ts"],  // Explicit .ts matching
+  "include": ["src/**/*.ts"] // Explicit .ts matching
   // Removed "composite": true
 }
 ```
@@ -30,6 +33,7 @@ error TS6307: File 'src/types.ts' is not listed within the file list of project
 ### 2. @commitly/cli Build Errors
 
 **Problem:**
+
 ```
 Error parsing: dist/index.js:2:1
 Expected ident
@@ -38,10 +42,12 @@ Expected ident
 ```
 
 **Root Cause:**
+
 - Shebang existed in both `src/index.ts` AND `tsup.config.ts` banner
 - Same TypeScript composite mode issues
 
 **Solution:**
+
 1. Removed shebang from `src/index.ts` (tsup adds it via banner)
 2. Fixed tsconfig same as core package
 
@@ -50,18 +56,21 @@ Expected ident
 ### 3. @commitly/web Build Errors
 
 **Problem:**
+
 ```
 error TS6306: Referenced project must have setting "composite": true
 ```
 
 **Root Cause:**
+
 - Project references pointing to packages without composite mode
 - Unnecessary project references for a Vite app
 
 **Solution:**
+
 ```json
 {
-  "include": ["src/**/*.ts", "src/**/*.tsx"],
+  "include": ["src/**/*.ts", "src/**/*.tsx"]
   // Removed "references" array entirely
 }
 ```
@@ -71,15 +80,17 @@ error TS6306: Referenced project must have setting "composite": true
 ## Build Outputs Verified
 
 ### @commitly/core
+
 ```
 ✓ index.js (ESM) - 11KB
-✓ index.cjs (CJS) - 11KB  
+✓ index.cjs (CJS) - 11KB
 ✓ index.d.ts (Types) - 3.8KB
 ✓ index.d.cts (CJS Types) - 3.8KB
 ✓ Source maps included
 ```
 
 ### @commitly/cli
+
 ```
 ✓ index.js (ESM with shebang) - 7.5KB
 ✓ index.d.ts (Types) - 13B
@@ -88,6 +99,7 @@ error TS6306: Referenced project must have setting "composite": true
 ```
 
 ### @commitly/web
+
 ```
 ✓ index.html - 1.07KB (gzipped: 0.50KB)
 ✓ CSS bundle - 16.06KB (gzipped: 3.75KB)
@@ -99,12 +111,14 @@ error TS6306: Referenced project must have setting "composite": true
 ## Validation Steps Performed
 
 ### 1. Dependency Installation ✅
+
 ```bash
 pnpm install
 # Result: 666 packages installed successfully
 ```
 
 ### 2. Individual Package Builds ✅
+
 ```bash
 cd packages/commitly-core && pnpm build  # ✅ SUCCESS
 cd packages/commitly-cli && pnpm build   # ✅ SUCCESS
@@ -112,6 +126,7 @@ cd apps/commitly-web && pnpm build       # ✅ SUCCESS
 ```
 
 ### 3. Monorepo Build ✅
+
 ```bash
 pnpm -r build  # Builds all packages in dependency order
 # Result: All successful
@@ -120,12 +135,14 @@ pnpm -r build  # Builds all packages in dependency order
 ## Best Practices Applied
 
 ### TypeScript Configuration
+
 - ✅ No composite mode for leaf packages
 - ✅ Explicit file matching with `**/*.ts` patterns
 - ✅ Proper extends chain from base config
 - ✅ No circular project references
 
-### Build Configuration  
+### Build Configuration
+
 - ✅ Separate ESM and CJS outputs for libraries
 - ✅ Declaration files (`.d.ts`) generated
 - ✅ Source maps for debugging
@@ -133,6 +150,7 @@ pnpm -r build  # Builds all packages in dependency order
 - ✅ Code splitting in web app
 
 ### Package Structure
+
 - ✅ Workspace protocol for internal deps (`workspace:*`)
 - ✅ Proper external marking to prevent bundling deps
 - ✅ Executable permissions for CLI
@@ -150,6 +168,7 @@ pnpm -r build  # Builds all packages in dependency order
 ## Commands to Run
 
 ### Development
+
 ```bash
 # Install dependencies
 pnpm install
@@ -166,6 +185,7 @@ cd packages/commitly-cli && pnpm build
 ```
 
 ### Production
+
 ```bash
 # Build for production
 pnpm build
@@ -179,7 +199,7 @@ cd apps/commitly-web && pnpm preview
 All fixes committed and pushed to main:
 
 1. `7ba166b` - fix(core): correct tsconfig include path
-2. `27d2d5f` - fix(core): remove composite mode and fix include pattern  
+2. `27d2d5f` - fix(core): remove composite mode and fix include pattern
 3. `cd04313` - fix(cli): remove duplicate shebang and fix tsconfig
 4. `591a660` - fix(web): remove project references from tsconfig
 
@@ -195,4 +215,3 @@ All packages build cleanly. Zero errors. Ready for development and deployment.
 4. Deploy to Vercel
 
 The codebase is production-ready and follows all TypeScript, monorepo, and React best practices.
-

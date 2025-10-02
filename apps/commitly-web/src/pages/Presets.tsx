@@ -5,7 +5,14 @@ import { Home, Plus, Trash2, Download, Upload, CheckCircle2 } from 'lucide-react
 import type { Config } from '@commitly/core';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  CardFooter,
+} from '@/components/ui/card';
 import { Input, Label } from '@/components/ui/input';
 import { toast } from '@/hooks/use-toast';
 
@@ -29,7 +36,19 @@ const defaultPresets: Preset[] = [
     name: 'Default',
     description: 'Standard Conventional Commits configuration',
     config: {
-      types: ['feat', 'fix', 'docs', 'style', 'refactor', 'perf', 'test', 'build', 'ci', 'chore', 'revert'],
+      types: [
+        'feat',
+        'fix',
+        'docs',
+        'style',
+        'refactor',
+        'perf',
+        'test',
+        'build',
+        'ci',
+        'chore',
+        'revert',
+      ],
       requireScope: false,
       maxHeaderLength: 72,
       maxLineLength: 100,
@@ -54,7 +73,8 @@ const defaultPresets: Preset[] = [
   {
     id: 'angular',
     name: 'Angular',
-    description: 'Angular commit message convention (build, ci, docs, feat, fix, perf, refactor, test)',
+    description:
+      'Angular commit message convention (build, ci, docs, feat, fix, perf, refactor, test)',
     config: {
       types: ['build', 'ci', 'docs', 'feat', 'fix', 'perf', 'refactor', 'test'],
       requireScope: false,
@@ -73,7 +93,19 @@ const defaultPresets: Preset[] = [
     name: 'Gitmoji',
     description: 'Gitmoji convention with emoji support (✨ feat, 🐛 fix, 📝 docs, etc.)',
     config: {
-      types: ['feat', 'fix', 'docs', 'style', 'refactor', 'perf', 'test', 'build', 'ci', 'chore', 'revert'],
+      types: [
+        'feat',
+        'fix',
+        'docs',
+        'style',
+        'refactor',
+        'perf',
+        'test',
+        'build',
+        'ci',
+        'chore',
+        'revert',
+      ],
       requireScope: false,
       maxHeaderLength: 80,
       maxLineLength: 100,
@@ -131,7 +163,19 @@ export default function Presets({ initialPresets }: Props): JSX.Element {
       name: newPresetName.trim(),
       description: newPresetDescription.trim(),
       config: {
-        types: ['feat', 'fix', 'docs', 'style', 'refactor', 'perf', 'test', 'build', 'ci', 'chore', 'revert'],
+        types: [
+          'feat',
+          'fix',
+          'docs',
+          'style',
+          'refactor',
+          'perf',
+          'test',
+          'build',
+          'ci',
+          'chore',
+          'revert',
+        ],
         requireScope: false,
         maxHeaderLength: 72,
         maxLineLength: 100,
@@ -155,20 +199,23 @@ export default function Presets({ initialPresets }: Props): JSX.Element {
     });
   }, [newPresetName, newPresetDescription, presets]);
 
-  const handleDeletePreset = useCallback((id: string) => {
-    const preset = presets.find((p) => p.id === id);
-    if (!preset) return;
-    
-    const updated = presets.filter((p) => p.id !== id);
-    setPresets(updated);
-    savePresetsToStorage(updated);
+  const handleDeletePreset = useCallback(
+    (id: string) => {
+      const preset = presets.find((p) => p.id === id);
+      if (!preset) return;
 
-    toast({
-      variant: 'default',
-      title: 'Preset deleted',
-      description: `"${preset.name}" has been removed`,
-    });
-  }, [presets]);
+      const updated = presets.filter((p) => p.id !== id);
+      setPresets(updated);
+      savePresetsToStorage(updated);
+
+      toast({
+        variant: 'default',
+        title: 'Preset deleted',
+        description: `"${preset.name}" has been removed`,
+      });
+    },
+    [presets]
+  );
 
   const handleExportPresets = useCallback(() => {
     try {
@@ -201,7 +248,7 @@ export default function Presets({ initialPresets }: Props): JSX.Element {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'application/json';
-    
+
     input.onchange = (e: Event) => {
       const file = (e.target as HTMLInputElement).files?.[0];
       if (!file) return;
@@ -234,8 +281,8 @@ export default function Presets({ initialPresets }: Props): JSX.Element {
   }, [presets]);
 
   const sortedPresets = useMemo(() => {
-    return [...presets].sort((a, b) => 
-      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    return [...presets].sort(
+      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );
   }, [presets]);
 
@@ -259,7 +306,12 @@ export default function Presets({ initialPresets }: Props): JSX.Element {
               <Upload className="h-4 w-4 mr-1" />
               <span className="hidden sm:inline">Import</span>
             </Button>
-            <Button variant="outline" size="sm" onClick={handleExportPresets} disabled={presets.length === 0}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleExportPresets}
+              disabled={presets.length === 0}
+            >
               <Download className="h-4 w-4 mr-1" />
               <span className="hidden sm:inline">Export</span>
             </Button>
@@ -283,7 +335,9 @@ export default function Presets({ initialPresets }: Props): JSX.Element {
               <CardContent>
                 <div className="space-y-4">
                   <div>
-                    <Label htmlFor="preset-name" required>Preset Name</Label>
+                    <Label htmlFor="preset-name" required>
+                      Preset Name
+                    </Label>
                     <Input
                       id="preset-name"
                       value={newPresetName}
@@ -382,10 +436,12 @@ export default function Presets({ initialPresets }: Props): JSX.Element {
                         </div>
                         <div className="flex items-center justify-between">
                           <span className="text-muted-foreground">Require Scope</span>
-                          <span className={cn(
-                            'font-medium',
-                            preset.config.requireScope ? 'text-success' : 'text-muted-foreground'
-                          )}>
+                          <span
+                            className={cn(
+                              'font-medium',
+                              preset.config.requireScope ? 'text-success' : 'text-muted-foreground'
+                            )}
+                          >
                             {preset.config.requireScope ? 'Yes' : 'No'}
                           </span>
                         </div>
@@ -406,4 +462,3 @@ export default function Presets({ initialPresets }: Props): JSX.Element {
     </div>
   );
 }
-

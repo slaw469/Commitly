@@ -1,7 +1,21 @@
 // File: apps/commitly-web/src/pages/Docs.tsx
 
 import { useState, useEffect } from 'react';
-import { Check, Search, BookOpen, Terminal, Settings as SettingsIcon, Code, Package, GitBranch, ExternalLink, AlertTriangle, Lightbulb, Copy, CheckCircle2 } from 'lucide-react';
+import {
+  Check,
+  Search,
+  BookOpen,
+  Terminal,
+  Settings as SettingsIcon,
+  Code,
+  Package,
+  GitBranch,
+  ExternalLink,
+  AlertTriangle,
+  Lightbulb,
+  Copy,
+  CheckCircle2,
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface Props {
@@ -174,7 +188,12 @@ export default function Docs({ initialSection = 'overview' }: Props): JSX.Elemen
                 strokeWidth={2}
                 d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
               />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+              />
             </svg>
             Settings
           </a>
@@ -210,7 +229,10 @@ export default function Docs({ initialSection = 'overview' }: Props): JSX.Elemen
           <div className="container mx-auto px-6 py-4 flex items-center justify-between gap-4">
             <h2 className="text-2xl font-bold font-display text-foreground">Documentation</h2>
             <div className="relative max-w-md w-full">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" aria-hidden="true" />
+              <Search
+                className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"
+                aria-hidden="true"
+              />
               <input
                 type="search"
                 placeholder="Search documentation..."
@@ -225,7 +247,10 @@ export default function Docs({ initialSection = 'overview' }: Props): JSX.Elemen
 
         <div className="flex flex-1">
           {/* Table of Contents */}
-          <nav className="w-64 border-r border-border/50 p-6 sticky top-[73px] h-[calc(100vh-73px)] overflow-y-auto" aria-label="Table of contents">
+          <nav
+            className="w-64 border-r border-border/50 p-6 sticky top-[73px] h-[calc(100vh-73px)] overflow-y-auto"
+            aria-label="Table of contents"
+          >
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-4">
               Table of Contents
             </h3>
@@ -255,12 +280,15 @@ export default function Docs({ initialSection = 'overview' }: Props): JSX.Elemen
               <section id="overview">
                 <div className="flex items-center gap-3 mb-4">
                   <BookOpen className="h-6 w-6 text-primary" aria-hidden="true" />
-                  <h2 className="text-3xl font-bold font-display text-foreground border-b-0">Overview</h2>
+                  <h2 className="text-3xl font-bold font-display text-foreground border-b-0">
+                    Overview
+                  </h2>
                 </div>
                 <div className="prose prose-invert max-w-none">
                   <p className="text-foreground leading-relaxed text-base">
-                    <strong className="text-primary">Commitly</strong> is a powerful tool designed to help development teams
-                    maintain clean, consistent commit history. By enforcing standardized commit message formats based on the{' '}
+                    <strong className="text-primary">Commitly</strong> is a powerful tool designed
+                    to help development teams maintain clean, consistent commit history. By
+                    enforcing standardized commit message formats based on the{' '}
                     <a
                       href="https://www.conventionalcommits.org"
                       target="_blank"
@@ -270,18 +298,22 @@ export default function Docs({ initialSection = 'overview' }: Props): JSX.Elemen
                       Conventional Commits
                       <ExternalLink className="h-3 w-3" />
                     </a>{' '}
-                    specification, Commitly improves readability, simplifies changelog generation, and makes navigating project
-                    history effortless.
+                    specification, Commitly improves readability, simplifies changelog generation,
+                    and makes navigating project history effortless.
                   </p>
 
                   <div className="mt-6 p-4 bg-warning/10 border-l-4 border-warning rounded-r-md">
                     <div className="flex gap-3">
-                      <Lightbulb className="h-5 w-5 text-warning flex-shrink-0 mt-0.5" aria-hidden="true" />
+                      <Lightbulb
+                        className="h-5 w-5 text-warning flex-shrink-0 mt-0.5"
+                        aria-hidden="true"
+                      />
                       <div>
                         <p className="text-foreground text-sm font-medium">Pro Tip</p>
                         <p className="text-muted-foreground text-sm mt-1">
-                          A clean commit history isn't just about aesthetics—it's a crucial part of a healthy, maintainable
-                          codebase that enables better collaboration and faster debugging.
+                          A clean commit history isn't just about aesthetics—it's a crucial part of
+                          a healthy, maintainable codebase that enables better collaboration and
+                          faster debugging.
                         </p>
                       </div>
                     </div>
@@ -291,28 +323,34 @@ export default function Docs({ initialSection = 'overview' }: Props): JSX.Elemen
 
               {/* Features Section */}
               <section id="features">
-                <h2 className="text-3xl font-bold font-display text-foreground mb-6 pb-2 border-b border-border">Features</h2>
+                <h2 className="text-3xl font-bold font-display text-foreground mb-6 pb-2 border-b border-border">
+                  Features
+                </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {[
                     {
                       icon: <Code className="h-5 w-5" />,
                       title: 'Parse & Validate',
-                      description: 'Automatically parse type(scope): subject structure and validate against configurable rules',
+                      description:
+                        'Automatically parse type(scope): subject structure and validate against configurable rules',
                     },
                     {
                       icon: <Package className="h-5 w-5" />,
                       title: 'Auto-Fix',
-                      description: 'Intelligent auto-fix for common issues like casing, trailing periods, and line wrapping',
+                      description:
+                        'Intelligent auto-fix for common issues like casing, trailing periods, and line wrapping',
                     },
                     {
                       icon: <Terminal className="h-5 w-5" />,
                       title: 'CLI & Web',
-                      description: 'Fast CLI for git hooks and CI/CD, plus a sleek web playground for interactive editing',
+                      description:
+                        'Fast CLI for git hooks and CI/CD, plus a sleek web playground for interactive editing',
                     },
                     {
                       icon: <SettingsIcon className="h-5 w-5" />,
                       title: 'Configurable',
-                      description: 'Customize types, scopes, max lengths, blocked words, and more via .commitlyrc',
+                      description:
+                        'Customize types, scopes, max lengths, blocked words, and more via .commitlyrc',
                     },
                   ].map((feature, index) => (
                     <div key={index} className="glassmorphism rounded-lg p-5 flex gap-4">
@@ -374,9 +412,12 @@ yarn add -D @commitly/cli`}
 
               {/* CLI Usage Section */}
               <section id="cli-usage">
-                <h2 className="text-3xl font-bold font-display text-foreground mb-6 pb-2 border-b border-border">CLI Usage</h2>
+                <h2 className="text-3xl font-bold font-display text-foreground mb-6 pb-2 border-b border-border">
+                  CLI Usage
+                </h2>
                 <p className="text-foreground leading-relaxed mb-6">
-                  The Commitly CLI provides four main commands for linting, fixing, checking, and setting up git hooks.
+                  The Commitly CLI provides four main commands for linting, fixing, checking, and
+                  setting up git hooks.
                 </p>
 
                 {/* Lint Command */}
@@ -436,7 +477,8 @@ commitly fix -m "Add new feature"`}
                     Check Command
                   </h3>
                   <p className="text-muted-foreground text-sm">
-                    Validates a message string (useful for CI/CD pipelines). Exits with code 0 if valid, 1 if invalid.
+                    Validates a message string (useful for CI/CD pipelines). Exits with code 0 if
+                    valid, 1 if invalid.
                   </p>
                   <CodeBlock
                     id="check-cmd"
@@ -459,8 +501,11 @@ commitly check "feat(api): add user endpoint"
                     Init Hooks
                   </h3>
                   <p className="text-muted-foreground text-sm">
-                    Automatically installs a git <code className="text-foreground bg-secondary px-1.5 py-0.5 rounded text-xs">commit-msg</code> hook
-                    that validates commits before they're created.
+                    Automatically installs a git{' '}
+                    <code className="text-foreground bg-secondary px-1.5 py-0.5 rounded text-xs">
+                      commit-msg
+                    </code>{' '}
+                    hook that validates commits before they're created.
                   </p>
                   <CodeBlock
                     id="init-hooks-cmd"
@@ -498,37 +543,56 @@ commitly init-hooks
                 <div className="glassmorphism rounded-lg p-6 space-y-4 mb-6">
                   <ul className="space-y-3" role="list">
                     <li className="flex items-start gap-3">
-                      <CheckCircle2 className="h-5 w-5 text-success flex-shrink-0 mt-0.5" aria-hidden="true" />
+                      <CheckCircle2
+                        className="h-5 w-5 text-success flex-shrink-0 mt-0.5"
+                        aria-hidden="true"
+                      />
                       <span className="text-foreground">
                         Header must not exceed <strong>72 characters</strong>
                       </span>
                     </li>
                     <li className="flex items-start gap-3">
-                      <CheckCircle2 className="h-5 w-5 text-success flex-shrink-0 mt-0.5" aria-hidden="true" />
+                      <CheckCircle2
+                        className="h-5 w-5 text-success flex-shrink-0 mt-0.5"
+                        aria-hidden="true"
+                      />
                       <span className="text-foreground">
                         Subject must be written in <strong>lowercase</strong>
                       </span>
                     </li>
                     <li className="flex items-start gap-3">
-                      <CheckCircle2 className="h-5 w-5 text-success flex-shrink-0 mt-0.5" aria-hidden="true" />
+                      <CheckCircle2
+                        className="h-5 w-5 text-success flex-shrink-0 mt-0.5"
+                        aria-hidden="true"
+                      />
                       <span className="text-foreground">
-                        Subject must start with a valid <strong>type</strong> (e.g., feat, fix, docs)
+                        Subject must start with a valid <strong>type</strong> (e.g., feat, fix,
+                        docs)
                       </span>
                     </li>
                     <li className="flex items-start gap-3">
-                      <CheckCircle2 className="h-5 w-5 text-success flex-shrink-0 mt-0.5" aria-hidden="true" />
+                      <CheckCircle2
+                        className="h-5 w-5 text-success flex-shrink-0 mt-0.5"
+                        aria-hidden="true"
+                      />
                       <span className="text-foreground">
                         Subject must not end with a <strong>period</strong>
                       </span>
                     </li>
                     <li className="flex items-start gap-3">
-                      <CheckCircle2 className="h-5 w-5 text-success flex-shrink-0 mt-0.5" aria-hidden="true" />
+                      <CheckCircle2
+                        className="h-5 w-5 text-success flex-shrink-0 mt-0.5"
+                        aria-hidden="true"
+                      />
                       <span className="text-foreground">
                         A <strong>blank line</strong> must separate header from body
                       </span>
                     </li>
                     <li className="flex items-start gap-3">
-                      <CheckCircle2 className="h-5 w-5 text-success flex-shrink-0 mt-0.5" aria-hidden="true" />
+                      <CheckCircle2
+                        className="h-5 w-5 text-success flex-shrink-0 mt-0.5"
+                        aria-hidden="true"
+                      />
                       <span className="text-foreground">
                         Body lines should wrap at <strong>100 characters</strong>
                       </span>
@@ -538,7 +602,9 @@ commitly init-hooks
 
                 {/* Commit Types */}
                 <div id="types" className="mb-8">
-                  <h3 className="text-xl font-semibold font-display text-foreground mb-4">Commit Types</h3>
+                  <h3 className="text-xl font-semibold font-display text-foreground mb-4">
+                    Commit Types
+                  </h3>
                   <p className="text-muted-foreground mb-4 text-sm">
                     Standard commit types supported by Commitly:
                   </p>
@@ -548,7 +614,10 @@ commitly init-hooks
                       { type: 'fix', desc: 'A bug fix' },
                       { type: 'docs', desc: 'Documentation changes only' },
                       { type: 'style', desc: 'Code style changes (formatting, semicolons, etc.)' },
-                      { type: 'refactor', desc: 'Code change that neither fixes a bug nor adds a feature' },
+                      {
+                        type: 'refactor',
+                        desc: 'Code change that neither fixes a bug nor adds a feature',
+                      },
                       { type: 'perf', desc: 'Performance improvements' },
                       { type: 'test', desc: 'Adding or updating tests' },
                       { type: 'build', desc: 'Build system or external dependency changes' },
@@ -568,9 +637,12 @@ commitly init-hooks
 
                 {/* Message Structure */}
                 <div id="structure" className="mb-8">
-                  <h3 className="text-xl font-semibold font-display text-foreground mb-4">Message Structure</h3>
+                  <h3 className="text-xl font-semibold font-display text-foreground mb-4">
+                    Message Structure
+                  </h3>
                   <p className="text-muted-foreground mb-4 text-sm">
-                    A conventional commit message consists of a header, optional body, and optional footer:
+                    A conventional commit message consists of a header, optional body, and optional
+                    footer:
                   </p>
                   <CodeBlock
                     id="structure-format"
@@ -592,9 +664,19 @@ commitly init-hooks
                   Configuration
                 </h2>
                 <p className="text-foreground leading-relaxed mb-4">
-                  Commitly can be configured via a <code className="text-foreground bg-secondary px-1.5 py-0.5 rounded text-sm">.commitlyrc.json</code> file
-                  in your project root, or by adding a <code className="text-foreground bg-secondary px-1.5 py-0.5 rounded text-sm">commitly</code> key
-                  to your <code className="text-foreground bg-secondary px-1.5 py-0.5 rounded text-sm">package.json</code>.
+                  Commitly can be configured via a{' '}
+                  <code className="text-foreground bg-secondary px-1.5 py-0.5 rounded text-sm">
+                    .commitlyrc.json
+                  </code>{' '}
+                  file in your project root, or by adding a{' '}
+                  <code className="text-foreground bg-secondary px-1.5 py-0.5 rounded text-sm">
+                    commitly
+                  </code>{' '}
+                  key to your{' '}
+                  <code className="text-foreground bg-secondary px-1.5 py-0.5 rounded text-sm">
+                    package.json
+                  </code>
+                  .
                 </p>
 
                 <div className="space-y-4">
@@ -637,27 +719,58 @@ commitly init-hooks
                 </div>
 
                 <div className="mt-6 glassmorphism rounded-lg p-5">
-                  <h4 className="text-sm font-semibold text-foreground mb-3">Configuration Options</h4>
+                  <h4 className="text-sm font-semibold text-foreground mb-3">
+                    Configuration Options
+                  </h4>
                   <div className="space-y-2 text-sm">
                     {[
-                      { key: 'types', desc: 'Array of allowed commit types', default: '["feat", "fix", "docs", ...]' },
+                      {
+                        key: 'types',
+                        desc: 'Array of allowed commit types',
+                        default: '["feat", "fix", "docs", ...]',
+                      },
                       { key: 'requireScope', desc: 'Whether scope is required', default: 'false' },
                       { key: 'maxHeaderLength', desc: 'Maximum header length', default: '72' },
                       { key: 'maxLineLength', desc: 'Maximum body line length', default: '100' },
                       { key: 'subjectCase', desc: 'Subject case style', default: '"lower"' },
-                      { key: 'subjectEmptyForbidden', desc: 'Forbid empty subject', default: 'true' },
-                      { key: 'subjectFullStopForbidden', desc: 'Forbid trailing period in subject', default: 'true' },
-                      { key: 'bodyLeadingBlank', desc: 'Require blank line before body', default: 'true' },
-                      { key: 'footerLeadingBlank', desc: 'Require blank line before footer', default: 'true' },
-                      { key: 'blockedWords', desc: 'Array of words not allowed in commits', default: '[]' },
+                      {
+                        key: 'subjectEmptyForbidden',
+                        desc: 'Forbid empty subject',
+                        default: 'true',
+                      },
+                      {
+                        key: 'subjectFullStopForbidden',
+                        desc: 'Forbid trailing period in subject',
+                        default: 'true',
+                      },
+                      {
+                        key: 'bodyLeadingBlank',
+                        desc: 'Require blank line before body',
+                        default: 'true',
+                      },
+                      {
+                        key: 'footerLeadingBlank',
+                        desc: 'Require blank line before footer',
+                        default: 'true',
+                      },
+                      {
+                        key: 'blockedWords',
+                        desc: 'Array of words not allowed in commits',
+                        default: '[]',
+                      },
                     ].map((option) => (
-                      <div key={option.key} className="flex items-start gap-3 pb-2 border-b border-border/30 last:border-0">
+                      <div
+                        key={option.key}
+                        className="flex items-start gap-3 pb-2 border-b border-border/30 last:border-0"
+                      >
                         <code className="text-primary font-mono text-xs bg-primary/10 px-2 py-1 rounded whitespace-nowrap">
                           {option.key}
                         </code>
                         <div className="flex-1">
                           <p className="text-muted-foreground">{option.desc}</p>
-                          <p className="text-muted-foreground/70 text-xs mt-0.5">Default: {option.default}</p>
+                          <p className="text-muted-foreground/70 text-xs mt-0.5">
+                            Default: {option.default}
+                          </p>
                         </div>
                       </div>
                     ))}
@@ -671,7 +784,8 @@ commitly init-hooks
                   Auto-Fix Options
                 </h2>
                 <p className="text-foreground leading-relaxed mb-4">
-                  Commitly's auto-fix feature can automatically correct common issues in your commit messages:
+                  Commitly's auto-fix feature can automatically correct common issues in your commit
+                  messages:
                 </p>
 
                 <div className="glassmorphism rounded-lg p-6 space-y-4 mb-6">
@@ -682,7 +796,11 @@ commitly init-hooks
                       </div>
                       <div>
                         <strong className="text-foreground">Type Inference:</strong>
-                        <span className="text-muted-foreground"> Automatically infers commit type from verbs (add → feat, fix → fix, update → refactor)</span>
+                        <span className="text-muted-foreground">
+                          {' '}
+                          Automatically infers commit type from verbs (add → feat, fix → fix, update
+                          → refactor)
+                        </span>
                       </div>
                     </li>
                     <li className="flex items-start gap-3">
@@ -691,7 +809,10 @@ commitly init-hooks
                       </div>
                       <div>
                         <strong className="text-foreground">Case Correction:</strong>
-                        <span className="text-muted-foreground"> Converts subject to lowercase as per convention</span>
+                        <span className="text-muted-foreground">
+                          {' '}
+                          Converts subject to lowercase as per convention
+                        </span>
                       </div>
                     </li>
                     <li className="flex items-start gap-3">
@@ -700,7 +821,10 @@ commitly init-hooks
                       </div>
                       <div>
                         <strong className="text-foreground">Trailing Period:</strong>
-                        <span className="text-muted-foreground"> Removes trailing periods from subject lines</span>
+                        <span className="text-muted-foreground">
+                          {' '}
+                          Removes trailing periods from subject lines
+                        </span>
                       </div>
                     </li>
                     <li className="flex items-start gap-3">
@@ -709,7 +833,10 @@ commitly init-hooks
                       </div>
                       <div>
                         <strong className="text-foreground">Line Wrapping:</strong>
-                        <span className="text-muted-foreground"> Wraps body text at configured line length</span>
+                        <span className="text-muted-foreground">
+                          {' '}
+                          Wraps body text at configured line length
+                        </span>
                       </div>
                     </li>
                   </ul>
@@ -717,12 +844,16 @@ commitly init-hooks
 
                 <div className="p-4 bg-warning/10 border-l-4 border-warning rounded-r-md">
                   <div className="flex gap-3">
-                    <AlertTriangle className="h-5 w-5 text-warning flex-shrink-0 mt-0.5" aria-hidden="true" />
+                    <AlertTriangle
+                      className="h-5 w-5 text-warning flex-shrink-0 mt-0.5"
+                      aria-hidden="true"
+                    />
                     <div>
                       <p className="text-foreground text-sm font-medium">Important</p>
                       <p className="text-muted-foreground text-sm mt-1">
-                        Always review auto-fixed commits before pushing. While auto-fix is intelligent, it may not always capture
-                        your exact intent. Use it as a helpful assistant, not a replacement for careful commit message crafting.
+                        Always review auto-fixed commits before pushing. While auto-fix is
+                        intelligent, it may not always capture your exact intent. Use it as a
+                        helpful assistant, not a replacement for careful commit message crafting.
                       </p>
                     </div>
                   </div>
@@ -735,7 +866,8 @@ commitly init-hooks
                   Integrations
                 </h2>
                 <p className="text-foreground leading-relaxed mb-6">
-                  Integrate Commitly into your development workflow using git hooks or CI/CD pipelines.
+                  Integrate Commitly into your development workflow using git hooks or CI/CD
+                  pipelines.
                 </p>
 
                 {/* Git Hooks */}
@@ -833,7 +965,9 @@ jobs:
 
               {/* Examples Section */}
               <section id="examples">
-                <h2 className="text-3xl font-bold font-display text-foreground mb-6 pb-2 border-b border-border">Examples</h2>
+                <h2 className="text-3xl font-bold font-display text-foreground mb-6 pb-2 border-b border-border">
+                  Examples
+                </h2>
 
                 <div className="space-y-6">
                   {/* Valid Example */}
@@ -847,7 +981,7 @@ jobs:
                         <span className="text-xs font-mono text-success font-semibold">✓ PASS</span>
                       </div>
                       <pre className="p-4 font-mono text-sm text-foreground overflow-x-auto">
-{`feat(api): add endpoint for user profiles
+                        {`feat(api): add endpoint for user profiles
 
 Implement the GET /api/users/:id endpoint.
 This endpoint returns the user's public profile information.
@@ -866,19 +1000,23 @@ Closes #123`}
                     </h3>
                     <div className="glassmorphism rounded-lg overflow-hidden border-l-4 border-destructive">
                       <div className="bg-destructive/10 px-4 py-2 border-b border-border/30">
-                        <span className="text-xs font-mono text-destructive font-semibold">✗ FAIL</span>
+                        <span className="text-xs font-mono text-destructive font-semibold">
+                          ✗ FAIL
+                        </span>
                       </div>
                       <pre className="p-4 font-mono text-sm text-foreground overflow-x-auto">
-{`fixed login button`}
+                        {`fixed login button`}
                       </pre>
                       <div className="px-4 py-3 bg-destructive/5 border-t border-border/30">
                         <p className="text-sm text-destructive font-medium mb-1">Errors:</p>
                         <ul className="text-xs text-muted-foreground space-y-1 ml-4 list-disc">
                           <li>
-                            <strong className="text-destructive">type-empty:</strong> Type must not be empty
+                            <strong className="text-destructive">type-empty:</strong> Type must not
+                            be empty
                           </li>
                           <li>
-                            <strong className="text-destructive">subject-case:</strong> Subject must be lowercase
+                            <strong className="text-destructive">subject-case:</strong> Subject must
+                            be lowercase
                           </li>
                         </ul>
                       </div>
@@ -893,16 +1031,23 @@ Closes #123`}
                     </h3>
                     <div className="glassmorphism rounded-lg overflow-hidden">
                       <div className="bg-destructive/5 px-4 py-3 border-b border-border/30">
-                        <span className="text-xs font-mono text-muted-foreground mr-2">BEFORE:</span>
-                        <pre className="font-mono text-sm text-destructive/80 inline">Add OAuth Login.</pre>
+                        <span className="text-xs font-mono text-muted-foreground mr-2">
+                          BEFORE:
+                        </span>
+                        <pre className="font-mono text-sm text-destructive/80 inline">
+                          Add OAuth Login.
+                        </pre>
                       </div>
                       <div className="bg-success/5 px-4 py-3">
                         <span className="text-xs font-mono text-muted-foreground mr-2">AFTER:</span>
-                        <pre className="font-mono text-sm text-success/80 inline">feat(auth): add OAuth login</pre>
+                        <pre className="font-mono text-sm text-success/80 inline">
+                          feat(auth): add OAuth login
+                        </pre>
                       </div>
                     </div>
                     <p className="text-xs text-muted-foreground mt-2">
-                      Auto-fix inferred type from "Add" → "feat", lowercased subject, removed trailing period, and added scope suggestion.
+                      Auto-fix inferred type from "Add" → "feat", lowercased subject, removed
+                      trailing period, and added scope suggestion.
                     </p>
                   </div>
                 </div>
@@ -957,7 +1102,9 @@ function CodeBlock({ id, code, language, title, onCopy, isCopied }: CodeBlockPro
     <div className="glassmorphism rounded-lg overflow-hidden">
       {title && (
         <div className="px-4 py-2 bg-secondary/50 border-b border-border/50 flex items-center justify-between">
-          <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{title}</span>
+          <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+            {title}
+          </span>
           <span className="text-xs text-muted-foreground font-mono">{language}</span>
         </div>
       )}
@@ -980,4 +1127,3 @@ function CodeBlock({ id, code, language, title, onCopy, isCopied }: CodeBlockPro
     </div>
   );
 }
-

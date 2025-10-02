@@ -11,7 +11,7 @@ const BREAKING_PATTERN = /^BREAKING[ -]CHANGE:\s*(.+)/im;
 export function parseCommitMessage(message: string): ParsedCommit {
   const lines = message.split('\n');
   const header = lines[0] ?? '';
-  
+
   // Find the first blank line to separate header from body
   let bodyStartIndex = 1;
   while (bodyStartIndex < lines.length && lines[bodyStartIndex]?.trim() === '') {
@@ -21,7 +21,7 @@ export function parseCommitMessage(message: string): ParsedCommit {
   // Find footer (last paragraph or BREAKING CHANGE section)
   let footerStartIndex = lines.length;
   let hasFooter = false;
-  
+
   // Look for BREAKING CHANGE or conventional footer patterns
   for (let i = lines.length - 1; i >= bodyStartIndex; i--) {
     const line = lines[i] ?? '';
@@ -112,4 +112,3 @@ export function reconstructCommitMessage(parsed: ParsedCommit): string {
 
   return parts.join('\n');
 }
-

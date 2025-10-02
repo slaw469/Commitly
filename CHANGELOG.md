@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+
 - Deployment readiness verification for Vercel
 - Comprehensive MVP validation suite
 - End-to-end integration testing
@@ -17,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 #### Core Library (@commitly/core)
+
 - Message parser with type/scope/subject extraction
 - Conventional Commits validation engine
 - Auto-fix functionality with type inference
@@ -27,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ESM and CJS dual build support
 
 #### CLI Tool (@commitly/cli)
+
 - `commitly lint` command for validating commit messages
 - `commitly fix` command for auto-fixing messages
 - `commitly check` command for CI/CD integration
@@ -38,6 +41,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Git commit-msg hook installer
 
 #### Web Playground (@commitly/web)
+
 - React-based web application with Vite
 - Landing page with feature showcase
 - Interactive formatter/playground with real-time validation
@@ -55,6 +59,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Diff view for auto-fix suggestions
 
 #### Documentation
+
 - Comprehensive README with quickstart guide
 - CLI usage documentation
 - Configuration examples
@@ -64,6 +69,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Package-specific READMEs
 
 #### Infrastructure
+
 - Monorepo with pnpm workspaces
 - Shared TypeScript configuration
 - ESLint and Prettier setup
@@ -73,6 +79,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Type checking
 
 ### Developer Experience
+
 - Well-organized project structure
 - Clear separation of concerns
 - Comprehensive test coverage
@@ -128,6 +135,7 @@ All configuration options for commit validation:
 ## [0.0.1] - 2024-12-01
 
 ### Added
+
 - Initial project setup
 - Basic monorepo structure
 - Development tooling configuration
@@ -141,6 +149,7 @@ All configuration options for commit validation:
 This is the first feature release. No breaking changes.
 
 **Installation:**
+
 ```bash
 # Update packages
 pnpm install
@@ -153,11 +162,13 @@ pnpm test
 ```
 
 **New Features:**
+
 - Full CLI functionality available
 - Web playground now production-ready
 - Comprehensive testing suite added
 
 **Configuration Changes:**
+
 - No breaking configuration changes
 - All default configurations remain the same
 

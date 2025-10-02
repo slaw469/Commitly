@@ -18,20 +18,25 @@ function formatTimeAgo(timestamp: string): string {
   const then = new Date(timestamp);
   const diffMs = now.getTime() - then.getTime();
   const diffMins = Math.floor(diffMs / 60000);
-  
+
   if (diffMins < 1) return 'just now';
   if (diffMins < 60) return `${diffMins}m ago`;
-  
+
   const diffHours = Math.floor(diffMins / 60);
   if (diffHours < 24) return `${diffHours}h ago`;
-  
+
   const diffDays = Math.floor(diffHours / 24);
   if (diffDays < 7) return `${diffDays}d ago`;
-  
+
   return then.toLocaleDateString();
 }
 
-export function HistoryPanel({ history, onClearHistory, onRemoveItem, onLoadMessage }: HistoryPanelProps): JSX.Element {
+export function HistoryPanel({
+  history,
+  onClearHistory,
+  onRemoveItem,
+  onLoadMessage,
+}: HistoryPanelProps): JSX.Element {
   if (history.length === 0) {
     return (
       <Card>
@@ -63,12 +68,7 @@ export function HistoryPanel({ history, onClearHistory, onRemoveItem, onLoadMess
             <History className="h-5 w-5 text-primary" />
             <CardTitle className="text-base">Validation History</CardTitle>
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onClearHistory}
-            className="h-8 px-2 text-xs"
-          >
+          <Button variant="ghost" size="sm" onClick={onClearHistory} className="h-8 px-2 text-xs">
             Clear All
           </Button>
         </div>
@@ -82,7 +82,9 @@ export function HistoryPanel({ history, onClearHistory, onRemoveItem, onLoadMess
               className={cn(
                 'group relative p-3 rounded-md border cursor-pointer transition-colors',
                 'hover:bg-secondary/50',
-                item.valid ? 'border-success/30 bg-success/5' : 'border-destructive/30 bg-destructive/5'
+                item.valid
+                  ? 'border-success/30 bg-success/5'
+                  : 'border-destructive/30 bg-destructive/5'
               )}
               onClick={() => onLoadMessage(item.message)}
             >
@@ -133,4 +135,3 @@ export function HistoryPanel({ history, onClearHistory, onRemoveItem, onLoadMess
     </Card>
   );
 }
-

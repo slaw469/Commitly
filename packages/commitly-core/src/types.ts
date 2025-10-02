@@ -76,4 +76,3 @@ export interface AutoFixOptions {
   wrapLines?: boolean;
   config?: Partial<Config>;
 }
-

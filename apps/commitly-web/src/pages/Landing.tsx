@@ -20,26 +20,33 @@ const features: Feature[] = [
   {
     icon: <Code className="h-6 w-6" />,
     title: 'Smart Parsing',
-    description: 'Automatically parse type(scope): subject structure and validate against Conventional Commits standards',
+    description:
+      'Automatically parse type(scope): subject structure and validate against Conventional Commits standards',
   },
   {
     icon: <Sparkles className="h-6 w-6" />,
     title: 'Auto-Fix Magic',
-    description: 'Intelligent suggestions fix casing, trailing periods, line wrapping, and even infer commit types',
+    description:
+      'Intelligent suggestions fix casing, trailing periods, line wrapping, and even infer commit types',
   },
   {
     icon: <Terminal className="h-6 w-6" />,
     title: 'CLI & Web Playground',
-    description: 'Fast CLI for git hooks and CI/CD, plus a sleek web playground for interactive testing',
+    description:
+      'Fast CLI for git hooks and CI/CD, plus a sleek web playground for interactive testing',
   },
   {
     icon: <GitBranch className="h-6 w-6" />,
     title: 'Git Hook Integration',
-    description: 'Block bad commits at the source with seamless git hook integration and real-time validation',
+    description:
+      'Block bad commits at the source with seamless git hook integration and real-time validation',
   },
 ];
 
-export default function Landing({ projectName = 'Commitly', githubUrl = 'https://github.com/yourusername/commitly' }: Props): JSX.Element {
+export default function Landing({
+  projectName = 'Commitly',
+  githubUrl = 'https://github.com/yourusername/commitly',
+}: Props): JSX.Element {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -51,7 +58,7 @@ export default function Landing({ projectName = 'Commitly', githubUrl = 'https:/
             </div>
             <h1 className="text-xl font-bold font-display text-foreground">{projectName}</h1>
           </Link>
-          
+
           <nav className="flex items-center gap-4" role="navigation" aria-label="Main navigation">
             <Link
               to="/dashboard"
@@ -98,17 +105,16 @@ export default function Landing({ projectName = 'Commitly', githubUrl = 'https:/
               <Sparkles className="h-4 w-4" />
               <span>Clean commits, every time</span>
             </div>
-            
+
             <h2 className="text-5xl md:text-6xl font-bold font-display text-foreground mb-6 text-balance">
-              Lint & Auto-Fix Your{' '}
-              <span className="text-primary">Commit Messages</span>
+              Lint & Auto-Fix Your <span className="text-primary">Commit Messages</span>
             </h2>
-            
+
             <p className="text-xl text-muted-foreground mb-10 max-w-2xl mx-auto text-balance">
-              Enforce consistent commit message formats with Conventional Commits. 
-              Catch mistakes before they reach your repo and generate clean changelogs automatically.
+              Enforce consistent commit message formats with Conventional Commits. Catch mistakes
+              before they reach your repo and generate clean changelogs automatically.
             </p>
-            
+
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Button variant="primary" size="lg" asChild>
                 <Link to="/playground" className="inline-flex items-center gap-2">
@@ -117,7 +123,12 @@ export default function Landing({ projectName = 'Commitly', githubUrl = 'https:/
                 </Link>
               </Button>
               <Button variant="outline" size="lg" asChild>
-                <a href={githubUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2">
+                <a
+                  href={githubUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2"
+                >
                   <Github className="h-4 w-4" />
                   View on GitHub
                 </a>
@@ -155,7 +166,7 @@ export default function Landing({ projectName = 'Commitly', githubUrl = 'https:/
                 Powerful features to help your team maintain a pristine commit history
               </p>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {features.map((feature, index) => (
                 <Card key={index} glass>
@@ -183,10 +194,12 @@ export default function Landing({ projectName = 'Commitly', githubUrl = 'https:/
                 Add git hooks in seconds and never worry about bad commits again
               </p>
             </div>
-            
+
             <div className="glassmorphism rounded-lg overflow-hidden">
               <div className="bg-secondary/50 px-4 py-2 border-b border-border/50 flex items-center justify-between">
-                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Terminal</span>
+                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                  Terminal
+                </span>
                 <span className="text-xs text-muted-foreground font-mono">bash</span>
               </div>
               <div className="p-6 font-mono text-sm">
@@ -253,16 +266,30 @@ export default function Landing({ projectName = 'Commitly', githubUrl = 'https:/
               </span>
             </div>
             <div className="flex items-center gap-6">
-              <Link to="/docs" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              <Link
+                to="/docs"
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
                 Documentation
               </Link>
-              <a href={githubUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              <a
+                href={githubUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
                 GitHub
               </a>
-              <Link to="/playground" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              <Link
+                to="/playground"
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
                 Playground
               </Link>
-              <Link to="/dashboard" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              <Link
+                to="/dashboard"
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
                 Dashboard
               </Link>
             </div>
@@ -272,4 +299,3 @@ export default function Landing({ projectName = 'Commitly', githubUrl = 'https:/
     </div>
   );
 }
-

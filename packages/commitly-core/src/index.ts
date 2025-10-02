@@ -12,4 +12,3 @@ export * from './autofix';
 export { validateCommit as validate } from './validator';
 export { parseCommitMessage as parse } from './parser';
 export { autofixCommit as autofix } from './autofix';
-

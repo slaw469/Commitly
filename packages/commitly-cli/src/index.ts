@@ -3,10 +3,7 @@ import { lintCommand, fixCommand, checkCommand, initHooksCommand } from './comma
 
 const program = new Command();
 
-program
-  .name('commitly')
-  .description('Lint and auto-fix commit messages')
-  .version('0.1.0');
+program.name('commitly').description('Lint and auto-fix commit messages').version('0.1.0');
 
 program
   .command('lint')
@@ -52,4 +49,3 @@ program.action(async () => {
 });
 
 program.parse();
-

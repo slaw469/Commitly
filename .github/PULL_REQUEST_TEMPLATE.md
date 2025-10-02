@@ -5,6 +5,7 @@
 ## Related Issue
 
 <!-- Link to the issue this PR addresses -->
+
 Closes #
 
 ## Type of Change
@@ -26,9 +27,9 @@ Closes #
 
 <!-- List the key changes in this PR -->
 
-- 
-- 
-- 
+-
+-
+-
 
 ## Testing
 
@@ -93,9 +94,9 @@ pnpm typecheck
 
 <!-- Steps users need to take to migrate to this version -->
 
-1. 
-2. 
-3. 
+1.
+2.
+3.
 
 ## Performance Impact
 
@@ -117,8 +118,8 @@ pnpm typecheck
 <!-- If you added dependencies, explain why they're necessary -->
 
 | Package | Version | Purpose | Bundle Size Impact |
-|---------|---------|---------|-------------------|
-|         |         |         |                   |
+| ------- | ------- | ------- | ------------------ |
+|         |         |         |                    |
 
 ## Accessibility
 
@@ -146,4 +147,3 @@ pnpm typecheck
 - [ ] Performance is acceptable
 - [ ] Breaking changes are clearly documented
 - [ ] Ready to merge
-

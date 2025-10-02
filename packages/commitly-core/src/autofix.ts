@@ -68,7 +68,7 @@ const VERB_TO_TYPE_MAP: Record<string, string> = {
 function inferTypeFromSubject(subject: string): string | null {
   const firstWord = subject.trim().toLowerCase().split(/\s+/)[0];
   if (!firstWord) return null;
-  
+
   return VERB_TO_TYPE_MAP[firstWord] ?? null;
 }
 
@@ -103,7 +103,7 @@ function wrapText(text: string, maxLength: number): string {
 
   for (const paragraph of paragraphs) {
     const existingLines = paragraph.split('\n');
-    
+
     for (const line of existingLines) {
       if (line.length <= maxLength) {
         lines.push(line);
@@ -191,10 +191,10 @@ export function autofixCommit(message: string, options: AutoFixOptions = {}): st
       ? `${fixed.type}${fixed.scope ? `(${fixed.scope})` : ''}${fixed.isBreaking ? '!' : ''}: `
       : '';
     const availableLength = config.maxHeaderLength - headerPrefix.length;
-    
+
     if (availableLength > 10) {
       // Truncate subject and add ellipsis
-      fixed.subject = `${fixed.subject.slice(0, availableLength - 3)  }...`;
+      fixed.subject = `${fixed.subject.slice(0, availableLength - 3)}...`;
       modified = true;
     }
   }
@@ -221,4 +221,3 @@ export function suggestFix(message: string, config?: Partial<Config>): string | 
     config,
   });
 }
-

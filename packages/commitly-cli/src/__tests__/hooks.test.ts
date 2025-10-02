@@ -3,12 +3,7 @@ import { readFile, writeFile, access } from 'fs/promises';
 import { join } from 'path';
 import { execSync } from 'child_process';
 import { initHooksCommand } from '../commands';
-import {
-  createTempDir,
-  cleanupTempDir,
-  initGitRepo,
-  installHook,
-} from './test-utils';
+import { createTempDir, cleanupTempDir, initGitRepo, installHook } from './test-utils';
 
 describe('Git Hooks Integration Tests', () => {
   let tmpDir: string;
@@ -54,12 +49,12 @@ describe('Git Hooks Integration Tests', () => {
         await initHooksCommand();
 
         const hookPath = join(tmpDir, '.git', 'hooks', 'commit-msg');
-        
+
         // Check if file is executable (on Unix-like systems)
         if (process.platform !== 'win32') {
           const stats = await readFile(hookPath, 'utf-8');
           expect(stats).toBeTruthy();
-          
+
           // Try to verify it can be executed
           try {
             execSync(`test -x "${hookPath}"`, { stdio: 'pipe' });
@@ -120,7 +115,7 @@ describe('Git Hooks Integration Tests', () => {
 
       try {
         const exitCode = await initHooksCommand();
-        
+
         // The command will create .git/hooks directory even if not a git repo
         // So we just verify it completes
         expect(exitCode).toBe(0);
@@ -141,7 +136,7 @@ describe('Git Hooks Integration Tests', () => {
 
         const hookPath = join(tmpDir, '.git', 'hooks', 'commit-msg');
         const hookContent = await readFile(hookPath, 'utf-8');
-        
+
         // Verify hook calls commitly lint with the commit message file
         expect(hookContent).toContain('commitly lint');
         expect(hookContent).toContain('$1'); // Message file path
@@ -161,11 +156,11 @@ describe('Git Hooks Integration Tests', () => {
         // Create a test commit message file manually
         const msgPath = join(tmpDir, '.git', 'COMMIT_EDITMSG');
         await writeFile(msgPath, 'feat: test message', 'utf-8');
-        
+
         // Verify the message file exists and can be read
         const content = await readFile(msgPath, 'utf-8');
         expect(content).toBe('feat: test message');
-        
+
         // Hook would call: commitly lint -f $msgPath
         // We can't test actual git commit here without the CLI being globally available
         // But we verified the hook structure is correct
@@ -187,7 +182,7 @@ describe('Git Hooks Integration Tests', () => {
         await initHooksCommand();
 
         const hookPath = join(tmpDir, '.git', 'hooks', 'commit-msg');
-        
+
         // Verify hook is executable
         try {
           execSync(`test -x "${hookPath}"`, { stdio: 'pipe' });
@@ -208,7 +203,7 @@ describe('Git Hooks Integration Tests', () => {
 
         const hookPath = join(tmpDir, '.git', 'hooks', 'commit-msg');
         const hookContent = await readFile(hookPath, 'utf-8');
-        
+
         expect(hookContent.startsWith('#!/bin/sh')).toBe(true);
       } finally {
         process.chdir(originalCwd);
@@ -224,7 +219,7 @@ describe('Git Hooks Integration Tests', () => {
 
         const hookPath = join(tmpDir, '.git', 'hooks', 'commit-msg');
         const hookContent = await readFile(hookPath, 'utf-8');
-        
+
         expect(hookContent).toContain('Commitly hook');
       } finally {
         process.chdir(originalCwd);
@@ -255,7 +250,7 @@ describe('Git Hooks Integration Tests', () => {
         const hookPath = join(tmpDir, '.git', 'hooks', 'commit-msg');
         await expect(access(hookPath)).resolves.not.toThrow();
         await expect(access(configPath)).resolves.not.toThrow();
-        
+
         // The hook will use this config when executed by git
         // (testing actual execution requires CLI to be in PATH)
       } finally {
@@ -290,7 +285,7 @@ describe('Git Hooks Integration Tests', () => {
 
         const hookPath = join(tmpDir, '.git', 'hooks', 'commit-msg');
         const hookContent = await readFile(hookPath, 'utf-8');
-        
+
         // Verify shebang is first line
         const lines = hookContent.split('\n');
         expect(lines[0]).toBe('#!/bin/sh');
@@ -308,7 +303,7 @@ describe('Git Hooks Integration Tests', () => {
 
         const hookPath = join(tmpDir, '.git', 'hooks', 'commit-msg');
         const hookContent = await readFile(hookPath, 'utf-8');
-        
+
         // Verify exit code is properly propagated
         expect(hookContent).toContain('exit $?');
       } finally {
@@ -325,7 +320,7 @@ describe('Git Hooks Integration Tests', () => {
 
         const hookPath = join(tmpDir, '.git', 'hooks', 'commit-msg');
         const hookContent = await readFile(hookPath, 'utf-8');
-        
+
         // Verify $1 (message file path) is passed to commitly
         expect(hookContent).toContain('"$1"');
       } finally {
@@ -334,4 +329,3 @@ describe('Git Hooks Integration Tests', () => {
     });
   });
 });
-

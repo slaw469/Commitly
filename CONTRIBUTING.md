@@ -112,7 +112,7 @@ Commitly/
 ### PR Guidelines
 
 1. **Title**: Use conventional commit format: `feat: add new feature`
-2. **Description**: 
+2. **Description**:
    - Explain what and why
    - Reference related issues: `Closes #123`
    - Include screenshots for UI changes
@@ -144,7 +144,7 @@ interface User {
 }
 
 // ❌ Bad
-const user: any = { name: "John" };
+const user: any = { name: 'John' };
 ```
 
 ### React
@@ -268,10 +268,10 @@ describe('parseCommitMessage', () => {
   it('should parse commit message with type and subject', () => {
     // Arrange
     const message = 'feat: add new feature';
-    
+
     // Act
     const result = parseCommitMessage(message);
-    
+
     // Assert
     expect(result.type).toBe('feat');
     expect(result.subject).toBe('add new feature');
@@ -298,14 +298,14 @@ describe('parseCommitMessage', () => {
 
 ### JSDoc Example
 
-```typescript
+````typescript
 /**
  * Parse a commit message into structured components
- * 
+ *
  * @param message - The commit message to parse
  * @param config - Optional configuration for parsing rules
  * @returns Parsed commit message with type, scope, subject, body, and footer
- * 
+ *
  * @example
  * ```typescript
  * const parsed = parseCommitMessage('feat(api): add user endpoint');
@@ -313,13 +313,10 @@ describe('parseCommitMessage', () => {
  * console.log(parsed.scope); // 'api'
  * ```
  */
-export function parseCommitMessage(
-  message: string,
-  config?: Config
-): ParsedCommit {
+export function parseCommitMessage(message: string, config?: Config): ParsedCommit {
   // ...
 }
-```
+````
 
 ## Questions?
 
@@ -337,4 +334,3 @@ Every contribution, no matter how small, makes a difference. Thank you for helpi
 ---
 
 **Happy Contributing!** 🚀
-

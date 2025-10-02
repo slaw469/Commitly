@@ -7,13 +7,7 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
-      exclude: [
-        'node_modules',
-        'dist',
-        '**/*.config.*',
-        '**/*.d.ts',
-        '**/index.ts',
-      ],
+      exclude: ['node_modules', 'dist', '**/*.config.*', '**/*.d.ts', '**/index.ts'],
     },
     testTimeout: 30000, // CLI tests may need more time for file operations
     pool: 'forks', // Use forks instead of threads to support process.chdir()
@@ -24,4 +18,3 @@ export default defineConfig({
     },
   },
 });
-

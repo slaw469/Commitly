@@ -16,7 +16,11 @@ export default defineConfig({
       output: {
         manualChunks: {
           'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          'ui-vendor': ['@radix-ui/react-dropdown-menu', '@radix-ui/react-tabs', '@radix-ui/react-toast'],
+          'ui-vendor': [
+            '@radix-ui/react-dropdown-menu',
+            '@radix-ui/react-tabs',
+            '@radix-ui/react-toast',
+          ],
         },
       },
     },
@@ -29,4 +33,3 @@ export default defineConfig({
     exclude: ['@commitly/core'],
   },
 });
-

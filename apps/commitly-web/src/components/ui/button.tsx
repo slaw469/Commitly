@@ -23,7 +23,8 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           {
             'bg-secondary text-foreground hover:bg-border': variant === 'default',
             'bg-primary text-primary-foreground hover:opacity-90 font-bold': variant === 'primary',
-            'bg-destructive text-destructive-foreground hover:opacity-90': variant === 'destructive',
+            'bg-destructive text-destructive-foreground hover:opacity-90':
+              variant === 'destructive',
             'border border-border bg-transparent hover:bg-secondary': variant === 'outline',
             'hover:bg-secondary hover:text-foreground': variant === 'ghost',
           },

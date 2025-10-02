@@ -1,7 +1,16 @@
 // File: apps/commitly-web/src/pages/Playground.tsx
 
 import { useMemo, useCallback, useState, useEffect } from 'react';
-import { Check, Sparkles, AlertCircle, AlertTriangle, Copy, CheckCircle2, Home, Keyboard } from 'lucide-react';
+import {
+  Check,
+  Sparkles,
+  AlertCircle,
+  AlertTriangle,
+  Copy,
+  CheckCircle2,
+  Home,
+  Keyboard,
+} from 'lucide-react';
 import { validate, suggestFix } from '@commitly/core';
 import type { ValidationResult } from '@commitly/core';
 import { cn } from '@/lib/utils';
@@ -37,7 +46,8 @@ const exampleTemplates = [
   },
   {
     name: 'Breaking Change',
-    message: 'feat(api)!: redesign authentication flow\n\nBREAKING CHANGE: Old auth tokens are no longer valid',
+    message:
+      'feat(api)!: redesign authentication flow\n\nBREAKING CHANGE: Old auth tokens are no longer valid',
   },
 ];
 
@@ -137,10 +147,11 @@ export default function Playground({ defaultMessage = demoMessage }: Props): JSX
         toast({
           variant: totalIssues === 0 ? 'success' : 'destructive',
           title: totalIssues === 0 ? 'Valid commit' : `${totalIssues} issue(s) found`,
-          description: totalIssues === 0 ? 'Your commit message is valid' : 'Check the issues below',
+          description:
+            totalIssues === 0 ? 'Your commit message is valid' : 'Check the issues below',
         });
       }
-      
+
       // Cmd/Ctrl + Shift + F - Apply auto-fix
       if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === 'F') {
         e.preventDefault();
@@ -176,7 +187,10 @@ export default function Playground({ defaultMessage = demoMessage }: Props): JSX
             >
               <Keyboard className="h-4 w-4" />
             </Button>
-            <a href="/docs" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+            <a
+              href="/docs"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
               Docs
             </a>
           </div>
@@ -236,10 +250,12 @@ export default function Playground({ defaultMessage = demoMessage }: Props): JSX
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-muted-foreground">Header Length</span>
-                    <span className={cn(
-                      'text-sm font-medium',
-                      charCount > 72 ? 'text-destructive' : 'text-muted-foreground'
-                    )}>
+                    <span
+                      className={cn(
+                        'text-sm font-medium',
+                        charCount > 72 ? 'text-destructive' : 'text-muted-foreground'
+                      )}
+                    >
                       {charCount}/72
                     </span>
                   </div>
@@ -308,7 +324,10 @@ export default function Playground({ defaultMessage = demoMessage }: Props): JSX
                   {(validationResult.errors.length > 0 || validationResult.warnings.length > 0) && (
                     <div className="space-y-2 pt-4 border-t border-border/50">
                       {validationResult.errors.map((error, index) => (
-                        <div key={`error-${index}`} className="flex items-start gap-2 p-3 rounded-md bg-destructive/10">
+                        <div
+                          key={`error-${index}`}
+                          className="flex items-start gap-2 p-3 rounded-md bg-destructive/10"
+                        >
                           <AlertCircle className="h-4 w-4 text-destructive mt-0.5 flex-shrink-0" />
                           <div className="flex-1">
                             <p className="text-sm font-medium text-destructive">{error.message}</p>
@@ -319,7 +338,10 @@ export default function Playground({ defaultMessage = demoMessage }: Props): JSX
                         </div>
                       ))}
                       {validationResult.warnings.map((warning, index) => (
-                        <div key={`warning-${index}`} className="flex items-start gap-2 p-3 rounded-md bg-warning/10">
+                        <div
+                          key={`warning-${index}`}
+                          className="flex items-start gap-2 p-3 rounded-md bg-warning/10"
+                        >
                           <AlertTriangle className="h-4 w-4 text-warning mt-0.5 flex-shrink-0" />
                           <div className="flex-1">
                             <p className="text-sm font-medium text-warning">{warning.message}</p>
@@ -342,7 +364,9 @@ export default function Playground({ defaultMessage = demoMessage }: Props): JSX
                   <div className="flex items-center justify-between">
                     <div>
                       <CardTitle>Auto-Fixed Message</CardTitle>
-                      <CardDescription>Smart suggestions to fix your commit message</CardDescription>
+                      <CardDescription>
+                        Smart suggestions to fix your commit message
+                      </CardDescription>
                     </div>
                     <div className="flex items-center gap-2">
                       <Button
@@ -403,7 +427,9 @@ export default function Playground({ defaultMessage = demoMessage }: Props): JSX
                     <div className="flex h-16 w-16 items-center justify-center rounded-full bg-success/10 mb-4">
                       <Check className="h-8 w-8 text-success" />
                     </div>
-                    <h3 className="text-lg font-bold text-foreground mb-2">Perfect Commit Message!</h3>
+                    <h3 className="text-lg font-bold text-foreground mb-2">
+                      Perfect Commit Message!
+                    </h3>
                     <p className="text-muted-foreground text-sm max-w-md">
                       Your commit message follows all Conventional Commits rules. No fixes needed.
                     </p>
@@ -417,4 +443,3 @@ export default function Playground({ defaultMessage = demoMessage }: Props): JSX
     </div>
   );
 }
-

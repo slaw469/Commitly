@@ -24,7 +24,7 @@ const explorer = cosmiconfig('commitly', {
 export async function loadConfig(cwd?: string): Promise<Partial<Config> | null> {
   try {
     const result = await explorer.search(cwd);
-    
+
     if (!result || result.isEmpty) {
       return null;
     }
@@ -48,7 +48,7 @@ export async function loadConfig(cwd?: string): Promise<Partial<Config> | null> 
 export async function loadConfigFromFile(filepath: string): Promise<Partial<Config> | null> {
   try {
     const result = await explorer.load(filepath);
-    
+
     if (!result || result.isEmpty) {
       return null;
     }
@@ -62,4 +62,3 @@ export async function loadConfigFromFile(filepath: string): Promise<Partial<Conf
     return null;
   }
 }
-

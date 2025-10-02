@@ -190,7 +190,12 @@ export default function Dashboard({
                 strokeWidth={2}
                 d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
               />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+              />
             </svg>
             Settings
           </a>
@@ -238,13 +243,18 @@ export default function Dashboard({
                   key={project.id}
                   className={cn(
                     'glassmorphism rounded-lg p-5 flex flex-col gap-4 transition-shadow',
-                    project.status === 'fail' && 'border-destructive/50 shadow-lg shadow-destructive/20'
+                    project.status === 'fail' &&
+                      'border-destructive/50 shadow-lg shadow-destructive/20'
                   )}
                 >
                   <div className="flex justify-between items-start">
                     <div>
-                      <h3 className="font-bold text-lg font-display text-foreground">{project.name}</h3>
-                      <p className="text-sm text-muted-foreground">Last commit: {project.lastCommit}</p>
+                      <h3 className="font-bold text-lg font-display text-foreground">
+                        {project.name}
+                      </h3>
+                      <p className="text-sm text-muted-foreground">
+                        Last commit: {project.lastCommit}
+                      </p>
                     </div>
                     <span
                       className={cn(
@@ -297,7 +307,9 @@ export default function Dashboard({
                 <span className="text-muted-foreground">footer</span>
               </div>
               <div className="bg-card p-4 rounded-md font-mono text-sm flex flex-wrap items-center gap-x-2 gap-y-1 mt-4">
-                <span className="text-destructive border border-destructive/50 px-1 py-0.5 rounded">fix</span>
+                <span className="text-destructive border border-destructive/50 px-1 py-0.5 rounded">
+                  fix
+                </span>
                 <span className="text-primary">(login):</span>
                 <span className="text-foreground">add error message for wrong password</span>
               </div>
@@ -307,7 +319,9 @@ export default function Dashboard({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Linting Errors */}
               <section className="glassmorphism rounded-lg p-5">
-                <h3 className="font-bold text-lg font-display text-foreground mb-4">Linting Errors</h3>
+                <h3 className="font-bold text-lg font-display text-foreground mb-4">
+                  Linting Errors
+                </h3>
                 <ul className="space-y-3" role="list">
                   {lintErrors.map((error, index) => (
                     <li key={index} className="text-sm">
@@ -328,10 +342,14 @@ export default function Dashboard({
 
               {/* Auto-Fix Suggestion */}
               <section className="glassmorphism rounded-lg p-5">
-                <h3 className="font-bold text-lg font-display text-foreground mb-4">Auto-Fix Suggestion</h3>
+                <h3 className="font-bold text-lg font-display text-foreground mb-4">
+                  Auto-Fix Suggestion
+                </h3>
                 <div className="bg-card p-3 rounded-md font-mono text-xs">
                   <div className="text-destructive/80">- fix login button</div>
-                  <div className="text-success/80">+ fix(auth): resolve login button redirect issue</div>
+                  <div className="text-success/80">
+                    + fix(auth): resolve login button redirect issue
+                  </div>
                 </div>
               </section>
             </div>
@@ -367,17 +385,23 @@ export default function Dashboard({
                   />
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-3xl font-bold font-display text-foreground">{compliancePercentage}%</span>
+                  <span className="text-3xl font-bold font-display text-foreground">
+                    {compliancePercentage}%
+                  </span>
                   <span className="text-xs text-muted-foreground">Compliant</span>
                 </div>
               </div>
               <div className="flex justify-center gap-6 mt-4 w-full">
                 <div className="text-center">
-                  <p className="text-lg font-bold text-success">{totalCompliant.toLocaleString()}</p>
+                  <p className="text-lg font-bold text-success">
+                    {totalCompliant.toLocaleString()}
+                  </p>
                   <p className="text-xs text-muted-foreground">Compliant</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-lg font-bold text-destructive">{totalNonCompliant.toLocaleString()}</p>
+                  <p className="text-lg font-bold text-destructive">
+                    {totalNonCompliant.toLocaleString()}
+                  </p>
                   <p className="text-xs text-muted-foreground">Non-Compliant</p>
                 </div>
               </div>
@@ -385,7 +409,9 @@ export default function Dashboard({
 
             {/* Integration Status */}
             <section className="glassmorphism rounded-lg p-5">
-              <h3 className="font-bold text-lg font-display text-foreground mb-4">Integration Status</h3>
+              <h3 className="font-bold text-lg font-display text-foreground mb-4">
+                Integration Status
+              </h3>
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium text-foreground">Git Hook Status</span>
@@ -413,4 +439,3 @@ export default function Dashboard({
     </div>
   );
 }
-

@@ -3,35 +3,39 @@
 ## Quick Deploy to Vercel
 
 ### Prerequisites
+
 - GitHub account
 - Vercel account (sign up at [vercel.com](https://vercel.com))
 
 ### Deployment Steps
 
 1. **Fork or Clone the Repository**
+
    ```bash
    git clone https://github.com/slaw469/Commitly.git
    cd Commitly
    ```
 
 2. **Push to Your GitHub Repository**
+
    ```bash
    git remote set-url origin https://github.com/YOUR_USERNAME/commitly.git
    git push -u origin main
    ```
 
 3. **Deploy to Vercel**
-   
+
    **Option A: Using Vercel CLI**
+
    ```bash
    # Install Vercel CLI
    npm install -g vercel
-   
+
    # Deploy from project root
    cd apps/commitly-web
    vercel --prod
    ```
-   
+
    **Option B: Using Vercel Dashboard**
    - Go to [vercel.com/new](https://vercel.com/new)
    - Import your GitHub repository
@@ -64,6 +68,7 @@ Add these in Vercel Dashboard → Settings → Environment Variables
 ### Vercel Configuration
 
 The project includes `apps/commitly-web/vercel.json` with:
+
 - ✅ Monorepo-aware build commands
 - ✅ SPA routing configuration
 - ✅ Optimized caching headers for assets
@@ -77,6 +82,7 @@ The project includes `apps/commitly-web/vercel.json` with:
 ### Verification
 
 After deployment, verify these pages work:
+
 - `/` - Dashboard
 - `/formatter` - Commit message formatter
 - `/reports` - Commit reports
@@ -89,20 +95,24 @@ All routes should load correctly thanks to SPA rewrites.
 ### Troubleshooting
 
 **Build fails with "command not found":**
+
 - Ensure you're deploying from the repository root or `apps/commitly-web`
 - Check that `vercel.json` is present
 
 **Routes return 404:**
+
 - Verify `vercel.json` rewrites configuration
 - Check that `dist/index.html` was generated
 
 **Assets not loading:**
+
 - Check Vite base URL configuration in `vite.config.ts`
 - Verify asset paths are relative
 
 ### Custom Domain (Optional)
 
 To add a custom domain:
+
 1. Go to your project in Vercel Dashboard
 2. Navigate to Settings → Domains
 3. Add your domain and follow DNS instructions
@@ -110,6 +120,7 @@ To add a custom domain:
 ### Continuous Deployment
 
 Vercel automatically deploys:
+
 - **Production:** Every push to `main` branch
 - **Preview:** Every pull request
 
@@ -122,12 +133,13 @@ No additional CI/CD setup required!
 ### Deploy to Netlify
 
 1. **netlify.toml** (add to project root):
+
    ```toml
    [build]
      base = "apps/commitly-web"
      command = "cd ../.. && pnpm install && pnpm --filter commitly-web build"
      publish = "dist"
-   
+
    [[redirects]]
      from = "/*"
      to = "/index.html"
@@ -144,35 +156,36 @@ No additional CI/CD setup required!
 ### Deploy to GitHub Pages
 
 1. **Add gh-pages workflow** (`.github/workflows/deploy.yml`):
+
    ```yaml
    name: Deploy to GitHub Pages
-   
+
    on:
      push:
        branches: [main]
-   
+
    jobs:
      deploy:
        runs-on: ubuntu-latest
        steps:
          - uses: actions/checkout@v3
-         
+
          - name: Setup Node
            uses: actions/setup-node@v3
            with:
              node-version: '20'
-         
+
          - name: Setup pnpm
            uses: pnpm/action-setup@v2
            with:
              version: 8
-         
+
          - name: Install dependencies
            run: pnpm install
-         
+
          - name: Build
            run: pnpm --filter commitly-web build
-         
+
          - name: Deploy
            uses: peaceiris/actions-gh-pages@v3
            with:
@@ -210,6 +223,7 @@ No additional CI/CD setup required!
 ## Performance Monitoring
 
 Vercel provides built-in analytics:
+
 - **Web Vitals:** Core Web Vitals monitoring
 - **Real User Monitoring:** Performance from actual users
 - **Edge Network:** Global CDN for fast loading
@@ -221,6 +235,7 @@ Access at: Vercel Dashboard → Your Project → Analytics
 ## Support
 
 For deployment issues:
+
 - **Vercel Docs:** [vercel.com/docs](https://vercel.com/docs)
 - **GitHub Issues:** [github.com/slaw469/Commitly/issues](https://github.com/slaw469/Commitly/issues)
 - **Vercel Support:** [vercel.com/support](https://vercel.com/support)
@@ -230,4 +245,3 @@ For deployment issues:
 **Ready to Deploy!** 🚀
 
 The project is fully configured for deployment. Choose your preferred platform and follow the steps above.
-

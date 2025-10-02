@@ -34,17 +34,20 @@ If applicable, add screenshots to help explain your problem.
 ## Environment
 
 **CLI:**
+
 - Commitly CLI Version: [e.g., 0.1.0]
 - Node.js Version: [e.g., 18.0.0]
 - OS: [e.g., macOS 12.0, Ubuntu 22.04, Windows 11]
 - Shell: [e.g., bash, zsh, powershell]
 
 **Web Playground:**
+
 - Browser: [e.g., Chrome 120, Safari 17, Firefox 121]
 - Device: [e.g., Desktop, iPhone 13, iPad Pro]
 - Screen Size: [e.g., 1920x1080, mobile]
 
 **Configuration:**
+
 ```json
 {
   // Paste your .commitlyrc.json here if relevant
@@ -85,4 +88,3 @@ If you have suggestions on how to fix this, please share them.
 - [ ] I have included all relevant information above
 - [ ] I have tested with the latest version of Commitly
 - [ ] I can reproduce this issue consistently
-

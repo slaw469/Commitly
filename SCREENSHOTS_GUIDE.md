@@ -8,11 +8,13 @@ This guide outlines the visual content needed for Task 5: Visuals & Content. The
 
 ## Required Screenshots
 
-### 1. **Dashboard Overview** 
+### 1. **Dashboard Overview**
+
 **File:** `docs/screenshots/dashboard.png`  
 **Size:** 1920x1080 (desktop view)
 
 **What to capture:**
+
 - Full dashboard view showing:
   - Sidebar navigation with Commitly logo
   - Project cards with status badges (pass/fail/warning)
@@ -23,6 +25,7 @@ This guide outlines the visual content needed for Task 5: Visuals & Content. The
   - Commit message structure breakdown
 
 **Lighting/Theme:**
+
 - Dark theme (default)
 - Show glassmorphism effects
 - Ensure readable contrast
@@ -32,10 +35,12 @@ This guide outlines the visual content needed for Task 5: Visuals & Content. The
 ---
 
 ### 2. **Formatter - Live Validation**
+
 **File:** `docs/screenshots/formatter-validation.png`  
 **Size:** 1920x1080 (desktop view)
 
 **What to capture:**
+
 - Formatter page with:
   - Input panel with an **invalid** commit message
   - Real-time error indicators below input
@@ -44,16 +49,19 @@ This guide outlines the visual content needed for Task 5: Visuals & Content. The
   - Error chips at bottom showing validation issues
 
 **Example commit to use:**
+
 ```
 Add OAuth Login.
 ```
 
 **Expected errors:**
+
 - Type missing
 - Subject should be lowercase
 - Trailing period
 
 **Expected auto-fix:**
+
 ```
 feat(auth): add OAuth login
 ```
@@ -63,10 +71,12 @@ feat(auth): add OAuth login
 ---
 
 ### 3. **Formatter - Success State**
+
 **File:** `docs/screenshots/formatter-success.png`  
 **Size:** 1920x1080 (desktop view)
 
 **What to capture:**
+
 - Formatter page with:
   - Input panel with a **valid** commit message
   - Green checkmark indicating success
@@ -74,6 +84,7 @@ feat(auth): add OAuth login
   - Output panel showing "No fixes needed"
 
 **Example commit to use:**
+
 ```
 feat(auth): add OAuth login
 
@@ -88,10 +99,12 @@ Closes #123
 ---
 
 ### 4. **Reports Page**
+
 **File:** `docs/screenshots/reports.png`  
 **Size:** 1920x1080 (desktop view)
 
 **What to capture:**
+
 - Reports page showing:
   - Commit history table with status indicators
   - Filter controls (repository, date range, status)
@@ -103,10 +116,12 @@ Closes #123
 ---
 
 ### 5. **Settings Page**
+
 **File:** `docs/screenshots/settings.png`  
 **Size:** 1920x1080 (desktop view)
 
 **What to capture:**
+
 - Settings page with:
   - Accordion sections (Commit Rules, Auto-Fix, Integrations)
   - One section expanded showing configuration options
@@ -118,10 +133,12 @@ Closes #123
 ---
 
 ### 6. **Documentation Page**
+
 **File:** `docs/screenshots/docs.png`  
 **Size:** 1920x1080 (desktop view)
 
 **What to capture:**
+
 - Docs page showing:
   - Table of contents sidebar
   - Main content area with formatted documentation
@@ -134,10 +151,12 @@ Closes #123
 ---
 
 ### 7. **Mobile Responsive View**
+
 **File:** `docs/screenshots/mobile.png`  
 **Size:** 375x812 (iPhone 13 Pro size)
 
 **What to capture:**
+
 - Dashboard or Formatter on mobile device
 - Show responsive navigation (collapsed sidebar)
 - Touch-friendly UI elements
@@ -150,11 +169,13 @@ Closes #123
 ## Required GIFs/Animated Demos
 
 ### 1. **CLI Hook in Action** ⭐ Priority
+
 **File:** `docs/gifs/cli-hook.gif`  
 **Duration:** 10-15 seconds  
 **Size:** 800x450
 
 **Script:**
+
 1. Terminal window showing empty git repo
 2. Type: `git init`
 3. Type: `commitly init-hooks`
@@ -168,11 +189,13 @@ Closes #123
 11. Show successful commit ✓
 
 **Tools:**
+
 - [Terminalizer](https://github.com/faressoft/terminalizer)
 - [asciinema](https://asciinema.org/)
 - [ttygif](https://github.com/icholy/ttygif)
 
 **Example commands:**
+
 ```bash
 # Record with asciinema
 asciinema rec cli-demo.cast
@@ -184,11 +207,13 @@ agg cli-demo.cast cli-hook.gif
 ---
 
 ### 2. **Web Playground Auto-Fix** ⭐ Priority
+
 **File:** `docs/gifs/web-autofix.gif`  
 **Duration:** 8-12 seconds  
 **Size:** 1200x700
 
 **Script:**
+
 1. Empty formatter page
 2. Type invalid commit: `"Added login button."`
 3. Pause briefly - show errors appear in real-time
@@ -199,12 +224,14 @@ agg cli-demo.cast cli-hook.gif
 8. Show success toast notification
 
 **Tools:**
+
 - [ScreenToGif](https://www.screentogif.com/) (Windows)
 - [Kap](https://getkap.co/) (macOS)
 - [Peek](https://github.com/phw/peek) (Linux)
 - [LICEcap](https://www.cockos.com/licecap/)
 
 **Settings:**
+
 - FPS: 15-20
 - Smooth cursor movement
 - Highlight clicks
@@ -212,11 +239,13 @@ agg cli-demo.cast cli-hook.gif
 ---
 
 ### 3. **Real-time Validation**
+
 **File:** `docs/gifs/realtime-validation.gif`  
 **Duration:** 6-8 seconds  
 **Size:** 1000x600
 
 **Script:**
+
 1. Start with empty input
 2. Type slowly: `f` → `fe` → `fea` → `feat`
 3. Show validation updating live
@@ -226,6 +255,7 @@ agg cli-demo.cast cli-hook.gif
 7. Show all green checkmarks
 
 **Focus on:**
+
 - Real-time feedback
 - Instant validation
 - Smooth UX
@@ -233,11 +263,13 @@ agg cli-demo.cast cli-hook.gif
 ---
 
 ### 4. **Dashboard Overview Tour**
+
 **File:** `docs/gifs/dashboard-tour.gif`  
 **Duration:** 10-12 seconds  
 **Size:** 1200x700
 
 **Script:**
+
 1. Load dashboard
 2. Slowly scroll down to show all sections:
    - Project cards
@@ -385,15 +417,19 @@ Once created, add to README.md:
 ## 📸 Screenshots
 
 ### Dashboard
+
 ![Dashboard Overview](docs/screenshots/dashboard.png)
 
 ### Formatter
+
 ![Live Validation](docs/screenshots/formatter-validation.png)
 
 ### CLI in Action
+
 ![CLI Hook Demo](docs/gifs/cli-hook.gif)
 
 ### Web Auto-Fix
+
 ![Web Auto-Fix](docs/gifs/web-autofix.gif)
 ```
 
@@ -417,22 +453,26 @@ Once created, add to README.md:
 ## Tools Summary
 
 **Screenshots:**
+
 - Chrome DevTools (built-in)
 - macOS Screenshot (Cmd+Shift+4)
 - Windows Snipping Tool (Win+Shift+S)
 
 **Screen Recording:**
+
 - [Kap](https://getkap.co/) - macOS, free, GIF export
 - [ScreenToGif](https://www.screentogif.com/) - Windows, free, great editor
 - [Peek](https://github.com/phw/peek) - Linux, simple GIF recorder
 - [OBS Studio](https://obsproject.com/) - Cross-platform, professional
 
 **GIF Optimization:**
+
 - [gifsicle](https://www.lcdf.org/gifsicle/) - CLI optimizer
 - [ezgif.com](https://ezgif.com/) - Online editor/optimizer
 - [gifski](https://gif.ski/) - High-quality GIF encoder
 
 **Terminal Recording:**
+
 - [asciinema](https://asciinema.org/) + [agg](https://github.com/asciinema/agg)
 - [terminalizer](https://github.com/faressoft/terminalizer)
 
@@ -453,4 +493,3 @@ Once created, add to README.md:
 **Status:** ⏳ Ready to capture - Application is fully built and functional
 
 **Estimated Time:** 2-3 hours for all screenshots and GIFs
-

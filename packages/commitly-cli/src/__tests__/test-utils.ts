@@ -56,17 +56,13 @@ export async function createConfig(
 ): Promise<string> {
   const filename = format === 'json' ? '.commitlyrc.json' : '.commitlyrc.js';
   const configPath = join(repoPath, filename);
-  
+
   if (format === 'json') {
     await writeFile(configPath, JSON.stringify(config, null, 2), 'utf-8');
   } else {
-    await writeFile(
-      configPath,
-      `module.exports = ${JSON.stringify(config, null, 2)}`,
-      'utf-8'
-    );
+    await writeFile(configPath, `module.exports = ${JSON.stringify(config, null, 2)}`, 'utf-8');
   }
-  
+
   return configPath;
 }
 
@@ -85,7 +81,10 @@ export async function installHook(repoPath: string, hookContent: string): Promis
 /**
  * Attempts a git commit and captures the result
  */
-export function attemptCommit(repoPath: string, message: string): {
+export function attemptCommit(
+  repoPath: string,
+  message: string
+): {
   success: boolean;
   stdout: string;
   stderr: string;
@@ -95,13 +94,13 @@ export function attemptCommit(repoPath: string, message: string): {
     const testFile = join(repoPath, 'test.txt');
     execSync(`echo "test" > "${testFile}"`, { cwd: repoPath, stdio: 'pipe' });
     execSync('git add .', { cwd: repoPath, stdio: 'pipe' });
-    
+
     const result = execSync(`git commit -m "${message}"`, {
       cwd: repoPath,
       stdio: 'pipe',
       encoding: 'utf-8',
     });
-    
+
     return {
       success: true,
       stdout: result.toString(),
@@ -116,4 +115,3 @@ export function attemptCommit(repoPath: string, message: string): {
     };
   }
 }
-

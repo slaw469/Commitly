@@ -107,9 +107,13 @@ function CommitRow({ commit }: { commit: CommitReport }): JSX.Element {
           commit.status === 'pass' && 'hover:bg-secondary/40'
         )}
       >
-        <td className="px-6 py-4 whitespace-nowrap text-sm font-mono text-warning">{commit.hash}</td>
+        <td className="px-6 py-4 whitespace-nowrap text-sm font-mono text-warning">
+          {commit.hash}
+        </td>
         <td className="px-6 py-4 text-sm text-foreground max-w-md truncate">{commit.message}</td>
-        <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">{commit.author}</td>
+        <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
+          {commit.author}
+        </td>
         <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">{commit.date}</td>
         <td className="px-6 py-4 whitespace-nowrap">
           <span
@@ -155,13 +159,16 @@ function CommitRow({ commit }: { commit: CommitReport }): JSX.Element {
                     <h4 className="text-sm font-bold text-foreground mb-2">Structure Breakdown</h4>
                     <ul className="text-sm space-y-1 text-muted-foreground">
                       <li>
-                        <span className="text-destructive/80 font-mono">type:</span> {commit.structure.type}
+                        <span className="text-destructive/80 font-mono">type:</span>{' '}
+                        {commit.structure.type}
                       </li>
                       <li>
-                        <span className="text-destructive/80 font-mono">scope:</span> {commit.structure.scope}
+                        <span className="text-destructive/80 font-mono">scope:</span>{' '}
+                        {commit.structure.scope}
                       </li>
                       <li>
-                        <span className="text-destructive/80 font-mono">subject:</span> {commit.structure.subject}
+                        <span className="text-destructive/80 font-mono">subject:</span>{' '}
+                        {commit.structure.subject}
                       </li>
                     </ul>
                   </section>
@@ -261,7 +268,12 @@ export default function Reports({
               viewBox="0 0 24 24"
               xmlns="http://www.w3.org/2000/svg"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 4v16m8-8H4"
+              />
             </svg>
             Add Project
           </a>
@@ -326,7 +338,12 @@ export default function Reports({
                 strokeWidth={2}
                 d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
               />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+              />
             </svg>
             Settings
           </a>
@@ -383,7 +400,10 @@ export default function Reports({
             <section className="bg-card/50 rounded-lg p-4 mb-6 border border-border/50">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <label htmlFor="repo-filter" className="block text-xs font-medium text-muted-foreground mb-1">
+                  <label
+                    htmlFor="repo-filter"
+                    className="block text-xs font-medium text-muted-foreground mb-1"
+                  >
                     Repository
                   </label>
                   <select
@@ -401,7 +421,10 @@ export default function Reports({
                   </select>
                 </div>
                 <div>
-                  <label htmlFor="date-range" className="block text-xs font-medium text-muted-foreground mb-1">
+                  <label
+                    htmlFor="date-range"
+                    className="block text-xs font-medium text-muted-foreground mb-1"
+                  >
                     Date Range
                   </label>
                   <input
@@ -414,7 +437,10 @@ export default function Reports({
                   />
                 </div>
                 <div>
-                  <label htmlFor="status-filter" className="block text-xs font-medium text-muted-foreground mb-1">
+                  <label
+                    htmlFor="status-filter"
+                    className="block text-xs font-medium text-muted-foreground mb-1"
+                  >
                     Status
                   </label>
                   <select
@@ -486,4 +512,3 @@ export default function Reports({
     </div>
   );
 }
-

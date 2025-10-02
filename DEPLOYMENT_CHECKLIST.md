@@ -29,6 +29,7 @@
 ### Functionality Verification ✅
 
 #### CLI Functionality
+
 - [x] `commitly lint` validates messages correctly
 - [x] `commitly fix` auto-fixes messages
 - [x] `commitly check` works for CI/CD
@@ -40,6 +41,7 @@
 - [x] Colorized output displays properly
 
 #### Web Playground
+
 - [ ] Landing page loads and displays correctly
 - [ ] Navigation works (all routes accessible)
 - [ ] Formatter/playground validates in real-time
@@ -52,6 +54,7 @@
 - [ ] Toast notifications display
 
 #### Presets Management
+
 - [ ] Presets save to localStorage
 - [ ] Presets persist after page reload
 - [ ] Can edit and delete presets
@@ -125,6 +128,7 @@ VITE_FIREBASE_APP_ID=your-app-id
 ### Vercel Configuration ✅
 
 **vercel.json:**
+
 ```json
 {
   "buildCommand": "cd ../.. && pnpm build",
@@ -202,12 +206,14 @@ After deployment, verify:
 Run these tests on the live site:
 
 #### Landing Page
+
 - [ ] Hero section displays
 - [ ] CTA buttons work
 - [ ] Navigation works
 - [ ] Links are correct
 
 #### Formatter/Playground
+
 - [ ] Enter invalid message → shows errors
 - [ ] Enter valid message → shows success
 - [ ] Auto-fix button works
@@ -215,11 +221,13 @@ Run these tests on the live site:
 - [ ] Diff view displays
 
 #### Responsive Design
+
 - [ ] Test on mobile (375px width)
 - [ ] Test on tablet (768px width)
 - [ ] Test on desktop (1920px width)
 
 #### Performance
+
 - [ ] Lighthouse score > 90
 - [ ] First Contentful Paint < 2s
 - [ ] Time to Interactive < 3s
@@ -228,18 +236,21 @@ Run these tests on the live site:
 ## Post-Deployment Tasks
 
 ### Immediate
+
 - [ ] Update README with live URL
 - [ ] Test all functionality on live site
 - [ ] Monitor error logs
 - [ ] Verify analytics working
 
 ### Within 24 Hours
+
 - [ ] Monitor performance metrics
 - [ ] Check for any errors
 - [ ] Collect initial user feedback
 - [ ] Document any issues found
 
 ### Within 1 Week
+
 - [ ] Review usage analytics
 - [ ] Gather user feedback
 - [ ] Create GitHub release (v0.1.0)
@@ -295,12 +306,14 @@ Deployment is successful when:
 ## Final Sign-Off
 
 **Pre-Deployment:**
+
 - Date: [YYYY-MM-DD]
 - Verified by: AI Development Team
 - Status: Ready / Not Ready
 - Blockers: [List any blockers]
 
 **Post-Deployment:**
+
 - Deployment Date: [YYYY-MM-DD]
 - Deployed by: [Name]
 - Live URL: https://commitly.vercel.app
@@ -336,4 +349,3 @@ vercel logs [deployment-url]
 ---
 
 **This checklist ensures a smooth, error-free deployment to production.**
-
