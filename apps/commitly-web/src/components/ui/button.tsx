@@ -7,13 +7,15 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'default' | 'primary' | 'destructive' | 'outline' | 'ghost';
   size?: 'sm' | 'md' | 'lg';
   children: React.ReactNode;
+  asChild?: boolean;
 }
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant = 'default', size = 'md', children, ...props }, ref) => {
+  ({ className, variant = 'default', size = 'md', children, asChild, ...props }, ref) => {
+    const Comp = asChild ? 'span' : 'button';
     return (
-      <button
-        ref={ref}
+      <Comp
+        ref={ref as any}
         className={cn(
           'inline-flex items-center justify-center gap-2 rounded-md font-medium transition-colors',
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
@@ -32,13 +34,12 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           },
           className
         )}
-        {...props}
+        {...(asChild ? {} : props)}
       >
         {children}
-      </button>
+      </Comp>
     );
   }
 );
 
 Button.displayName = 'Button';
-
