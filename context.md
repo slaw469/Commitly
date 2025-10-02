@@ -91,9 +91,9 @@
 
 ## 9) Stretch (post-MVP)
 
-- [ ] Additional rule presets: Angular, Gitmoji
+- [x] Additional rule presets: Angular, Gitmoji
 - [ ] Scope autocomplete from package.json workspaces (paste JSON in web)
-- [ ] "History" panel in web to track last N validations (local only)
-- [ ] GitHub Action example: run commitly check -m across PR commits
-- [ ] PWA installability for offline use
+- [x] "History" panel in web to track last N validations (local only)
+- [x] GitHub Action example: run commitly check -m across PR commits
+- [x] PWA installability for offline use
 
