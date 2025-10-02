@@ -1,0 +1,133 @@
+name: 🐛 Bug Report
+description: Report a bug or unexpected behavior in Commitly
+title: "[Bug]: "
+labels: ["bug", "needs-triage"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug! Please fill out the information below to help us resolve the issue quickly.
+
+  - type: checkboxes
+    id: prerequisites
+    attributes:
+      label: Prerequisites
+      description: Please confirm the following before submitting
+      options:
+        - label: I have searched existing issues to avoid duplicates
+          required: true
+        - label: I am using the latest version of Commitly
+          required: true
+        - label: I have read the [documentation](https://github.com/slaw469/Commitly/blob/main/README.md)
+          required: true
+
+  - type: dropdown
+    id: package
+    attributes:
+      label: Which package is affected?
+      description: Select the package where you encountered the bug
+      options:
+        - "@commitly/core (Core library)"
+        - "@commitly/cli (Command-line tool)"
+        - "@commitly/web (Web playground)"
+        - "Documentation"
+        - "Other / Not sure"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: A clear and concise description of what the bug is
+      placeholder: "When I do X, Y happens instead of Z..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to Reproduce
+      description: Step-by-step instructions to reproduce the issue
+      placeholder: |
+        1. Install commitly via `npm install -g @commitly/cli`
+        2. Run `commitly lint -m "test message"`
+        3. Observe error...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What should happen instead?
+      placeholder: "I expected X to happen..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual Behavior
+      description: What actually happened?
+      placeholder: "Instead, Y happened..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Please provide your environment details
+      value: |
+        - **OS**: [e.g., macOS 14.0, Ubuntu 22.04, Windows 11]
+        - **Node.js version**: [e.g., 20.11.0]
+        - **Package manager**: [e.g., npm 10.2.0, pnpm 8.11.0]
+        - **Commitly version**: [e.g., 0.1.0]
+        - **Shell**: [e.g., bash, zsh, PowerShell]
+    validations:
+      required: true
+
+  - type: textarea
+    id: config
+    attributes:
+      label: Configuration
+      description: If relevant, paste your `.commitlyrc.json` or `package.json` commitly config
+      render: json
+      placeholder: |
+        {
+          "types": ["feat", "fix"],
+          "requireScope": true
+        }
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Error Logs
+      description: Paste any relevant error messages or logs
+      render: shell
+      placeholder: |
+        $ commitly lint
+        Error: ...
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Add any other context about the problem (screenshots, links, etc.)
+      placeholder: |
+        - I'm using this in a monorepo
+        - This started happening after upgrading from version X
+        - Screenshots: [attach here]
+
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: Contribution
+      description: Would you like to help fix this issue?
+      options:
+        - label: I am willing to submit a PR to fix this issue
+          required: false
+
