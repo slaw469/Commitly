@@ -16,6 +16,12 @@ export default defineConfig({
       ],
     },
     testTimeout: 30000, // CLI tests may need more time for file operations
+    pool: 'forks', // Use forks instead of threads to support process.chdir()
+    poolOptions: {
+      forks: {
+        singleFork: true, // Use single fork for consistency
+      },
+    },
   },
 });
 
