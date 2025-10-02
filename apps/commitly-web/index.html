@@ -2,23 +2,80 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="alternate icon" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/logo.svg" />
+    
+    <!-- Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- Theme -->
+    <meta name="theme-color" content="#FF9933" />
+    <meta name="color-scheme" content="dark light" />
+    
+    <!-- Basic Meta -->
+    <title>Commitly - Lint & Auto-Fix Commit Messages</title>
     <meta
       name="description"
-      content="Lint and auto-fix commit messages with Commitly - enforce Conventional Commits with ease"
+      content="Enforce clean, conventional commits with Commitly. Fast CLI tool and modern web playground for linting and auto-fixing commit messages following Conventional Commits specification."
     />
-    <meta property="og:title" content="Commitly - Commit Message Linter" />
+    <meta name="keywords" content="commitlint, conventional commits, git hooks, commit messages, cli tool, web playground, auto-fix, lint" />
+    <meta name="author" content="Commitly" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://commitly.vercel.app/" />
+    <meta property="og:site_name" content="Commitly" />
+    <meta property="og:title" content="Commitly - Lint & Auto-Fix Commit Messages" />
     <meta
       property="og:description"
-      content="Clean, conventional commits—every time. Lint and auto-fix via CLI and web playground."
+      content="Clean, conventional commits—every time. Lint and auto-fix commit messages via a fast CLI and sleek web playground. Open source and free to use."
     />
-    <meta property="og:type" content="website" />
-    <title>Commitly - Commit Message Linter</title>
+    <meta property="og:image" content="https://commitly.vercel.app/og-image.svg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Commitly - Clean conventional commits every time" />
+    <meta property="og:locale" content="en_US" />
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://commitly.vercel.app/" />
+    <meta name="twitter:title" content="Commitly - Lint & Auto-Fix Commit Messages" />
+    <meta
+      name="twitter:description"
+      content="Clean, conventional commits—every time. Lint and auto-fix commit messages via a fast CLI and sleek web playground."
+    />
+    <meta name="twitter:image" content="https://commitly.vercel.app/og-image.svg" />
+    <meta name="twitter:image:alt" content="Commitly logo and tagline" />
+    <meta name="twitter:creator" content="@commitly" />
+    <meta name="twitter:site" content="@commitly" />
+    
+    <!-- Additional Meta -->
+    <meta name="application-name" content="Commitly" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Commitly" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    
+    <!-- Canonical -->
+    <link rel="canonical" href="https://commitly.vercel.app/" />
+    
+    <!-- Preconnect for performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    
+    <!-- Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
-
