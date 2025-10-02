@@ -25,16 +25,16 @@
 
 ## 3) CLI (packages/commitly-cli)
 
-- [ ] Commands with commander:
-  - [ ] commitly lint (default reads .git/COMMIT_EDITMSG; -f for file)
-  - [ ] commitly fix (in-place)
-  - [ ] commitly check -m "<msg>" (CI usage)
-  - [ ] commitly init-hooks (writes commit-msg / optional prepare-commit-msg)
-- [ ] Output polish: chalk colors, concise error table, exit codes (0/1)
-- [ ] Config loading via cosmiconfig + zod (.commitlyrc.{json,yaml}, or commitly key in package.json)
-- [ ] Hook installer: simple-git-hooks (no runtime dependency)
-- [ ] Integration tests: temp repo → run hooks → assert failures/success
-- [ ] Build with tsup (ESM, #!/usr/bin/env node banner)
+- [x] Commands with commander:
+  - [x] commitly lint (default reads .git/COMMIT_EDITMSG; -f for file)
+  - [x] commitly fix (in-place)
+  - [x] commitly check -m "<msg>" (CI usage)
+  - [x] commitly init-hooks (writes commit-msg / optional prepare-commit-msg)
+- [x] Output polish: chalk colors, concise error table, exit codes (0/1)
+- [x] Config loading via cosmiconfig + zod (.commitlyrc.{json,yaml}, or commitly key in package.json)
+- [x] Hook installer: simple-git-hooks (no runtime dependency)
+- [x] Integration tests: temp repo → run hooks → assert failures/success
+- [x] Build with tsup (ESM, #!/usr/bin/env node banner)
 
 ## 4) Web Playground (apps/commitly-web)
 
