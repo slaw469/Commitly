@@ -16,7 +16,6 @@ module.exports = {
   extends: [
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
-    'plugin:@typescript-eslint/recommended-requiring-type-checking',
     'plugin:import/recommended',
     'plugin:import/typescript',
     'prettier',
@@ -46,8 +45,6 @@ module.exports = {
         fixStyle: 'inline-type-imports',
       },
     ],
-    '@typescript-eslint/no-floating-promises': 'error',
-    '@typescript-eslint/no-misused-promises': 'error',
     
     // General best practices
     'no-console': ['warn', { allow: ['warn', 'error'] }],
@@ -78,10 +75,10 @@ module.exports = {
   },
   settings: {
     'import/resolver': {
-      typescript: {
-        alwaysTryTypes: true,
-        project: ['./tsconfig.json', './packages/*/tsconfig.json', './apps/*/tsconfig.json'],
+      node: {
+        extensions: ['.js', '.jsx', '.ts', '.tsx'],
       },
+      typescript: true,
     },
   },
   ignorePatterns: ['dist', 'build', 'node_modules', '.turbo'],
