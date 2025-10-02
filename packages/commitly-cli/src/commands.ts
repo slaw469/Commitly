@@ -1,7 +1,6 @@
 import { readFile, writeFile } from 'fs/promises';
 import { resolve } from 'path';
 import { validateCommit, suggestFix } from '@commitly/core';
-import type { Config } from '@commitly/core';
 import { loadConfig } from './config';
 import {
   formatValidationResult,
