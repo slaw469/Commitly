@@ -1,0 +1,60 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Dark background matching theme -->
+  <rect width="1200" height="630" fill="#0f1419"/>
+  
+  <!-- Grid pattern for depth -->
+  <g opacity="0.05">
+    <pattern id="grid" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="white" stroke-width="1"/>
+    </pattern>
+    <rect fill="url(#grid)" x="0" y="0" width="1200" height="630"/>
+  </g>
+  
+  <!-- Gradient overlay -->
+  <rect width="1200" height="630" fill="url(#bgGradient)" opacity="0.3"/>
+  
+  <!-- Logo circle -->
+  <circle cx="300" cy="315" r="120" fill="url(#logoGradient)"/>
+  
+  <!-- Checkmark -->
+  <path 
+    d="M262 305L288 331L338 281C342 277 349 277 353 281C357 285 357 292 353 296L299 350C295 354 288 354 284 350L253 319C249 315 249 308 253 304C257 300 264 300 268 304Z" 
+    fill="white"
+    stroke="white"
+    stroke-width="2"
+  />
+  
+  <!-- Title -->
+  <text x="480" y="290" font-family="Space Grotesk, sans-serif" font-size="80" font-weight="bold" fill="white">
+    Commitly
+  </text>
+  
+  <!-- Subtitle -->
+  <text x="480" y="350" font-family="Inter, sans-serif" font-size="32" fill="#cccccc">
+    Clean, conventional commits—every time
+  </text>
+  
+  <!-- Features -->
+  <text x="480" y="410" font-family="Inter, sans-serif" font-size="24" fill="#969696">
+    ✓ CLI Tool  ✓ Web Playground  ✓ Auto-Fix
+  </text>
+  
+  <!-- Badge -->
+  <rect x="480" y="450" width="200" height="50" rx="25" fill="#FF9933" opacity="0.2"/>
+  <text x="580" y="483" font-family="Inter, sans-serif" font-size="22" font-weight="600" fill="#FF9933" text-anchor="middle">
+    Open Source
+  </text>
+  
+  <!-- Gradients -->
+  <defs>
+    <linearGradient id="bgGradient" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FF9933" stop-opacity="0.1"/>
+      <stop offset="100%" stop-color="#FF6600" stop-opacity="0.1"/>
+    </linearGradient>
+    <linearGradient id="logoGradient" x1="180" y1="195" x2="420" y2="435" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FF9933"/>
+      <stop offset="100%" stop-color="#FF6600"/>
+    </linearGradient>
+  </defs>
+</svg>
+
