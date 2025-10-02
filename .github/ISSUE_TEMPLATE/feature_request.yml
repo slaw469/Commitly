@@ -1,0 +1,162 @@
+name: ✨ Feature Request
+description: Suggest a new feature or enhancement for Commitly
+title: "[Feature]: "
+labels: ["enhancement", "needs-triage"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a feature! Please provide as much detail as possible to help us understand your request.
+
+  - type: checkboxes
+    id: prerequisites
+    attributes:
+      label: Prerequisites
+      description: Please confirm the following before submitting
+      options:
+        - label: I have searched existing issues to avoid duplicates
+          required: true
+        - label: This feature doesn't exist in the latest version
+          required: true
+        - label: I have checked the [documentation](https://github.com/slaw469/Commitly/blob/main/README.md)
+          required: true
+
+  - type: dropdown
+    id: package
+    attributes:
+      label: Which package would this affect?
+      description: Select the package(s) this feature would impact
+      options:
+        - "@commitly/core (Core library)"
+        - "@commitly/cli (Command-line tool)"
+        - "@commitly/web (Web playground)"
+        - "Documentation"
+        - "Multiple packages"
+        - "Other"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Feature Priority
+      description: How important is this feature to you?
+      options:
+        - "Critical - Blocking my work"
+        - "High - Would significantly improve my workflow"
+        - "Medium - Would be nice to have"
+        - "Low - Minor enhancement"
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Statement
+      description: What problem does this feature solve? Is your feature request related to a problem?
+      placeholder: "I'm frustrated when... / I need to... / It would be helpful if..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: Describe the solution you'd like to see
+      placeholder: |
+        I would like Commitly to...
+        
+        For example:
+        - Add support for custom commit types
+        - Provide a `--quiet` flag to suppress warnings
+        - Display commit stats in the web interface
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: Describe any alternative solutions or workarounds you've considered
+      placeholder: |
+        I've tried...
+        Alternative approach could be...
+
+  - type: textarea
+    id: examples
+    attributes:
+      label: Usage Examples
+      description: Show how you envision using this feature
+      render: bash
+      placeholder: |
+        # Example command
+        $ commitly lint --custom-type "release" -m "release: v1.0.0"
+        
+        # Or in config
+        {
+          "types": ["feat", "fix", "release"]
+        }
+
+  - type: textarea
+    id: benefits
+    attributes:
+      label: Benefits
+      description: Who would benefit from this feature and how?
+      placeholder: |
+        - Teams using custom commit types
+        - CI/CD pipelines needing quiet mode
+        - Developers tracking commit quality metrics
+
+  - type: textarea
+    id: breaking
+    attributes:
+      label: Breaking Changes
+      description: Would this feature introduce any breaking changes?
+      placeholder: |
+        - This would not break existing functionality
+        - OR: This would require changes to...
+
+  - type: textarea
+    id: implementation
+    attributes:
+      label: Implementation Notes
+      description: If you have ideas about implementation, share them here
+      placeholder: |
+        This could be implemented by...
+        Potential challenges:...
+
+  - type: textarea
+    id: mockups
+    attributes:
+      label: Mockups / References
+      description: Add any mockups, screenshots, or links to similar features in other tools
+      placeholder: |
+        - Similar feature in tool X: [link]
+        - Screenshot: [attach here]
+        - Design mockup: [attach here]
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Add any other context about the feature request
+      placeholder: |
+        - Use case: [describe]
+        - Related to issue #[number]
+        - Discussed in: [link to discussion]
+
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: Contribution
+      description: Would you like to help implement this feature?
+      options:
+        - label: I am willing to submit a PR to implement this feature
+          required: false
+        - label: I can help with testing this feature
+          required: false
+        - label: I can help with documentation for this feature
+          required: false
+
