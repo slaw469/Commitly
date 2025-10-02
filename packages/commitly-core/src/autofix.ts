@@ -194,7 +194,7 @@ export function autofixCommit(message: string, options: AutoFixOptions = {}): st
     
     if (availableLength > 10) {
       // Truncate subject and add ellipsis
-      fixed.subject = fixed.subject.slice(0, availableLength - 3) + '...';
+      fixed.subject = `${fixed.subject.slice(0, availableLength - 3)  }...`;
       modified = true;
     }
   }

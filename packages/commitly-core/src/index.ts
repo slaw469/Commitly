@@ -11,5 +11,5 @@ export * from './autofix';
 // Re-export for convenience
 export { validateCommit as validate } from './validator';
 export { parseCommitMessage as parse } from './parser';
-export { autofixCommit as autofix, suggestFix } from './autofix';
+export { autofixCommit as autofix } from './autofix';
 

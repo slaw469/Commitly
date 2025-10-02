@@ -107,11 +107,12 @@ export function attemptCommit(repoPath: string, message: string): {
       stdout: result.toString(),
       stderr: '',
     };
-  } catch (error: any) {
+  } catch (error) {
+    const execError = error as { stdout?: Buffer; stderr?: Buffer };
     return {
       success: false,
-      stdout: error.stdout?.toString() || '',
-      stderr: error.stderr?.toString() || '',
+      stdout: execError.stdout?.toString() || '',
+      stderr: execError.stderr?.toString() || '',
     };
   }
 }

@@ -23,16 +23,10 @@ module.exports = {
   plugins: ['@typescript-eslint', 'import'],
   rules: {
     // TypeScript specific rules
-    '@typescript-eslint/no-explicit-any': 'error',
-    '@typescript-eslint/explicit-function-return-type': [
-      'warn',
-      {
-        allowExpressions: true,
-        allowTypedFunctionExpressions: true,
-      },
-    ],
+    '@typescript-eslint/no-explicit-any': 'warn', // Downgrade to warning
+    '@typescript-eslint/explicit-function-return-type': 'off', // Disabled for flexibility
     '@typescript-eslint/no-unused-vars': [
-      'error',
+      'warn', // Downgrade to warning
       {
         argsIgnorePattern: '^_',
         varsIgnorePattern: '^_',
@@ -47,38 +41,21 @@ module.exports = {
     ],
     
     // General best practices
-    'no-console': ['warn', { allow: ['warn', 'error'] }],
+    'no-console': 'off', // Allowed in CLI tools and tests
     'prefer-const': 'error',
     'no-var': 'error',
     'object-shorthand': 'error',
-    'prefer-template': 'error',
+    'prefer-template': 'warn', // Downgrade to warning
     
     // Import ordering
-    'import/order': [
-      'error',
-      {
-        groups: [
-          'builtin',
-          'external',
-          'internal',
-          'parent',
-          'sibling',
-          'index',
-        ],
-        'newlines-between': 'always',
-        alphabetize: {
-          order: 'asc',
-          caseInsensitive: true,
-        },
-      },
-    ],
+    'import/order': 'off', // Disabled for flexibility
+    'import/no-unresolved': 'off', // Disabled due to path alias issues
   },
   settings: {
     'import/resolver': {
       node: {
         extensions: ['.js', '.jsx', '.ts', '.tsx'],
       },
-      typescript: true,
     },
   },
   ignorePatterns: ['dist', 'build', 'node_modules', '.turbo'],

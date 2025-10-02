@@ -52,7 +52,7 @@ export function formatValidationResult(result: ValidationResult): string {
 
   // Suggestion
   if (result.suggestion && result.suggestion !== result.parsed.raw) {
-    parts.push('\n' + chalk.cyan.bold('Suggested fix:'));
+    parts.push(`\n${  chalk.cyan.bold('Suggested fix:')}`);
     parts.push(chalk.cyan(result.suggestion));
   }
 
@@ -81,8 +81,8 @@ export function formatValidationResult(result: ValidationResult): string {
 export function formatDiff(original: string, fixed: string): string {
   const lines: string[] = [chalk.bold('\nDiff:')];
   
-  lines.push(chalk.red('- ' + original.split('\n').join('\n- ')));
-  lines.push(chalk.green('+ ' + fixed.split('\n').join('\n+ ')));
+  lines.push(chalk.red(`- ${  original.split('\n').join('\n- ')}`));
+  lines.push(chalk.green(`+ ${  fixed.split('\n').join('\n+ ')}`));
 
   return lines.join('\n');
 }

@@ -1,5 +1,6 @@
 // File: apps/commitly-web/src/pages/Landing.tsx
 
+import { Link } from 'react-router-dom';
 import { Check, Code, GitBranch, Sparkles, Terminal, Github, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -44,26 +45,38 @@ export default function Landing({ projectName = 'Commitly', githubUrl = 'https:/
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-sm border-b border-border">
         <div className="container mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+          <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
             <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary/10">
               <Check className="h-5 w-5 text-primary" />
             </div>
             <h1 className="text-xl font-bold font-display text-foreground">{projectName}</h1>
-          </div>
+          </Link>
           
           <nav className="flex items-center gap-4" role="navigation" aria-label="Main navigation">
-            <a
-              href="/playground"
+            <Link
+              to="/dashboard"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Dashboard
+            </Link>
+            <Link
+              to="/playground"
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               Playground
-            </a>
-            <a
-              href="/docs"
+            </Link>
+            <Link
+              to="/formatter"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Formatter
+            </Link>
+            <Link
+              to="/docs"
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               Docs
-            </a>
+            </Link>
             <a
               href={githubUrl}
               target="_blank"
@@ -98,10 +111,10 @@ export default function Landing({ projectName = 'Commitly', githubUrl = 'https:/
             
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Button variant="primary" size="lg" asChild>
-                <a href="/playground" className="inline-flex items-center gap-2">
+                <Link to="/playground" className="inline-flex items-center gap-2">
                   Try Playground
                   <ArrowRight className="h-4 w-4" />
-                </a>
+                </Link>
               </Button>
               <Button variant="outline" size="lg" asChild>
                 <a href={githubUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2">

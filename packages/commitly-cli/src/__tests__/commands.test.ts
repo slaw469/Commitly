@@ -68,7 +68,7 @@ describe('CLI Commands Integration Tests', () => {
     });
 
     it('should reject message exceeding max header length', async () => {
-      const longMessage = 'feat: ' + 'a'.repeat(100);
+      const longMessage = `feat: ${  'a'.repeat(100)}`;
       const exitCode = await lintCommand({
         message: longMessage,
       });

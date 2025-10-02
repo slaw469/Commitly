@@ -8,7 +8,6 @@ import {
   cleanupTempDir,
   initGitRepo,
   installHook,
-  attemptCommit,
 } from './test-utils';
 
 describe('Git Hooks Integration Tests', () => {

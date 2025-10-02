@@ -102,11 +102,11 @@ export async function fixCommand(options: {
 
     // Write back if file mode
     if (targetFile) {
-      await writeFile(targetFile, fixed + '\n', 'utf-8');
+      await writeFile(targetFile, `${fixed  }\n`, 'utf-8');
       printSuccess(`Fixed commit message written to ${targetFile}`);
     } else {
       // Just print fixed version
-      console.log('\n' + fixed);
+      console.log(`\n${  fixed}`);
     }
 
     return 0;
