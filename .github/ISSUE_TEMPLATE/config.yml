@@ -1,0 +1,15 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 📚 Documentation
+    url: https://github.com/slaw469/Commitly/blob/main/README.md
+    about: Read the comprehensive documentation and usage guides
+  - name: 💬 Discussions
+    url: https://github.com/slaw469/Commitly/discussions
+    about: Ask questions and discuss ideas with the community
+  - name: 🌐 Web Playground
+    url: https://commitly.vercel.app
+    about: Try Commitly in your browser with our interactive playground
+  - name: 🔧 CLI Documentation
+    url: https://github.com/slaw469/Commitly/tree/main/packages/commitly-cli#readme
+    about: Learn about CLI commands and configuration options
+
