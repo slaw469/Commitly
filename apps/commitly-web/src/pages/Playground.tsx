@@ -1,7 +1,7 @@
 // File: apps/commitly-web/src/pages/Playground.tsx
 
-import { useMemo, useCallback, useState } from 'react';
-import { Check, Sparkles, AlertCircle, AlertTriangle, Copy, CheckCircle2, Home } from 'lucide-react';
+import { useMemo, useCallback, useState, useEffect } from 'react';
+import { Check, Sparkles, AlertCircle, AlertTriangle, Copy, CheckCircle2, Home, Keyboard } from 'lucide-react';
 import { validate, suggestFix } from '@commitly/core';
 import type { ValidationResult } from '@commitly/core';
 import { cn } from '@/lib/utils';
@@ -120,6 +120,30 @@ export default function Playground({ defaultMessage = demoMessage }: Props): JSX
   const totalIssues = validationResult.errors.length + validationResult.warnings.length;
   const charCount = validationResult.parsed.header.length;
 
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Cmd/Ctrl + Enter - Show validation result
+      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+        e.preventDefault();
+        toast({
+          variant: totalIssues === 0 ? 'success' : 'destructive',
+          title: totalIssues === 0 ? 'Valid commit' : `${totalIssues} issue(s) found`,
+          description: totalIssues === 0 ? 'Your commit message is valid' : 'Check the issues below',
+        });
+      }
+      
+      // Cmd/Ctrl + Shift + F - Apply auto-fix
+      if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === 'F') {
+        e.preventDefault();
+        handleApplyFix();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [totalIssues, handleApplyFix]);
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -136,6 +160,14 @@ export default function Playground({ defaultMessage = demoMessage }: Props): JSX
             <h2 className="text-xl font-bold font-display text-foreground">Commit Playground</h2>
           </div>
           <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              title="Keyboard shortcuts: Cmd/Ctrl+Enter to validate, Cmd/Ctrl+Shift+F to auto-fix"
+              className="h-9 w-9 p-0"
+            >
+              <Keyboard className="h-4 w-4" />
+            </Button>
             <a href="/docs" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               Docs
             </a>
