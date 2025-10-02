@@ -99,7 +99,11 @@ export default function Presets({ initialPresets }: Props): JSX.Element {
       name: newPresetName.trim(),
       description: newPresetDescription.trim(),
       config: {
-        ...defaultPresets[0].config,
+        types: ['feat', 'fix', 'docs', 'style', 'refactor', 'perf', 'test', 'build', 'ci', 'chore', 'revert'],
+        requireScope: false,
+        maxHeaderLength: 72,
+        maxLineLength: 100,
+        subjectCase: 'lower',
       },
       createdAt: new Date().toISOString(),
     };
