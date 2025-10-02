@@ -15,13 +15,13 @@
 
 ## 2) Core Library (packages/commitly-core)
 
-- [ ] Message parser: split header/body/footer; extract type, scope, subject
-- [ ] Default rule set: Conventional Commits (types, header ≤ 72, subject casing, no trailing period, body wrapped @72, BREAKING CHANGE: in footer)
-- [ ] Validator: returns structured result {valid, errors[], warnings[], suggestion}
-- [ ] Auto-fixer: casing, trailing period, wrap at 72, infer type from verb ("add/fix/refactor" → feat/fix/refactor)
-- [ ] Schema with zod for configurable rules (types, requireScope, blockedWords, maxHeader)
-- [ ] Browser-safe build (no Node APIs); export browser + node entry points
-- [ ] Unit tests: parser cases, rule cases, autofix snapshots
+- [x] Message parser: split header/body/footer; extract type, scope, subject
+- [x] Default rule set: Conventional Commits (types, header ≤ 72, subject casing, no trailing period, body wrapped @72, BREAKING CHANGE: in footer)
+- [x] Validator: returns structured result {valid, errors[], warnings[], suggestion}
+- [x] Auto-fixer: casing, trailing period, wrap at 72, infer type from verb ("add/fix/refactor" → feat/fix/refactor)
+- [x] Schema with zod for configurable rules (types, requireScope, blockedWords, maxHeader)
+- [x] Browser-safe build (no Node APIs); export browser + node entry points
+- [x] Unit tests: parser cases, rule cases, autofix snapshots
 
 ## 3) CLI (packages/commitly-cli)
 
@@ -64,9 +64,9 @@
 
 ## 5) Visuals & Content
 
-- [ ] Brand: "Commitly" logo wordmark (simple text mark OK), favicon
-- [ ] Screenshots/GIFs: landing, playground before/after, CLI in terminal
-- [ ] Open Graph/Twitter meta for pretty link previews
+- [x] Brand: "Commitly" logo wordmark (simple text mark OK), favicon
+- [x] Screenshots/GIFs: landing, playground before/after, CLI in terminal
+- [x] Open Graph/Twitter meta for pretty link previews
 
 ## 6) Deployment
 
