@@ -6,6 +6,7 @@ import AddProject from './pages/AddProject';
 import Formatter from './pages/Formatter';
 import Reports from './pages/Reports';
 import Settings from './pages/Settings';
+import Docs from './pages/Docs';
 
 export default function App(): JSX.Element {
   return (
@@ -15,6 +16,7 @@ export default function App(): JSX.Element {
       <Route path="/formatter" element={<Formatter />} />
       <Route path="/reports" element={<Reports />} />
       <Route path="/settings" element={<Settings />} />
+      <Route path="/docs" element={<Docs />} />
     </Routes>
   );
 }
