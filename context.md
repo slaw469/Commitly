@@ -84,9 +84,9 @@
 
 ## 8) Definition of Done (MVP)
 
-- [ ] CLI lints and blocks bad commits via commit-msg hook
-- [ ] Web playground validates & shows auto-fix suggestion with diff
-- [ ] Presets persist locally; export/import works
+- [x] CLI lints and blocks bad commits via commit-msg hook
+- [x] Web playground validates & shows auto-fix suggestion with diff
+- [x] Presets persist locally; export/import works
 - [ ] Deployed on Vercel; README has GIFs + demo link
 
 ## 9) Stretch (post-MVP)
