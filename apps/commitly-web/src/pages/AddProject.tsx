@@ -1,18 +1,10 @@
 // File: apps/commitly-web/src/pages/AddProject.tsx
 
 import { Check, Code, Terminal, Rocket, Plus } from 'lucide-react';
-import { cn } from '@/lib/utils';
 
 interface GitProvider {
   value: string;
   label: string;
-}
-
-interface ToggleOption {
-  id: string;
-  label: string;
-  description: string;
-  enabled: boolean;
 }
 
 interface Props {
