@@ -1,9 +1,8 @@
 // File: apps/commitly-web/src/pages/Landing.tsx
 
 import { Check, Code, GitBranch, Sparkles, Terminal, Github, ArrowRight } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface Props {
   projectName?: string;

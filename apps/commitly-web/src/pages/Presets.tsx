@@ -121,6 +121,8 @@ export default function Presets({ initialPresets }: Props): JSX.Element {
 
   const handleDeletePreset = useCallback((id: string) => {
     const preset = presets.find((p) => p.id === id);
+    if (!preset) return;
+    
     const updated = presets.filter((p) => p.id !== id);
     setPresets(updated);
     savePresetsToStorage(updated);
@@ -128,7 +130,7 @@ export default function Presets({ initialPresets }: Props): JSX.Element {
     toast({
       variant: 'default',
       title: 'Preset deleted',
-      description: `"${preset?.name}" has been removed`,
+      description: `"${preset.name}" has been removed`,
     });
   }, [presets]);
 
