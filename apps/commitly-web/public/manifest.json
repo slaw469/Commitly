@@ -1,18 +1,70 @@
 {
   "name": "Commitly - Commit Message Linter",
   "short_name": "Commitly",
-  "description": "Lint and auto-fix commit messages with Conventional Commits",
+  "description": "Lint & auto-fix commit messages with Conventional Commits standards. Fast CLI and sleek web playground.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0f1419",
-  "theme_color": "#FF9933",
+  "background_color": "#0d1117",
+  "theme_color": "#ff9933",
+  "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/logo.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
       "purpose": "any maskable"
     }
-  ]
+  ],
+  "categories": ["development", "productivity", "utilities"],
+  "screenshots": [
+    {
+      "src": "/screenshot-playground.png",
+      "sizes": "1920x1080",
+      "type": "image/png",
+      "label": "Playground - Live commit message validation"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Playground",
+      "short_name": "Playground",
+      "description": "Open the commit message playground",
+      "url": "/playground",
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Presets",
+      "short_name": "Presets",
+      "description": "Manage validation presets",
+      "url": "/presets",
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
+  "share_target": {
+    "action": "/playground",
+    "method": "GET",
+    "enctype": "application/x-www-form-urlencoded",
+    "params": {
+      "title": "title",
+      "text": "text"
+    }
+  }
 }
-
