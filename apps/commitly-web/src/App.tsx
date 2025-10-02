@@ -1,7 +1,10 @@
 // File: apps/commitly-web/src/App.tsx
 
 import { Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './contexts/AuthContext';
+import { ProtectedRoute } from './components/ProtectedRoute';
 import Landing from './pages/Landing';
+import Login from './pages/Login';
 import Playground from './pages/Playground';
 import Presets from './pages/Presets';
 import Dashboard from './pages/Dashboard';
@@ -14,19 +17,50 @@ import { Toaster } from './components/ui/toaster';
 
 export default function App(): JSX.Element {
   return (
-    <>
+    <AuthProvider>
       <Routes>
         <Route path="/" element={<Landing />} />
+        <Route path="/login" element={<Login />} />
         <Route path="/playground" element={<Playground />} />
         <Route path="/presets" element={<Presets />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/add-project" element={<AddProject />} />
         <Route path="/formatter" element={<Formatter />} />
-        <Route path="/reports" element={<Reports />} />
-        <Route path="/settings" element={<Settings />} />
         <Route path="/docs" element={<Docs />} />
+        
+        {/* Protected Routes */}
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/add-project"
+          element={
+            <ProtectedRoute>
+              <AddProject />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/reports"
+          element={
+            <ProtectedRoute>
+              <Reports />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/settings"
+          element={
+            <ProtectedRoute>
+              <Settings />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
       <Toaster />
-    </>
+    </AuthProvider>
   );
 }

@@ -41,3 +41,4 @@ yarn-error.log*
 # Build outputs
 *.tsbuildinfo
 
+apps/commitly-web/.env.local

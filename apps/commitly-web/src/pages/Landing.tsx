@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom';
 import { Check, Code, GitBranch, Sparkles, Terminal, Github, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useAuth } from '@/contexts/AuthContext';
+import { UserMenu } from '@/components/UserMenu';
 
 interface Props {
   projectName?: string;
@@ -47,6 +49,8 @@ export default function Landing({
   projectName = 'Commitly',
   githubUrl = 'https://github.com/yourusername/commitly',
 }: Props): JSX.Element {
+  const { user } = useAuth();
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -93,6 +97,13 @@ export default function Landing({
               <Github className="h-4 w-4" />
               GitHub
             </a>
+            {user ? (
+              <UserMenu />
+            ) : (
+              <Button variant="default" size="sm" asChild>
+                <Link to="/login">Sign In</Link>
+              </Button>
+            )}
           </nav>
         </div>
       </header>
