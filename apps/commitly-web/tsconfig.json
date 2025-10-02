@@ -14,11 +14,6 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["src"],
-  "references": [
-    {
-      "path": "../../packages/commitly-core"
-    }
-  ]
+  "include": ["src/**/*.ts", "src/**/*.tsx"]
 }
 
