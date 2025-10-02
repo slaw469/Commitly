@@ -51,6 +51,38 @@ const defaultPresets: Preset[] = [
     },
     createdAt: new Date().toISOString(),
   },
+  {
+    id: 'angular',
+    name: 'Angular',
+    description: 'Angular commit message convention (build, ci, docs, feat, fix, perf, refactor, test)',
+    config: {
+      types: ['build', 'ci', 'docs', 'feat', 'fix', 'perf', 'refactor', 'test'],
+      requireScope: false,
+      maxHeaderLength: 72,
+      maxLineLength: 100,
+      subjectCase: 'lower',
+      subjectEmptyForbidden: true,
+      subjectFullStopForbidden: true,
+      bodyLeadingBlank: true,
+      footerLeadingBlank: true,
+    },
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'gitmoji',
+    name: 'Gitmoji',
+    description: 'Gitmoji convention with emoji support (✨ feat, 🐛 fix, 📝 docs, etc.)',
+    config: {
+      types: ['feat', 'fix', 'docs', 'style', 'refactor', 'perf', 'test', 'build', 'ci', 'chore', 'revert'],
+      requireScope: false,
+      maxHeaderLength: 80,
+      maxLineLength: 100,
+      subjectCase: 'lower',
+      subjectEmptyForbidden: true,
+      subjectFullStopForbidden: true,
+    },
+    createdAt: new Date().toISOString(),
+  },
 ];
 
 function loadPresets(): Preset[] {
