@@ -45,8 +45,10 @@ test_cli() {
 }
 
 echo "1. Building CLI..."
+REPO_ROOT=$(pwd)
 cd packages/commitly-cli
 pnpm build > /dev/null 2>&1
+CLI_PATH="$REPO_ROOT/packages/commitly-cli/dist/index.js"
 echo -e "${GREEN}✓${NC} CLI built successfully"
 echo ""
 
@@ -57,39 +59,44 @@ echo "----------------------"
 TEST_DIR=$(mktemp -d)
 cd "$TEST_DIR"
 
+# Helper function to run CLI
+run_cli() {
+    node "$CLI_PATH" "$@"
+}
+
 # Test 1: lint command with valid message
 echo "feat: test message" > test-msg.txt
-test_cli "lint valid message" "commitly lint -f test-msg.txt" 0
+test_cli "lint valid message" "run_cli lint -f test-msg.txt" 0
 
 # Test 2: lint command with invalid message
 echo "invalid message" > test-msg.txt
-test_cli "lint invalid message" "commitly lint -f test-msg.txt" 1
+test_cli "lint invalid message" "run_cli lint -f test-msg.txt" 1
 
 # Test 3: lint with missing type
 echo "add new feature" > test-msg.txt
-test_cli "lint missing type" "commitly lint -f test-msg.txt" 1
+test_cli "lint missing type" "run_cli lint -f test-msg.txt" 1
 
 # Test 4: lint with trailing period
 echo "feat: add feature." > test-msg.txt
-test_cli "lint trailing period" "commitly lint -f test-msg.txt" 1
+test_cli "lint trailing period" "run_cli lint -f test-msg.txt" 1
 
 # Test 5: lint with wrong case
 echo "feat: Add Feature" > test-msg.txt
-test_cli "lint wrong case" "commitly lint -f test-msg.txt" 1
+test_cli "lint wrong case" "run_cli lint -f test-msg.txt" 1
 
 # Test 6: lint with scope
 echo "feat(auth): add login" > test-msg.txt
-test_cli "lint with scope" "commitly lint -f test-msg.txt" 0
+test_cli "lint with scope" "run_cli lint -f test-msg.txt" 0
 
 # Test 7: lint breaking change
 echo "feat!: breaking change" > test-msg.txt
-test_cli "lint breaking change" "commitly lint -f test-msg.txt" 0
+test_cli "lint breaking change" "run_cli lint -f test-msg.txt" 0
 
 # Test 8: check command with valid message
-test_cli "check valid message" "commitly check 'feat: test message'" 0
+test_cli "check valid message" "run_cli check 'feat: test message'" 0
 
 # Test 9: check command with invalid message
-test_cli "check invalid message" "commitly check 'invalid message'" 1
+test_cli "check invalid message" "run_cli check 'invalid message'" 1
 
 echo ""
 echo "3. Testing Fix Command"
@@ -97,7 +104,7 @@ echo "----------------------"
 
 # Test 10: fix trailing period
 echo "feat: add feature." > test-msg.txt
-commitly fix -f test-msg.txt > /dev/null 2>&1
+run_cli fix -f test-msg.txt > /dev/null 2>&1
 if grep -q "feat: add feature$" test-msg.txt; then
     echo -e "${GREEN}✓ PASS${NC} fix trailing period"
     ((PASSED++))
@@ -108,7 +115,7 @@ fi
 
 # Test 11: fix case
 echo "feat: Add Feature" > test-msg.txt
-commitly fix -f test-msg.txt > /dev/null 2>&1
+run_cli fix -f test-msg.txt > /dev/null 2>&1
 if grep -q "feat: add feature" test-msg.txt; then
     echo -e "${GREEN}✓ PASS${NC} fix case"
     ((PASSED++))
@@ -119,7 +126,7 @@ fi
 
 # Test 12: infer type
 echo "Add new feature" > test-msg.txt
-commitly fix -f test-msg.txt > /dev/null 2>&1
+run_cli fix -f test-msg.txt > /dev/null 2>&1
 if grep -q "^feat:" test-msg.txt; then
     echo -e "${GREEN}✓ PASS${NC} infer type from verb"
     ((PASSED++))
@@ -138,7 +145,7 @@ git config user.name "Test User" > /dev/null 2>&1
 git config user.email "test@example.com" > /dev/null 2>&1
 
 # Install hooks
-commitly init-hooks > /dev/null 2>&1
+run_cli init-hooks > /dev/null 2>&1
 
 # Check if hook was created
 if [ -f ".git/hooks/commit-msg" ]; then
