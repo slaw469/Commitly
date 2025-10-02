@@ -229,13 +229,13 @@ export default function Landing({ projectName = 'Commitly', githubUrl = 'https:/
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Button variant="primary" size="lg" asChild>
-                <a href="/playground" className="inline-flex items-center gap-2">
+                <Link to="/playground" className="inline-flex items-center gap-2">
                   Open Playground
                   <ArrowRight className="h-4 w-4" />
-                </a>
+                </Link>
               </Button>
               <Button variant="outline" size="lg" asChild>
-                <a href="/docs">Read Documentation</a>
+                <Link to="/docs">Read Documentation</Link>
               </Button>
             </div>
           </div>
@@ -253,15 +253,18 @@ export default function Landing({ projectName = 'Commitly', githubUrl = 'https:/
               </span>
             </div>
             <div className="flex items-center gap-6">
-              <a href="/docs" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              <Link to="/docs" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                 Documentation
-              </a>
+              </Link>
               <a href={githubUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                 GitHub
               </a>
-              <a href="/playground" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              <Link to="/playground" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                 Playground
-              </a>
+              </Link>
+              <Link to="/dashboard" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                Dashboard
+              </Link>
             </div>
           </div>
         </div>
