@@ -1,77 +1,16 @@
 // File: apps/commitly-web/src/pages/Settings.tsx
+// Fully functional Settings page with CRUD for rule presets
 
-import { Check, ChevronDown, ChevronUp } from 'lucide-react';
+import { useState, useCallback } from 'react';
+import { Check, ChevronDown, ChevronUp, Save, RotateCcw, Download, Upload, Plus } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { useState } from 'react';
-
-interface CommitRulesSettings {
-  maxSubjectLength: number;
-  requireTypeScope: boolean;
-  subjectSentenceCase: boolean;
-  requireBlankLineBeforeBody: boolean;
-  allowedCommitTypes: string;
-}
-
-interface AutoFixSettings {
-  enableAutoFixSuggestions: boolean;
-  autoApplyFixesOnCommit: boolean;
-  preferredStyle: string;
-}
-
-interface IntegrationSettings {
-  gitHooksEnabled: boolean;
-  cicdEnabled: boolean;
-  gitHooksStatus: 'active' | 'inactive';
-  cicdStatus: 'active' | 'inactive';
-}
-
-interface AppearanceSettings {
-  theme: 'light' | 'dark';
-  defaultTheme: 'system' | 'light' | 'dark';
-}
-
-interface GeneralSettings {
-  version: string;
-}
-
-interface Props {
-  commitRules?: CommitRulesSettings;
-  autoFix?: AutoFixSettings;
-  integrations?: IntegrationSettings;
-  appearance?: AppearanceSettings;
-  general?: GeneralSettings;
-}
-
-// Demo data - realistic default settings
-const demoCommitRules: CommitRulesSettings = {
-  maxSubjectLength: 50,
-  requireTypeScope: true,
-  subjectSentenceCase: false,
-  requireBlankLineBeforeBody: true,
-  allowedCommitTypes: 'feat, fix, docs, style, refactor, test, chore',
-};
-
-const demoAutoFix: AutoFixSettings = {
-  enableAutoFixSuggestions: true,
-  autoApplyFixesOnCommit: false,
-  preferredStyle: 'Conventional Commits',
-};
-
-const demoIntegrations: IntegrationSettings = {
-  gitHooksEnabled: true,
-  cicdEnabled: true,
-  gitHooksStatus: 'active',
-  cicdStatus: 'active',
-};
-
-const demoAppearance: AppearanceSettings = {
-  theme: 'dark',
-  defaultTheme: 'system',
-};
-
-const demoGeneral: GeneralSettings = {
-  version: 'v1.2.3',
-};
+import { Button } from '@/components/ui/button';
+import { useSettings, DEFAULT_SETTINGS } from '@/hooks/use-settings';
+import { usePresets } from '@/hooks/use-presets';
+import { toast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
+import type { Config } from '@commitly/core';
 
 interface AccordionSectionProps {
   title: string;
@@ -108,11 +47,12 @@ function AccordionSection({
 interface ToggleSwitchProps {
   id: string;
   checked: boolean;
+  onChange: (checked: boolean) => void;
   label: string;
   ariaLabel?: string;
 }
 
-function ToggleSwitch({ id, checked, label, ariaLabel }: ToggleSwitchProps): JSX.Element {
+function ToggleSwitch({ id, checked, label, ariaLabel, onChange }: ToggleSwitchProps): JSX.Element {
   return (
     <div className="flex items-center justify-between">
       <span className="text-foreground">{label}</span>
@@ -121,7 +61,8 @@ function ToggleSwitch({ id, checked, label, ariaLabel }: ToggleSwitchProps): JSX
           type="checkbox"
           id={id}
           className="sr-only peer"
-          defaultChecked={checked}
+          checked={checked}
+          onChange={(e) => onChange(e.target.checked)}
           aria-label={ariaLabel || label}
         />
         <div className="w-11 h-6 bg-secondary rounded-full peer peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-ring transition-colors peer-checked:bg-primary after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-foreground after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-5 peer-checked:after:bg-primary-foreground"></div>
@@ -130,18 +71,171 @@ function ToggleSwitch({ id, checked, label, ariaLabel }: ToggleSwitchProps): JSX
   );
 }
 
-export default function Settings({
-  commitRules = demoCommitRules,
-  autoFix = demoAutoFix,
-  integrations = demoIntegrations,
-  appearance = demoAppearance,
-  general = demoGeneral,
-}: Props): JSX.Element {
+export default function Settings(): JSX.Element {
+  const { user } = useAuth();
+  const { settings, updateSetting, updateSettings, resetToDefaults, exportSettings, importSettings } = useSettings();
+  const { presets, addPreset, getPresetById } = usePresets();
+  
   const [openPanel, setOpenPanel] = useState<string>('rules');
+  const [selectedPresetId, setSelectedPresetId] = useState<string>('');
+  const [customTypes, setCustomTypes] = useState<string>(settings.types.join(', '));
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   const togglePanel = (panel: string) => {
     setOpenPanel(openPanel === panel ? '' : panel);
   };
+
+  // Mark as having unsaved changes when settings are modified
+  const handleSettingChange = useCallback(<K extends keyof typeof settings>(
+    key: K,
+    value: typeof settings[K]
+  ) => {
+    updateSetting(key, value);
+    setHasUnsavedChanges(true);
+  }, [updateSetting]);
+
+  // Handle custom types input change
+  const handleTypesChange = useCallback((value: string) => {
+    setCustomTypes(value);
+    const typesArray = value.split(',').map(t => t.trim()).filter(t => t.length > 0);
+    handleSettingChange('types', typesArray);
+  }, [handleSettingChange]);
+
+  // Apply preset to current settings
+  const handleApplyPreset = useCallback((presetId: string) => {
+    const preset = getPresetById(presetId);
+    if (!preset) {
+      toast({
+        variant: 'destructive',
+        title: 'Preset not found',
+        description: 'Could not load the selected preset',
+      });
+      return;
+    }
+
+    // Merge preset config with current settings
+    updateSettings({
+      ...settings,
+      ...preset.config,
+    });
+
+    // Update custom types display
+    if (preset.config.types) {
+      setCustomTypes(preset.config.types.join(', '));
+    }
+
+    setSelectedPresetId(presetId);
+    setHasUnsavedChanges(true);
+
+    toast({
+      title: 'Preset applied',
+      description: `"${preset.name}" has been applied to your settings`,
+    });
+  }, [getPresetById, updateSettings, settings]);
+
+  // Save current settings as a new preset
+  const handleSaveAsPreset = useCallback(() => {
+    const presetName = prompt('Enter a name for this preset:');
+    if (!presetName?.trim()) return;
+
+    const config: Partial<Config> = {
+      types: settings.types,
+      requireScope: settings.requireScope,
+      maxHeaderLength: settings.maxHeaderLength,
+      maxLineLength: settings.maxLineLength,
+      subjectCase: settings.subjectCase,
+      subjectEmptyForbidden: settings.subjectEmptyForbidden,
+      subjectFullStopForbidden: settings.subjectFullStopForbidden,
+      bodyLeadingBlank: settings.bodyLeadingBlank,
+      footerLeadingBlank: settings.footerLeadingBlank,
+      blockedWords: settings.blockedWords,
+    };
+
+    addPreset({
+      name: presetName.trim(),
+      description: 'Custom preset created from settings',
+      config,
+    });
+
+    toast({
+      title: 'Preset saved',
+      description: `"${presetName}" has been saved`,
+    });
+  }, [settings, addPreset]);
+
+  // Reset settings to defaults
+  const handleReset = useCallback(() => {
+    if (!confirm('Are you sure you want to reset all settings to defaults?')) {
+      return;
+    }
+
+    resetToDefaults();
+    setCustomTypes(DEFAULT_SETTINGS.types.join(', '));
+    setSelectedPresetId('');
+    setHasUnsavedChanges(false);
+
+    toast({
+      title: 'Settings reset',
+      description: 'All settings have been reset to defaults',
+    });
+  }, [resetToDefaults]);
+
+  // Export settings
+  const handleExport = useCallback(() => {
+    try {
+      exportSettings();
+      toast({
+        title: 'Settings exported',
+        description: 'Your settings have been downloaded',
+      });
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        title: 'Export failed',
+        description: 'Could not export settings',
+      });
+    }
+  }, [exportSettings]);
+
+  // Import settings
+  const handleImport = useCallback(() => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'application/json';
+
+    input.onchange = async (e: Event) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (!file) return;
+
+      try {
+        await importSettings(file);
+        setCustomTypes(settings.types.join(', '));
+        setHasUnsavedChanges(false);
+
+        toast({
+          title: 'Settings imported',
+          description: 'Your settings have been updated',
+        });
+      } catch (error) {
+        toast({
+          variant: 'destructive',
+          title: 'Import failed',
+          description: error instanceof Error ? error.message : 'Could not import settings',
+        });
+      }
+    };
+
+    input.click();
+  }, [importSettings, settings]);
+
+  // Save changes notification
+  const handleSaveChanges = useCallback(() => {
+    setHasUnsavedChanges(false);
+    toast({
+      title: 'Settings saved',
+      description: 'Your changes have been saved',
+    });
+  }, []);
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -155,8 +249,8 @@ export default function Settings({
         </div>
 
         <nav className="flex flex-col gap-2" role="navigation" aria-label="Main navigation">
-          <a
-            href="/"
+          <Link
+            to="/dashboard"
             className="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors"
           >
             <svg
@@ -164,7 +258,6 @@ export default function Settings({
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
             >
               <path
                 strokeLinecap="round"
@@ -174,10 +267,10 @@ export default function Settings({
               />
             </svg>
             Dashboard
-          </a>
+          </Link>
 
-          <a
-            href="/add-project"
+          <Link
+            to="/add-project"
             className="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors"
           >
             <svg
@@ -185,7 +278,6 @@ export default function Settings({
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
             >
               <path
                 strokeLinecap="round"
@@ -195,10 +287,10 @@ export default function Settings({
               />
             </svg>
             Add Project
-          </a>
+          </Link>
 
-          <a
-            href="/reports"
+          <Link
+            to="/reports"
             className="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors"
           >
             <svg
@@ -206,7 +298,6 @@ export default function Settings({
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
             >
               <path
                 strokeLinecap="round"
@@ -216,10 +307,10 @@ export default function Settings({
               />
             </svg>
             Reports
-          </a>
+          </Link>
 
-          <a
-            href="/formatter"
+          <Link
+            to="/formatter"
             className="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors"
           >
             <svg
@@ -227,7 +318,6 @@ export default function Settings({
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
             >
               <path
                 strokeLinecap="round"
@@ -237,10 +327,10 @@ export default function Settings({
               />
             </svg>
             Formatter
-          </a>
+          </Link>
 
-          <a
-            href="/settings"
+          <Link
+            to="/settings"
             className="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium bg-secondary text-foreground transition-colors"
             aria-current="page"
           >
@@ -249,7 +339,6 @@ export default function Settings({
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
             >
               <path
                 strokeLinecap="round"
@@ -265,10 +354,10 @@ export default function Settings({
               />
             </svg>
             Settings
-          </a>
+          </Link>
 
-          <a
-            href="/docs"
+          <Link
+            to="/docs"
             className="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors"
           >
             <svg
@@ -276,7 +365,6 @@ export default function Settings({
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
             >
               <path
                 strokeLinecap="round"
@@ -286,7 +374,7 @@ export default function Settings({
               />
             </svg>
             Docs
-          </a>
+          </Link>
         </nav>
       </aside>
 
@@ -294,14 +382,61 @@ export default function Settings({
       <div className="flex-1 flex flex-col">
         {/* Header */}
         <header className="sticky top-0 z-20 bg-background/80 backdrop-blur-sm border-b border-border">
-          <div className="container mx-auto px-6 py-4">
+          <div className="container mx-auto px-6 py-4 flex items-center justify-between">
             <h2 className="text-2xl font-bold font-display text-foreground">Settings</h2>
+            <div className="flex items-center gap-2">
+              {hasUnsavedChanges && (
+                <span className="text-sm text-muted-foreground mr-2">Unsaved changes</span>
+              )}
+              <Button variant="outline" size="sm" onClick={handleImport}>
+                <Upload className="h-4 w-4 mr-2" />
+                Import
+              </Button>
+              <Button variant="outline" size="sm" onClick={handleExport}>
+                <Download className="h-4 w-4 mr-2" />
+                Export
+              </Button>
+              {hasUnsavedChanges && (
+                <Button variant="primary" size="sm" onClick={handleSaveChanges}>
+                  <Save className="h-4 w-4 mr-2" />
+                  Save
+                </Button>
+              )}
+            </div>
           </div>
         </header>
 
         {/* Content */}
         <main className="flex-1 p-6">
           <div className="space-y-6 max-w-4xl mx-auto">
+            {/* Preset Selection */}
+            <div className="bg-card/50 rounded-lg border border-border/50 p-4">
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex-1">
+                  <label htmlFor="preset-select" className="block text-sm font-medium text-foreground mb-2">
+                    Apply Preset
+                  </label>
+                  <select
+                    id="preset-select"
+                    value={selectedPresetId}
+                    onChange={(e) => handleApplyPreset(e.target.value)}
+                    className="w-full bg-secondary border border-border rounded-md text-foreground px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-shadow"
+                  >
+                    <option value="">-- Select a preset --</option>
+                    {presets.map((preset) => (
+                      <option key={preset.id} value={preset.id}>
+                        {preset.name} - {preset.description}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <Button variant="outline" size="sm" onClick={handleSaveAsPreset} className="mt-6">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Save as Preset
+                </Button>
+              </div>
+            </div>
+
             {/* Commit Rules Section */}
             <AccordionSection
               title="Commit Rules"
@@ -309,53 +444,71 @@ export default function Settings({
               onToggle={() => togglePanel('rules')}
             >
               <div className="flex items-center justify-between">
-                <label htmlFor="max-length" className="text-foreground">
-                  Max subject length
+                <label htmlFor="max-header-length" className="text-foreground">
+                  Max header length
                 </label>
                 <input
                   type="number"
-                  id="max-length"
-                  name="max-length"
+                  id="max-header-length"
+                  value={settings.maxHeaderLength}
+                  onChange={(e) => handleSettingChange('maxHeaderLength', parseInt(e.target.value) || 72)}
+                  min={30}
+                  max={200}
                   className="w-20 bg-secondary border border-border rounded-md text-center text-foreground px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-shadow"
-                  defaultValue={commitRules.maxSubjectLength}
-                  aria-label="Maximum subject length"
+                  aria-label="Maximum header length"
                 />
               </div>
 
               <ToggleSwitch
-                id="require-type-scope"
-                checked={commitRules.requireTypeScope}
-                label="Require type/scope (e.g., feat(api): ...)"
-              />
-
-              <ToggleSwitch
-                id="subject-sentence-case"
-                checked={commitRules.subjectSentenceCase}
-                label="Subject must be sentence case"
-              />
-
-              <ToggleSwitch
-                id="require-blank-line"
-                checked={commitRules.requireBlankLineBeforeBody}
-                label="Require blank line before body"
+                id="require-scope"
+                checked={settings.requireScope}
+                onChange={(checked) => handleSettingChange('requireScope', checked)}
+                label="Require scope (e.g., feat(api): ...)"
               />
 
               <div className="flex items-center justify-between">
-                <label htmlFor="allowed-types" className="text-foreground">
-                  Allowed commit types
+                <label htmlFor="subject-case" className="text-foreground">
+                  Subject case
                 </label>
                 <select
-                  id="allowed-types"
-                  name="allowed-types"
+                  id="subject-case"
+                  value={settings.subjectCase}
+                  onChange={(e) => handleSettingChange('subjectCase', e.target.value as 'lower' | 'sentence' | 'any')}
                   className="w-1/2 bg-secondary border border-border rounded-md text-foreground px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-shadow"
-                  defaultValue={commitRules.allowedCommitTypes}
-                  aria-label="Select allowed commit types"
                 >
-                  <option>feat, fix, docs, style, refactor, test, chore</option>
-                  <option>Conventional Commits v1.0.0</option>
-                  <option>Custom</option>
+                  <option value="lower">Lowercase</option>
+                  <option value="sentence">Sentence case</option>
+                  <option value="any">Any case</option>
                 </select>
               </div>
+
+              <ToggleSwitch
+                id="blank-line-before-body"
+                checked={settings.bodyLeadingBlank}
+                onChange={(checked) => handleSettingChange('bodyLeadingBlank', checked)}
+                label="Require blank line before body"
+              />
+
+              <div className="space-y-2">
+                <label htmlFor="allowed-types" className="text-foreground block">
+                  Allowed commit types (comma-separated)
+                </label>
+                <input
+                  type="text"
+                  id="allowed-types"
+                  value={customTypes}
+                  onChange={(e) => handleTypesChange(e.target.value)}
+                  className="w-full bg-secondary border border-border rounded-md text-foreground px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-shadow"
+                  placeholder="feat, fix, docs, style, refactor, test, chore"
+                />
+              </div>
+
+              <ToggleSwitch
+                id="subject-full-stop-forbidden"
+                checked={settings.subjectFullStopForbidden}
+                onChange={(checked) => handleSettingChange('subjectFullStopForbidden', checked)}
+                label="Forbid trailing period in subject"
+              />
             </AccordionSection>
 
             {/* Auto-Fix Behavior Section */}
@@ -366,13 +519,15 @@ export default function Settings({
             >
               <ToggleSwitch
                 id="enable-autofix"
-                checked={autoFix.enableAutoFixSuggestions}
+                checked={settings.enableAutoFixSuggestions}
+                onChange={(checked) => handleSettingChange('enableAutoFixSuggestions', checked)}
                 label="Enable auto-fix suggestions"
               />
 
               <ToggleSwitch
                 id="auto-apply-fixes"
-                checked={autoFix.autoApplyFixesOnCommit}
+                checked={settings.autoApplyFixesOnCommit}
+                onChange={(checked) => handleSettingChange('autoApplyFixesOnCommit', checked)}
                 label="Automatically apply fixes on commit"
               />
 
@@ -382,14 +537,13 @@ export default function Settings({
                 </label>
                 <select
                   id="preferred-style"
-                  name="preferred-style"
+                  value={settings.preferredStyle}
+                  onChange={(e) => handleSettingChange('preferredStyle', e.target.value as 'conventional' | 'angular' | 'gitmoji')}
                   className="w-1/2 bg-secondary border border-border rounded-md text-foreground px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-shadow"
-                  defaultValue={autoFix.preferredStyle}
-                  aria-label="Select preferred commit style"
                 >
-                  <option>Conventional Commits</option>
-                  <option>Angular</option>
-                  <option>Atom</option>
+                  <option value="conventional">Conventional Commits</option>
+                  <option value="angular">Angular</option>
+                  <option value="gitmoji">Gitmoji</option>
                 </select>
               </div>
             </AccordionSection>
@@ -403,9 +557,12 @@ export default function Settings({
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <span className="text-foreground">Git Hooks (pre-commit)</span>
-                  <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium bg-success/10 text-success">
-                    <span className="w-2 h-2 bg-success rounded-full"></span>
-                    {integrations.gitHooksStatus === 'active' ? 'Active' : 'Inactive'}
+                  <span className={cn(
+                    "inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium",
+                    settings.gitHooksEnabled ? "bg-success/10 text-success" : "bg-muted/10 text-muted-foreground"
+                  )}>
+                    <span className={cn("w-2 h-2 rounded-full", settings.gitHooksEnabled ? "bg-success" : "bg-muted-foreground")}></span>
+                    {settings.gitHooksEnabled ? 'Active' : 'Inactive'}
                   </span>
                 </div>
                 <label
@@ -416,7 +573,8 @@ export default function Settings({
                     type="checkbox"
                     id="git-hooks"
                     className="sr-only peer"
-                    defaultChecked={integrations.gitHooksEnabled}
+                    checked={settings.gitHooksEnabled}
+                    onChange={(e) => handleSettingChange('gitHooksEnabled', e.target.checked)}
                     aria-label="Toggle git hooks integration"
                   />
                   <div className="w-11 h-6 bg-secondary rounded-full peer peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-ring transition-colors peer-checked:bg-primary after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-foreground after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-5 peer-checked:after:bg-primary-foreground"></div>
@@ -426,9 +584,12 @@ export default function Settings({
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <span className="text-foreground">CI/CD Integration (e.g., GitHub Actions)</span>
-                  <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium bg-success/10 text-success">
-                    <span className="w-2 h-2 bg-success rounded-full"></span>
-                    {integrations.cicdStatus === 'active' ? 'Active' : 'Inactive'}
+                  <span className={cn(
+                    "inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium",
+                    settings.cicdEnabled ? "bg-success/10 text-success" : "bg-muted/10 text-muted-foreground"
+                  )}>
+                    <span className={cn("w-2 h-2 rounded-full", settings.cicdEnabled ? "bg-success" : "bg-muted-foreground")}></span>
+                    {settings.cicdEnabled ? 'Active' : 'Inactive'}
                   </span>
                 </div>
                 <label htmlFor="cicd" className="relative inline-flex items-center cursor-pointer">
@@ -436,63 +597,12 @@ export default function Settings({
                     type="checkbox"
                     id="cicd"
                     className="sr-only peer"
-                    defaultChecked={integrations.cicdEnabled}
+                    checked={settings.cicdEnabled}
+                    onChange={(e) => handleSettingChange('cicdEnabled', e.target.checked)}
                     aria-label="Toggle CI/CD integration"
                   />
                   <div className="w-11 h-6 bg-secondary rounded-full peer peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-ring transition-colors peer-checked:bg-primary after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-foreground after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-5 peer-checked:after:bg-primary-foreground"></div>
                 </label>
-              </div>
-            </AccordionSection>
-
-            {/* Appearance Section */}
-            <AccordionSection
-              title="Appearance"
-              isOpen={openPanel === 'appearance'}
-              onToggle={() => togglePanel('appearance')}
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-foreground">Theme</span>
-                <div className="flex items-center gap-2" role="group" aria-label="Theme selection">
-                  <button
-                    className={cn(
-                      'px-3 py-1.5 text-sm rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
-                      appearance.theme === 'light'
-                        ? 'bg-primary text-primary-foreground'
-                        : 'bg-secondary text-muted-foreground hover:text-foreground'
-                    )}
-                    aria-pressed={appearance.theme === 'light'}
-                  >
-                    Light
-                  </button>
-                  <button
-                    className={cn(
-                      'px-3 py-1.5 text-sm rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
-                      appearance.theme === 'dark'
-                        ? 'bg-primary text-primary-foreground'
-                        : 'bg-secondary text-muted-foreground hover:text-foreground'
-                    )}
-                    aria-pressed={appearance.theme === 'dark'}
-                  >
-                    Dark
-                  </button>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <label htmlFor="default-theme" className="text-foreground">
-                  Default theme
-                </label>
-                <select
-                  id="default-theme"
-                  name="default-theme"
-                  className="w-1/2 bg-secondary border border-border rounded-md text-foreground px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-shadow"
-                  defaultValue={appearance.defaultTheme}
-                  aria-label="Select default theme"
-                >
-                  <option>System</option>
-                  <option>Light</option>
-                  <option>Dark</option>
-                </select>
               </div>
             </AccordionSection>
 
@@ -504,15 +614,23 @@ export default function Settings({
             >
               <div className="flex items-center justify-between">
                 <span className="text-foreground">Reset all settings to their default values.</span>
-                <button className="bg-secondary text-foreground font-medium py-2 px-4 rounded-md hover:bg-border transition-colors text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                <Button variant="outline" size="sm" onClick={handleReset}>
+                  <RotateCcw className="h-4 w-4 mr-2" />
                   Reset to Default
-                </button>
+                </Button>
               </div>
 
               <div className="flex items-center justify-between text-sm text-muted-foreground">
                 <span>Version</span>
-                <span className="font-mono">{general.version}</span>
+                <span className="font-mono">v1.0.0</span>
               </div>
+
+              {user && (
+                <div className="flex items-center justify-between text-sm text-muted-foreground">
+                  <span>Signed in as</span>
+                  <span className="font-medium text-foreground">{user.email}</span>
+                </div>
+              )}
             </AccordionSection>
           </div>
         </main>
