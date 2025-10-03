@@ -281,9 +281,9 @@ export default function Playground({ defaultMessage = demoMessage }: Props): JSX
                       onClick={() => handleLoadTemplate(template.message)}
                       className="w-full justify-start text-left h-auto py-2"
                     >
-                      <div className="flex flex-col items-start gap-1">
+                      <div className="flex flex-col items-start gap-1 min-w-0 w-full">
                         <span className="font-medium text-xs">{template.name}</span>
-                        <span className="text-xs text-muted-foreground font-mono truncate w-full">
+                        <span className="text-xs text-muted-foreground font-mono truncate w-full block">
                           {template.message.split('\n')[0]}
                         </span>
                       </div>

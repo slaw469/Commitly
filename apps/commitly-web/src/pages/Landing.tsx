@@ -109,8 +109,8 @@ export default function Landing({
       </header>
 
       {/* Hero Section */}
-      <main className="pt-24">
-        <section className="container mx-auto px-6 py-20 md:py-32">
+      <main className="pt-20">
+        <section className="container mx-auto px-6 py-12 md:py-20">
           <div className="max-w-4xl mx-auto text-center">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-8">
               <Sparkles className="h-4 w-4" />
