@@ -25,7 +25,7 @@ export enum FeatureFlag {
 /**
  * Feature flag configuration
  */
-interface FeatureFlagConfig {
+export interface FeatureFlagConfig {
   name: string;
   description: string;
   defaultEnabled: boolean;
@@ -143,12 +143,12 @@ export function isFeatureEnabled(flag: FeatureFlag): boolean {
   
   // URL params take highest priority
   if (flag in urlFlags) {
-    return urlFlags[flag];
+    return urlFlags[flag] ?? false;
   }
   
   // Then check localStorage
   if (flag in storedFlags) {
-    return storedFlags[flag];
+    return storedFlags[flag] ?? false;
   }
   
   // Fall back to default
