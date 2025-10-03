@@ -1,8 +1,11 @@
 // File: apps/commitly-web/src/pages/Reports.tsx
 
+import { useState, useMemo } from 'react';
 import { Check, Download, ArrowLeft, ChevronDown, ChevronUp, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useState } from 'react';
+import { useProjects } from '@/hooks/use-projects';
+import { useValidationHistory } from '@/hooks/use-validation-history';
+import { suggestFix } from '@commitly/core';
 
 interface CommitReport {
   id: string;
@@ -25,74 +28,6 @@ interface CommitReport {
     after: string;
   };
 }
-
-interface Repository {
-  value: string;
-  label: string;
-}
-
-interface Props {
-  commits?: CommitReport[];
-  repositories?: Repository[];
-  defaultRepository?: string;
-  defaultDateRange?: string;
-  defaultStatus?: string;
-}
-
-// Demo data - realistic commit reports
-const demoCommits: CommitReport[] = [
-  {
-    id: '1',
-    hash: 'a1b2c3d',
-    message: 'feat: implement user authentication',
-    author: 'Alice',
-    date: '2023-10-26',
-    status: 'pass',
-  },
-  {
-    id: '2',
-    hash: 'f4e5d6c',
-    message: 'fix login button',
-    author: 'Bob',
-    date: '2023-10-25',
-    status: 'fail',
-    structure: {
-      type: 'fix',
-      scope: '-',
-      subject: 'login button',
-    },
-    errors: [
-      { message: 'Subject must not be capitalized.', level: 'error' },
-      { message: 'Scope is missing.', level: 'error' },
-    ],
-    autoFix: {
-      before: 'fix login button',
-      after: 'fix(ui): fix login button',
-    },
-  },
-  {
-    id: '3',
-    hash: '7g8h9i0',
-    message: 'docs: update contribution guidelines for new linter',
-    author: 'Charlie',
-    date: '2023-10-24',
-    status: 'warning',
-  },
-  {
-    id: '4',
-    hash: 'j1k2l3m',
-    message: 'chore(deps): update dependencies',
-    author: 'David',
-    date: '2023-10-23',
-    status: 'pass',
-  },
-];
-
-const demoRepositories: Repository[] = [
-  { value: 'project-phoenix', label: 'project-phoenix' },
-  { value: 'frontend-unicorn', label: 'frontend-unicorn' },
-  { value: 'backend-goliath', label: 'backend-goliath' },
-];
 
 function CommitRow({ commit }: { commit: CommitReport }): JSX.Element {
   const [expanded, setExpanded] = useState(commit.status === 'fail');
@@ -217,13 +152,114 @@ function CommitRow({ commit }: { commit: CommitReport }): JSX.Element {
   );
 }
 
-export default function Reports({
-  commits = demoCommits,
-  repositories = demoRepositories,
-  defaultRepository = 'project-phoenix',
-  defaultDateRange = '2023-10-01 to 2023-10-31',
-  defaultStatus = 'All',
-}: Props): JSX.Element {
+export default function Reports(): JSX.Element {
+  // Get real data from hooks
+  const { projects } = useProjects();
+  const { history } = useValidationHistory();
+
+  // Filter state - using controlled components
+  const [selectedProject, setSelectedProject] = useState<string>('all');
+  const [selectedStatus, setSelectedStatus] = useState<string>('all');
+  const [dateFrom, setDateFrom] = useState<string>('');
+  const [dateTo, setDateTo] = useState<string>('');
+
+  // Convert validation history to commit reports
+  const allCommitReports = useMemo((): CommitReport[] => {
+    return history.map((item) => {
+      const parsed = item.validationResult.parsed;
+      const suggestion = suggestFix(item.message);
+
+      // Determine status based on errors and warnings
+      let status: 'pass' | 'fail' | 'warning';
+      if (item.valid) {
+        status = 'pass';
+      } else if (item.errorCount > 0) {
+        status = 'fail';
+      } else {
+        status = 'warning';
+      }
+
+      return {
+        id: item.id,
+        hash: item.id.substring(0, 7), // Simulate a git hash
+        message: item.message,
+        author: 'You', // Client-only, so always "You"
+        date: new Date(item.timestamp).toISOString().split('T')[0] || '',
+        status,
+        structure: parsed.type ? {
+          type: parsed.type,
+          scope: parsed.scope || '-',
+          subject: parsed.subject || '-',
+        } : undefined,
+        errors: [
+          ...item.validationResult.errors.map((e) => ({
+            message: e.message,
+            level: 'error' as const,
+          })),
+          ...item.validationResult.warnings.map((w) => ({
+            message: w.message,
+            level: 'warning' as const,
+          })),
+        ],
+        autoFix: suggestion ? {
+          before: item.message.split('\n')[0] || '',
+          after: suggestion.split('\n')[0] || '',
+        } : undefined,
+      };
+    });
+  }, [history]);
+
+  // Apply filters to commit reports
+  const filteredCommits = useMemo(() => {
+    let filtered = [...allCommitReports];
+
+    // Filter by status
+    if (selectedStatus !== 'all') {
+      filtered = filtered.filter((c) => c.status === selectedStatus);
+    }
+
+    // Filter by date range
+    if (dateFrom) {
+      filtered = filtered.filter((c) => c.date >= dateFrom);
+    }
+    if (dateTo) {
+      filtered = filtered.filter((c) => c.date <= dateTo);
+    }
+
+    // Note: Project filtering would work with actual project assignments
+    // For now, we show all validations since they're not tied to projects yet
+
+    return filtered;
+  }, [allCommitReports, selectedStatus, dateFrom, dateTo]);
+
+  // Download report as JSON
+  const handleDownloadReport = () => {
+    const reportData = {
+      generatedAt: new Date().toISOString(),
+      filters: {
+        project: selectedProject,
+        status: selectedStatus,
+        dateRange: { from: dateFrom, to: dateTo },
+      },
+      totalCommits: filteredCommits.length,
+      summary: {
+        pass: filteredCommits.filter((c) => c.status === 'pass').length,
+        fail: filteredCommits.filter((c) => c.status === 'fail').length,
+        warning: filteredCommits.filter((c) => c.status === 'warning').length,
+      },
+      commits: filteredCommits,
+    };
+
+    const blob = new Blob([JSON.stringify(reportData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `commitly-report-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
   return (
     <div className="flex min-h-screen bg-background">
       {/* Sidebar */}
@@ -378,7 +414,10 @@ export default function Reports({
           <div className="container mx-auto px-6 py-4 flex justify-between items-center">
             <h2 className="text-2xl font-bold font-display text-foreground">Commit Reports</h2>
             <div className="flex items-center gap-4">
-              <button className="flex items-center gap-2 bg-secondary text-foreground font-medium py-2 px-4 rounded-md hover:bg-border transition-colors text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+              <button 
+                onClick={handleDownloadReport}
+                className="flex items-center gap-2 bg-secondary text-foreground font-medium py-2 px-4 rounded-md hover:bg-border transition-colors text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
                 <Download className="h-4 w-4" />
                 Download Report
               </button>
@@ -398,42 +437,62 @@ export default function Reports({
           <div className="flex-1 flex flex-col p-6 overflow-y-auto">
             {/* Filter Bar */}
             <section className="bg-card/50 rounded-lg p-4 mb-6 border border-border/50">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div>
                   <label
                     htmlFor="repo-filter"
                     className="block text-xs font-medium text-muted-foreground mb-1"
                   >
-                    Repository
+                    Project
                   </label>
                   <select
                     id="repo-filter"
                     name="repo-filter"
                     className="w-full bg-secondary border border-border text-foreground rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-shadow"
-                    defaultValue={defaultRepository}
-                    aria-label="Filter by repository"
+                    value={selectedProject}
+                    onChange={(e) => setSelectedProject(e.target.value)}
+                    aria-label="Filter by project"
                   >
-                    {repositories.map((repo) => (
-                      <option key={repo.value} value={repo.value}>
-                        {repo.label}
+                    <option value="all">All Projects</option>
+                    {projects.map((project) => (
+                      <option key={project.id} value={project.id}>
+                        {project.name}
                       </option>
                     ))}
                   </select>
                 </div>
                 <div>
                   <label
-                    htmlFor="date-range"
+                    htmlFor="date-from"
                     className="block text-xs font-medium text-muted-foreground mb-1"
                   >
-                    Date Range
+                    From Date
                   </label>
                   <input
-                    type="text"
-                    id="date-range"
-                    name="date-range"
+                    type="date"
+                    id="date-from"
+                    name="date-from"
                     className="w-full bg-secondary border border-border text-foreground rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-shadow"
-                    defaultValue={defaultDateRange}
-                    aria-label="Filter by date range"
+                    value={dateFrom}
+                    onChange={(e) => setDateFrom(e.target.value)}
+                    aria-label="Filter from date"
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="date-to"
+                    className="block text-xs font-medium text-muted-foreground mb-1"
+                  >
+                    To Date
+                  </label>
+                  <input
+                    type="date"
+                    id="date-to"
+                    name="date-to"
+                    className="w-full bg-secondary border border-border text-foreground rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-shadow"
+                    value={dateTo}
+                    onChange={(e) => setDateTo(e.target.value)}
+                    aria-label="Filter to date"
                   />
                 </div>
                 <div>
@@ -447,13 +506,14 @@ export default function Reports({
                     id="status-filter"
                     name="status-filter"
                     className="w-full bg-secondary border border-border text-foreground rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-shadow"
-                    defaultValue={defaultStatus}
+                    value={selectedStatus}
+                    onChange={(e) => setSelectedStatus(e.target.value)}
                     aria-label="Filter by status"
                   >
-                    <option>All</option>
-                    <option>Pass</option>
-                    <option>Fail</option>
-                    <option>Warning</option>
+                    <option value="all">All</option>
+                    <option value="pass">Pass</option>
+                    <option value="fail">Fail</option>
+                    <option value="warning">Warning</option>
                   </select>
                 </div>
               </div>
@@ -500,9 +560,22 @@ export default function Reports({
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
-                  {commits.map((commit) => (
-                    <CommitRow key={commit.id} commit={commit} />
-                  ))}
+                  {filteredCommits.length > 0 ? (
+                    filteredCommits.map((commit) => (
+                      <CommitRow key={commit.id} commit={commit} />
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={6} className="px-6 py-12 text-center">
+                        <p className="text-muted-foreground text-sm">
+                          No validations found matching your filters.
+                        </p>
+                        <p className="text-muted-foreground text-xs mt-2">
+                          Try using the Formatter to validate some commit messages!
+                        </p>
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>

@@ -1,208 +1,166 @@
-// Hook for managing UI-only project data
-// Stores fake "connected repos" until backend integration exists
+// Hook for managing projects with uid namespacing
+// Provides a reactive interface to localStorage-based projects
 
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLocalStorage } from './use-local-storage';
+import type { Project, ProjectCreateInput } from '@/lib/projects';
+import {
+  isValidProjectsArray,
+  createProject as createProjectInStorage,
+  updateProject as updateProjectInStorage,
+  deleteProject as deleteProjectInStorage,
+  initializeDemoProjects,
+  getAggregateStats,
+} from '@/lib/projects';
 
 const PROJECTS_KEY = 'projects';
 
-export interface Project {
-  id: string;
-  name: string;
-  owner: string;
-  repo: string;
-  description?: string;
-  defaultBranch: string;
-  isPrivate: boolean;
-  connectedAt: string;
-  lastValidatedAt?: string;
-  status: 'active' | 'paused' | 'error';
-  stats?: {
-    totalCommits: number;
-    validCommits: number;
-    invalidCommits: number;
-    lastCheckQuality: number; // percentage
-  };
-}
-
-// Validator for project
-function isValidProject(data: unknown): data is Project {
-  if (typeof data !== 'object' || data === null) return false;
-
-  const project = data as Record<string, unknown>;
-  return (
-    typeof project.id === 'string' &&
-    typeof project.name === 'string' &&
-    typeof project.owner === 'string' &&
-    typeof project.repo === 'string' &&
-    typeof project.defaultBranch === 'string' &&
-    typeof project.isPrivate === 'boolean' &&
-    typeof project.connectedAt === 'string' &&
-    (project.status === 'active' || project.status === 'paused' || project.status === 'error')
-  );
-}
-
-// Validator for project array
-function isValidProjectArray(data: unknown): data is Project[] {
-  return Array.isArray(data) && data.every(isValidProject);
-}
-
 /**
- * Hook for managing UI-only project data with localStorage persistence
+ * Hook for managing projects with localStorage persistence
  * Automatically namespaced by user ID
  * 
- * Projects are fake integration objects that will be replaced with
- * real GitHub App data when backend is implemented
+ * Provides reactive state management for projects without useEffect spam
  */
 export function useProjects() {
   const { user } = useAuth();
+  const uid = user?.uid ?? null;
 
   const [projects, setProjects, clearProjects, isLoading] = useLocalStorage<Project[]>(
     PROJECTS_KEY,
     {
-      uid: user?.uid ?? null,
+      uid,
       defaultValue: [],
-      validate: isValidProjectArray,
+      validate: isValidProjectsArray,
     }
   );
 
-  const addProject = useCallback(
-    (project: Omit<Project, 'id' | 'connectedAt' | 'status'>) => {
-      const newProject: Project = {
-        ...project,
-        id: `project-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-        connectedAt: new Date().toISOString(),
-        status: 'active',
-      };
+  // Initialize demo projects if empty (only on first load)
+  const currentProjects = useMemo(() => {
+    if (!projects || projects.length === 0) {
+      const demo = initializeDemoProjects(uid);
+      return demo;
+    }
+    return projects;
+  }, [projects, uid]);
 
-      const currentProjects = projects ?? [];
-      setProjects([...currentProjects, newProject]);
-
+  /**
+   * Create a new project
+   */
+  const createProject = useCallback(
+    (input: ProjectCreateInput) => {
+      const newProject = createProjectInStorage(input, uid);
+      const updated = [...currentProjects, newProject];
+      setProjects(updated);
       return newProject;
     },
-    [projects, setProjects]
+    [currentProjects, setProjects, uid]
   );
 
+  /**
+   * Update an existing project
+   */
   const updateProject = useCallback(
-    (id: string, updates: Partial<Omit<Project, 'id' | 'connectedAt'>>) => {
-      const currentProjects = projects ?? [];
-      const updated = currentProjects.map((project) =>
-        project.id === id
-          ? {
-              ...project,
-              ...updates,
-              lastValidatedAt: new Date().toISOString(),
-            }
-          : project
-      );
-      setProjects(updated);
+    (id: string, updates: Partial<Omit<Project, 'id' | 'createdAt'>>) => {
+      const updated = updateProjectInStorage(id, updates, uid);
+      if (!updated) return null;
 
-      return updated.find((p) => p.id === id) ?? null;
+      // Update local state
+      const newProjects = currentProjects.map((p) => (p.id === id ? updated : p));
+      setProjects(newProjects);
+      return updated;
     },
-    [projects, setProjects]
+    [currentProjects, setProjects, uid]
   );
 
+  /**
+   * Delete a project
+   */
   const deleteProject = useCallback(
     (id: string) => {
-      const currentProjects = projects ?? [];
-      const filtered = currentProjects.filter((project) => project.id !== id);
-      setProjects(filtered);
+      const success = deleteProjectInStorage(id, uid);
+      if (success) {
+        const filtered = currentProjects.filter((p) => p.id !== id);
+        setProjects(filtered);
+      }
+      return success;
     },
-    [projects, setProjects]
+    [currentProjects, setProjects, uid]
   );
 
-  const getProjectById = useCallback(
-    (id: string) => {
-      const currentProjects = projects ?? [];
-      return currentProjects.find((project) => project.id === id) ?? null;
+  /**
+   * Get a single project by ID
+   */
+  const getProject = useCallback(
+    (id: string): Project | null => {
+      return currentProjects.find((p) => p.id === id) ?? null;
     },
-    [projects]
+    [currentProjects]
   );
 
-  const pauseProject = useCallback(
-    (id: string) => {
-      updateProject(id, { status: 'paused' });
-    },
-    [updateProject]
-  );
-
-  const resumeProject = useCallback(
-    (id: string) => {
-      updateProject(id, { status: 'active' });
-    },
-    [updateProject]
-  );
-
+  /**
+   * Update project statistics based on a validation
+   */
   const updateProjectStats = useCallback(
-    (id: string, stats: Project['stats']) => {
-      updateProject(id, { stats });
+    (projectId: string, validationResult: { valid: boolean; message: string; timestamp: string; author?: string; hash?: string }) => {
+      const project = getProject(projectId);
+      if (!project) return null;
+
+      const totalCommits = project.totalCommits + 1;
+      const compliantCommits = project.compliantCommits + (validationResult.valid ? 1 : 0);
+      const nonCompliantCommits = project.nonCompliantCommits + (validationResult.valid ? 0 : 1);
+
+      // Determine status
+      let status: Project['status'];
+      if (validationResult.valid) {
+        status = 'pass';
+      } else {
+        const nonCompliantPercentage = (nonCompliantCommits / totalCommits) * 100;
+        status = nonCompliantPercentage > 30 ? 'fail' : 'warning';
+      }
+
+      return updateProject(projectId, {
+        lastCommit: new Date(validationResult.timestamp).toLocaleString(),
+        lastCommitMessage: validationResult.message,
+        lastCommitHash: validationResult.hash ?? '',
+        lastCommitAuthor: validationResult.author ?? '',
+        lastCommitDate: validationResult.timestamp,
+        status,
+        totalCommits,
+        compliantCommits,
+        nonCompliantCommits,
+      });
     },
-    [updateProject]
+    [getProject, updateProject]
   );
 
-  const getProjectStats = useCallback(() => {
-    const currentProjects = projects ?? [];
-    const totalProjects = currentProjects.length;
-    const activeProjects = currentProjects.filter((p) => p.status === 'active').length;
-    const pausedProjects = currentProjects.filter((p) => p.status === 'paused').length;
-    const errorProjects = currentProjects.filter((p) => p.status === 'error').length;
+  /**
+   * Get aggregate statistics across all projects
+   */
+  const aggregateStats = useMemo(() => {
+    return getAggregateStats(uid);
+  }, [currentProjects, uid]);
 
-    const totalCommits = currentProjects.reduce((sum, p) => sum + (p.stats?.totalCommits ?? 0), 0);
-    const validCommits = currentProjects.reduce((sum, p) => sum + (p.stats?.validCommits ?? 0), 0);
-    const invalidCommits = currentProjects.reduce(
-      (sum, p) => sum + (p.stats?.invalidCommits ?? 0),
-      0
-    );
-
-    const avgQuality =
-      currentProjects.reduce((sum, p) => sum + (p.stats?.lastCheckQuality ?? 0), 0) /
-        totalProjects || 0;
-
-    return {
-      totalProjects,
-      activeProjects,
-      pausedProjects,
-      errorProjects,
-      totalCommits,
-      validCommits,
-      invalidCommits,
-      avgQuality: Math.round(avgQuality * 100) / 100,
-    };
-  }, [projects]);
+  /**
+   * Reset projects to demo data
+   */
+  const resetToDemo = useCallback(() => {
+    clearProjects();
+    const demo = initializeDemoProjects(uid);
+    setProjects(demo);
+    return demo;
+  }, [clearProjects, setProjects, uid]);
 
   return {
-    projects: projects ?? [],
+    projects: currentProjects,
     isLoading,
-    addProject,
+    createProject,
     updateProject,
     deleteProject,
-    getProjectById,
-    pauseProject,
-    resumeProject,
+    getProject,
     updateProjectStats,
-    getProjectStats,
+    aggregateStats,
+    resetToDemo,
     clearProjects,
   };
 }
-
-/**
- * Create a mock project for testing/demo purposes
- */
-export function createMockProject(overrides?: Partial<Project>): Omit<Project, 'id' | 'connectedAt' | 'status'> {
-  return {
-    name: overrides?.name ?? 'Example Repository',
-    owner: overrides?.owner ?? 'username',
-    repo: overrides?.repo ?? 'example-repo',
-    description: overrides?.description ?? 'A sample repository for demonstration',
-    defaultBranch: overrides?.defaultBranch ?? 'main',
-    isPrivate: overrides?.isPrivate ?? false,
-    stats: overrides?.stats ?? {
-      totalCommits: 150,
-      validCommits: 135,
-      invalidCommits: 15,
-      lastCheckQuality: 90,
-    },
-  };
-}
-

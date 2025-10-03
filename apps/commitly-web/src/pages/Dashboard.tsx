@@ -1,15 +1,10 @@
 // File: apps/commitly-web/src/pages/Dashboard.tsx
 
+import { useMemo } from 'react';
 import { Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
-
-interface Project {
-  id: string;
-  name: string;
-  lastCommit: string;
-  commitMessage: string;
-  status: 'pass' | 'fail' | 'warning';
-}
+import { useProjects } from '@/hooks/use-projects';
+import { useValidationHistory } from '@/hooks/use-validation-history';
 
 interface LintError {
   rule: string;
@@ -17,64 +12,72 @@ interface LintError {
   level: 'error' | 'warning';
 }
 
-interface Props {
-  projects?: Project[];
-  totalCompliant?: number;
-  totalNonCompliant?: number;
-  lintErrors?: LintError[];
-}
+export default function Dashboard(): JSX.Element {
+  // Get real data from hooks - no useEffect spam, just reactive state
+  const { projects, aggregateStats } = useProjects();
+  const { history, getHistoryStats } = useValidationHistory();
 
-// Demo data - realistic examples
-const demoProjects: Project[] = [
-  {
-    id: '1',
-    name: 'project-phoenix',
-    lastCommit: '2 hours ago',
-    commitMessage: 'feat(auth): implement magic link login',
-    status: 'pass',
-  },
-  {
-    id: '2',
-    name: 'apollo-gateway',
-    lastCommit: '1 day ago',
-    commitMessage: 'fix login button',
-    status: 'fail',
-  },
-  {
-    id: '3',
-    name: 'mobile-app-v2',
-    lastCommit: '5 hours ago',
-    commitMessage: 'refactor: update dependencies and remove unused packages',
-    status: 'warning',
-  },
-];
+  // Calculate aggregate statistics from real data
+  const stats = useMemo(() => {
+    const historyStats = getHistoryStats();
+    const projectStats = aggregateStats;
 
-const demoLintErrors: LintError[] = [
-  {
-    rule: 'subject-empty',
-    message: 'Subject may not be empty.',
-    level: 'error',
-  },
-  {
-    rule: 'type-case',
-    message: "Type must be lower-case. (e.g., 'feat')",
-    level: 'error',
-  },
-  {
-    rule: 'body-leading-blank',
-    message: 'Body must have a leading blank line.',
-    level: 'warning',
-  },
-];
+    // Combine validation history stats with project stats
+    // Prefer project stats if available (more commits), otherwise use history
+    const totalCompliant = projectStats.compliantCommits || historyStats.valid;
+    const totalNonCompliant = projectStats.nonCompliantCommits || historyStats.invalid;
+    const totalCommits = totalCompliant + totalNonCompliant;
+    const compliancePercentage = totalCommits > 0
+      ? Math.round((totalCompliant / totalCommits) * 100)
+      : 0;
 
-export default function Dashboard({
-  projects = demoProjects,
-  totalCompliant = 1283,
-  totalNonCompliant = 427,
-  lintErrors = demoLintErrors,
-}: Props): JSX.Element {
-  const totalCommits = totalCompliant + totalNonCompliant;
-  const compliancePercentage = Math.round((totalCompliant / totalCommits) * 100);
+    return {
+      totalCompliant,
+      totalNonCompliant,
+      totalCommits,
+      compliancePercentage,
+    };
+  }, [aggregateStats, getHistoryStats]);
+
+  // Extract most common lint errors from recent history
+  const lintErrors = useMemo(() => {
+    const errorMap = new Map<string, LintError>();
+
+    // Take last 20 validations
+    const recentHistory = history.slice(0, 20);
+
+    recentHistory.forEach((item) => {
+      // Add errors
+      item.validationResult.errors.forEach((error) => {
+        if (!errorMap.has(error.rule)) {
+          errorMap.set(error.rule, {
+            rule: error.rule,
+            message: error.message,
+            level: 'error',
+          });
+        }
+      });
+
+      // Add warnings
+      item.validationResult.warnings.forEach((warning) => {
+        if (!errorMap.has(warning.rule)) {
+          errorMap.set(warning.rule, {
+            rule: warning.rule,
+            message: warning.message,
+            level: 'warning',
+          });
+        }
+      });
+    });
+
+    // Return top 5 most common
+    return Array.from(errorMap.values()).slice(0, 5);
+  }, [history]);
+
+  // Get the most recent failed validation for auto-fix example
+  const latestFailedValidation = useMemo(() => {
+    return history.find((item) => !item.valid) ?? null;
+  }, [history]);
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -277,7 +280,7 @@ export default function Dashboard({
                       {project.status === 'warning' && 'Warning'}
                     </span>
                   </div>
-                  <p className="text-sm text-foreground">{project.commitMessage}</p>
+                  <p className="text-sm text-foreground">{project.lastCommitMessage || 'No commit message'}</p>
                   <div className="flex items-center justify-end gap-2 mt-auto pt-4">
                     <button className="px-3 py-1.5 text-xs font-semibold text-foreground bg-secondary hover:bg-border rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
                       View Report
@@ -345,12 +348,18 @@ export default function Dashboard({
                 <h3 className="font-bold text-lg font-display text-foreground mb-4">
                   Auto-Fix Suggestion
                 </h3>
-                <div className="bg-card p-3 rounded-md font-mono text-xs">
-                  <div className="text-destructive/80">- fix login button</div>
-                  <div className="text-success/80">
-                    + fix(auth): resolve login button redirect issue
+                {latestFailedValidation && latestFailedValidation.validationResult.suggestion ? (
+                  <div className="bg-card p-3 rounded-md font-mono text-xs">
+                    <div className="text-destructive/80">- {latestFailedValidation.message.split('\n')[0]}</div>
+                    <div className="text-success/80">
+                      + {latestFailedValidation.validationResult.suggestion.split('\n')[0]}
+                    </div>
                   </div>
-                </div>
+                ) : (
+                  <div className="bg-card p-3 rounded-md font-mono text-xs text-muted-foreground">
+                    No failed validations to show. All commits are compliant!
+                  </div>
+                )}
               </section>
             </div>
           </div>
@@ -380,13 +389,13 @@ export default function Dashboard({
                     fill="none"
                     stroke="currentColor"
                     strokeWidth="3"
-                    strokeDasharray={`${compliancePercentage} ${100 - compliancePercentage}`}
+                    strokeDasharray={`${stats.compliancePercentage} ${100 - stats.compliancePercentage}`}
                     className="text-success"
                   />
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
                   <span className="text-3xl font-bold font-display text-foreground">
-                    {compliancePercentage}%
+                    {stats.compliancePercentage}%
                   </span>
                   <span className="text-xs text-muted-foreground">Compliant</span>
                 </div>
@@ -394,13 +403,13 @@ export default function Dashboard({
               <div className="flex justify-center gap-6 mt-4 w-full">
                 <div className="text-center">
                   <p className="text-lg font-bold text-success">
-                    {totalCompliant.toLocaleString()}
+                    {stats.totalCompliant.toLocaleString()}
                   </p>
                   <p className="text-xs text-muted-foreground">Compliant</p>
                 </div>
                 <div className="text-center">
                   <p className="text-lg font-bold text-destructive">
-                    {totalNonCompliant.toLocaleString()}
+                    {stats.totalNonCompliant.toLocaleString()}
                   </p>
                   <p className="text-xs text-muted-foreground">Non-Compliant</p>
                 </div>
@@ -414,21 +423,21 @@ export default function Dashboard({
               </h3>
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-foreground">Git Hook Status</span>
-                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-success/10 text-success">
-                    Active
+                  <span className="text-sm font-medium text-foreground">Projects Connected</span>
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
+                    {projects.length}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-foreground">CI/CD Pipeline</span>
-                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-success/10 text-success">
-                    Connected
+                  <span className="text-sm font-medium text-foreground">Validation History</span>
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
+                    {history.length} entries
                   </span>
                 </div>
                 <div className="border-t border-border pt-4">
-                  <p className="text-sm font-medium text-foreground">Last Run Summary</p>
+                  <p className="text-sm font-medium text-foreground">Client-Only Mode</p>
                   <p className="text-xs text-muted-foreground">
-                    Checked 15 commits, found 3 errors. Completed in 2.1s.
+                    Using localStorage for project data. Real GitHub integration coming soon!
                   </p>
                 </div>
               </div>
