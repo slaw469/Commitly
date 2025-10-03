@@ -90,11 +90,33 @@
 - No unnecessary useEffect hooks or rerenders
 - Proper TypeScript typing throughout
 
-### 6. UX polish
+### 6. UX polish ✅ COMPLETE
 
-- [ ] Loading & error states for auth, history, presets
-- [ ] Toasts/snackbars for save, copy, import/export success/failure
-- [ ] A11y: proper labels, focus states, color contrast
+- [x] Loading & error states for auth, history, presets
+- [x] Toasts/snackbars for save, copy, import/export success/failure
+- [x] A11y: proper labels, focus states, color contrast
+
+**Implementation Details:**
+- Added comprehensive loading states with skeleton components across all pages
+- Implemented toast notifications for all CRUD operations (create, update, delete)
+- Enhanced error handling with user-friendly messages and proper error states
+- Added loading indicators for async operations (import, export, delete, reset)
+- Implemented WCAG AA compliant accessibility features:
+  - Proper ARIA labels and descriptions on all interactive elements
+  - Keyboard navigation support (Enter, Space, Tab)
+  - Focus management with focus-visible states
+  - Screen reader announcements for state changes
+  - Role attributes (list, listitem, status, navigation, region)
+  - aria-busy, aria-expanded, aria-pressed, aria-checked states
+- No AI anti-patterns: proper useEffect dependencies, no infinite loops, cleanup functions
+- Performance optimized: debouncing, memoization, skeleton loaders prevent CLS
+- See TASK6_COMPLETION_SUMMARY.md for full details
+
+**Files Modified:**
+- apps/commitly-web/src/pages/Presets.tsx
+- apps/commitly-web/src/components/HistoryPanel.tsx
+- apps/commitly-web/src/pages/Login.tsx
+- apps/commitly-web/src/pages/Settings.tsx
 
 ### 7. Testing & Hardening
 
