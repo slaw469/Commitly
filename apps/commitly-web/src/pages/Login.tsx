@@ -74,8 +74,12 @@ export default function Login(): JSX.Element {
       <div className="w-full max-w-md">
         {/* Logo & Header */}
         <div className="text-center mb-8">
-          <Link to="/" className="inline-flex items-center gap-3 mb-6 hover:opacity-80 transition-opacity">
-            <div className="flex h-12 w-12 items-center justify-center rounded-md bg-primary/10">
+          <Link
+            to="/"
+            className="inline-flex items-center gap-3 mb-6 hover:opacity-80 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md"
+            aria-label="Go to Commitly home page"
+          >
+            <div className="flex h-12 w-12 items-center justify-center rounded-md bg-primary/10" aria-hidden="true">
               <Check className="h-7 w-7 text-primary" />
             </div>
             <h1 className="text-2xl font-bold font-display text-foreground">Commitly</h1>
@@ -98,15 +102,17 @@ export default function Login(): JSX.Element {
               className="w-full"
               onClick={handleGoogleSignIn}
               disabled={loading !== null}
+              aria-label={loading === 'google' ? 'Signing in with Google' : 'Sign in with Google'}
+              aria-busy={loading === 'google'}
             >
               {loading === 'google' ? (
                 <>
-                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                  <Loader2 className="mr-2 h-5 w-5 animate-spin" aria-hidden="true" />
                   Signing in...
                 </>
               ) : (
                 <>
-                  <svg className="mr-2 h-5 w-5" viewBox="0 0 24 24">
+                  <svg className="mr-2 h-5 w-5" viewBox="0 0 24 24" aria-hidden="true">
                     <path
                       fill="currentColor"
                       d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -136,15 +142,17 @@ export default function Login(): JSX.Element {
               className="w-full"
               onClick={handleGithubSignIn}
               disabled={loading !== null}
+              aria-label={loading === 'github' ? 'Signing in with GitHub' : 'Sign in with GitHub'}
+              aria-busy={loading === 'github'}
             >
               {loading === 'github' ? (
                 <>
-                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                  <Loader2 className="mr-2 h-5 w-5 animate-spin" aria-hidden="true" />
                   Signing in...
                 </>
               ) : (
                 <>
-                  <Github className="mr-2 h-5 w-5" />
+                  <Github className="mr-2 h-5 w-5" aria-hidden="true" />
                   Continue with GitHub
                 </>
               )}
