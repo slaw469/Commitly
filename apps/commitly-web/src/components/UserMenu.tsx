@@ -17,7 +17,7 @@ import { toast } from '@/hooks/use-toast';
 
 export function UserMenu(): JSX.Element {
   const navigate = useNavigate();
-  const { user, signOut, error } = useAuth();
+  const { user, signOut } = useAuth();
   const [isSigningOut, setIsSigningOut] = useState(false);
 
   const handleSignOut = async () => {
