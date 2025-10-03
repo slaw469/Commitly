@@ -1,8 +1,8 @@
 // File: apps/commitly-web/src/pages/Presets.tsx
 
-import { useState, useMemo, useCallback } from 'react';
-import { Home, Plus, Trash2, Download, Upload, CheckCircle2 } from 'lucide-react';
-import type { Config } from '@commitly/core';
+import { useState, useMemo } from 'react';
+import { Home, Plus, Trash2, Download, Upload, CheckCircle2, Loader2 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import {
@@ -15,140 +15,29 @@ import {
 } from '@/components/ui/card';
 import { Input, Label } from '@/components/ui/input';
 import { toast } from '@/hooks/use-toast';
-
-interface Preset {
-  id: string;
-  name: string;
-  description: string;
-  config: Partial<Config>;
-  createdAt: string;
-}
+import { usePresets } from '@/hooks/use-presets';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface Props {
-  initialPresets?: Preset[];
+  // No longer need initialPresets as we use the hook
 }
 
-const STORAGE_KEY = 'commitly-presets';
+export default function Presets(_props: Props): JSX.Element {
+  const { user } = useAuth();
+  const {
+    presets,
+    isLoading,
+    addPreset,
+    deletePreset,
+    exportPresets,
+    importPresets,
+  } = usePresets();
 
-const defaultPresets: Preset[] = [
-  {
-    id: 'default',
-    name: 'Default',
-    description: 'Standard Conventional Commits configuration',
-    config: {
-      types: [
-        'feat',
-        'fix',
-        'docs',
-        'style',
-        'refactor',
-        'perf',
-        'test',
-        'build',
-        'ci',
-        'chore',
-        'revert',
-      ],
-      requireScope: false,
-      maxHeaderLength: 72,
-      maxLineLength: 100,
-      subjectCase: 'lower',
-    },
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 'strict',
-    name: 'Strict',
-    description: 'Stricter rules with required scopes',
-    config: {
-      types: ['feat', 'fix', 'docs', 'refactor', 'test', 'chore'],
-      requireScope: true,
-      maxHeaderLength: 50,
-      maxLineLength: 72,
-      subjectCase: 'lower',
-      blockedWords: ['wip', 'todo', 'fixme'],
-    },
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 'angular',
-    name: 'Angular',
-    description:
-      'Angular commit message convention (build, ci, docs, feat, fix, perf, refactor, test)',
-    config: {
-      types: ['build', 'ci', 'docs', 'feat', 'fix', 'perf', 'refactor', 'test'],
-      requireScope: false,
-      maxHeaderLength: 72,
-      maxLineLength: 100,
-      subjectCase: 'lower',
-      subjectEmptyForbidden: true,
-      subjectFullStopForbidden: true,
-      bodyLeadingBlank: true,
-      footerLeadingBlank: true,
-    },
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 'gitmoji',
-    name: 'Gitmoji',
-    description: 'Gitmoji convention with emoji support (✨ feat, 🐛 fix, 📝 docs, etc.)',
-    config: {
-      types: [
-        'feat',
-        'fix',
-        'docs',
-        'style',
-        'refactor',
-        'perf',
-        'test',
-        'build',
-        'ci',
-        'chore',
-        'revert',
-      ],
-      requireScope: false,
-      maxHeaderLength: 80,
-      maxLineLength: 100,
-      subjectCase: 'lower',
-      subjectEmptyForbidden: true,
-      subjectFullStopForbidden: true,
-    },
-    createdAt: new Date().toISOString(),
-  },
-];
-
-function loadPresets(): Preset[] {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      return JSON.parse(stored);
-    }
-  } catch (error) {
-    console.error('Failed to load presets:', error);
-  }
-  return defaultPresets;
-}
-
-function savePresetsToStorage(presets: Preset[]): void {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(presets));
-  } catch (error) {
-    console.error('Failed to save presets:', error);
-    toast({
-      variant: 'destructive',
-      title: 'Failed to save',
-      description: 'Could not save presets to localStorage',
-    });
-  }
-}
-
-export default function Presets({ initialPresets }: Props): JSX.Element {
-  const [presets, setPresets] = useState<Preset[]>(() => initialPresets ?? loadPresets());
   const [newPresetName, setNewPresetName] = useState<string>('');
   const [newPresetDescription, setNewPresetDescription] = useState<string>('');
   const [isCreating, setIsCreating] = useState<boolean>(false);
 
-  const handleCreatePreset = useCallback(() => {
+  const handleCreatePreset = () => {
     if (!newPresetName.trim()) {
       toast({
         variant: 'destructive',
@@ -158,8 +47,7 @@ export default function Presets({ initialPresets }: Props): JSX.Element {
       return;
     }
 
-    const newPreset: Preset = {
-      id: `preset-${Date.now()}`,
+    addPreset({
       name: newPresetName.trim(),
       description: newPresetDescription.trim(),
       config: {
@@ -181,12 +69,7 @@ export default function Presets({ initialPresets }: Props): JSX.Element {
         maxLineLength: 100,
         subjectCase: 'lower',
       },
-      createdAt: new Date().toISOString(),
-    };
-
-    const updated = [...presets, newPreset];
-    setPresets(updated);
-    savePresetsToStorage(updated);
+    });
 
     setNewPresetName('');
     setNewPresetDescription('');
@@ -195,41 +78,26 @@ export default function Presets({ initialPresets }: Props): JSX.Element {
     toast({
       variant: 'success',
       title: 'Preset created',
-      description: `"${newPreset.name}" has been saved`,
+      description: `"${newPresetName.trim()}" has been saved`,
     });
-  }, [newPresetName, newPresetDescription, presets]);
+  };
 
-  const handleDeletePreset = useCallback(
-    (id: string) => {
-      const preset = presets.find((p) => p.id === id);
-      if (!preset) return;
+  const handleDeletePreset = (id: string) => {
+    const preset = presets.find((p) => p.id === id);
+    if (!preset) return;
 
-      const updated = presets.filter((p) => p.id !== id);
-      setPresets(updated);
-      savePresetsToStorage(updated);
+    deletePreset(id);
 
-      toast({
-        variant: 'default',
-        title: 'Preset deleted',
-        description: `"${preset.name}" has been removed`,
-      });
-    },
-    [presets]
-  );
+    toast({
+      variant: 'default',
+      title: 'Preset deleted',
+      description: `"${preset.name}" has been removed`,
+    });
+  };
 
-  const handleExportPresets = useCallback(() => {
+  const handleExportPresets = () => {
     try {
-      const dataStr = JSON.stringify(presets, null, 2);
-      const dataBlob = new Blob([dataStr], { type: 'application/json' });
-      const url = URL.createObjectURL(dataBlob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `commitly-presets-${Date.now()}.json`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-
+      exportPresets();
       toast({
         variant: 'success',
         title: 'Presets exported',
@@ -242,43 +110,35 @@ export default function Presets({ initialPresets }: Props): JSX.Element {
         description: 'Could not export presets',
       });
     }
-  }, [presets]);
+  };
 
-  const handleImportPresets = useCallback(() => {
+  const handleImportPresets = () => {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'application/json';
 
-    input.onchange = (e: Event) => {
+    input.onchange = async (e: Event) => {
       const file = (e.target as HTMLInputElement).files?.[0];
       if (!file) return;
 
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        try {
-          const imported = JSON.parse(event.target?.result as string) as Preset[];
-          const updated = [...presets, ...imported];
-          setPresets(updated);
-          savePresetsToStorage(updated);
-
-          toast({
-            variant: 'success',
-            title: 'Presets imported',
-            description: `${imported.length} preset(s) added`,
-          });
-        } catch (error) {
-          toast({
-            variant: 'destructive',
-            title: 'Import failed',
-            description: 'Invalid preset file format',
-          });
-        }
-      };
-      reader.readAsText(file);
+      try {
+        const count = await importPresets(file);
+        toast({
+          variant: 'success',
+          title: 'Presets imported',
+          description: `${count} preset(s) added`,
+        });
+      } catch (error) {
+        toast({
+          variant: 'destructive',
+          title: 'Import failed',
+          description: error instanceof Error ? error.message : 'Invalid preset file format',
+        });
+      }
     };
 
     input.click();
-  }, [presets]);
+  };
 
   const sortedPresets = useMemo(() => {
     return [...presets].sort(
@@ -293,16 +153,29 @@ export default function Presets({ initialPresets }: Props): JSX.Element {
         <div className="container mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Button variant="ghost" size="sm" asChild>
-              <a href="/" className="inline-flex items-center gap-2">
+              <Link to="/" className="inline-flex items-center gap-2">
                 <Home className="h-4 w-4" />
                 <span className="hidden sm:inline">Home</span>
-              </a>
+              </Link>
             </Button>
             <div className="h-4 w-px bg-border" />
             <h2 className="text-xl font-bold font-display text-foreground">Presets</h2>
+            {isLoading && (
+              <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" aria-label="Loading presets" />
+            )}
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={handleImportPresets}>
+            {!user && (
+              <span className="text-xs text-muted-foreground mr-2">
+                Sign in to sync across devices
+              </span>
+            )}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleImportPresets}
+              disabled={isLoading}
+            >
               <Upload className="h-4 w-4 mr-1" />
               <span className="hidden sm:inline">Import</span>
             </Button>
@@ -310,12 +183,17 @@ export default function Presets({ initialPresets }: Props): JSX.Element {
               variant="outline"
               size="sm"
               onClick={handleExportPresets}
-              disabled={presets.length === 0}
+              disabled={presets.length === 0 || isLoading}
             >
               <Download className="h-4 w-4 mr-1" />
               <span className="hidden sm:inline">Export</span>
             </Button>
-            <Button variant="primary" size="sm" onClick={() => setIsCreating(!isCreating)}>
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={() => setIsCreating(!isCreating)}
+              disabled={isLoading}
+            >
               <Plus className="h-4 w-4 mr-1" />
               <span className="hidden sm:inline">New Preset</span>
             </Button>
