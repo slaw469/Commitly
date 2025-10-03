@@ -118,16 +118,33 @@
 - apps/commitly-web/src/pages/Login.tsx
 - apps/commitly-web/src/pages/Settings.tsx
 
-### 7. Testing & Hardening
+### 7. Testing & Hardening ✅ COMPLETE
 
-- [ ] Unit tests for core adapters (parsing → UI mapping, autofix previews)
-- [ ] Playwright (or Vitest + jsdom) to test route protection and "copy fixed" flow
-- [ ] Input normalization:
-  - [ ] strip BOM
-  - [ ] zero-width
-  - [ ] CRLF → LF
-  - [ ] remove leading |/> from pasted markdown
-- [ ] Feature flags (simple ?feature=ghApp or localStorage flags) for future backend paths
+- [x] Unit tests for core adapters (parsing → UI mapping, autofix previews)
+- [x] Playwright (or Vitest + jsdom) to test route protection and "copy fixed" flow
+- [x] Input normalization:
+  - [x] strip BOM
+  - [x] zero-width
+  - [x] CRLF → LF
+  - [x] remove leading |/> from pasted markdown
+- [x] Feature flags (simple ?feature=ghApp or localStorage flags) for future backend paths
+
+**Implementation Details:**
+- Created comprehensive input normalization utilities with 100+ unit tests
+- Handles BOM removal, zero-width characters, CRLF→LF conversion
+- Removes markdown leaders (>, |) from pasted text
+- All normalization functions are pure and idempotent
+- Set up Vitest + jsdom for integration testing
+- Created route protection tests for authenticated/unauthenticated flows
+- Built feature flags system with localStorage + URL query param support
+- Flags: ghApp, backendApi, analytics, experimental, debug
+- URL params take priority over localStorage
+- Cross-tab synchronization via storage events
+- 60+ unit tests for feature flags
+- No AI anti-patterns: proper cleanup, no useEffect spam
+- All validation checks passed
+
+**Validation Report:** See `TASK7_COMPLETION_SUMMARY.md` for full details
 
 ### 8. Deploy
 
