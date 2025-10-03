@@ -1,12 +1,8 @@
 // Authentication context for managing user state
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import {
-  User,
-  signInWithPopup,
-  signOut as firebaseSignOut,
-  onAuthStateChanged,
-  AuthError,
-} from 'firebase/auth';
+import { createContext, useContext, useEffect, useState } from 'react';
+import type { ReactNode } from 'react';
+import { signInWithPopup, signOut as firebaseSignOut, onAuthStateChanged } from 'firebase/auth';
+import type { User, AuthError } from 'firebase/auth';
 import { auth, googleProvider, githubProvider } from '@/lib/firebase';
 
 interface AuthContextType {
