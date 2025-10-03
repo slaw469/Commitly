@@ -22,6 +22,25 @@ interface Props {
   // No longer need initialPresets as we use the hook
 }
 
+// Skeleton loader component for presets
+function PresetSkeleton() {
+  return (
+    <Card className="animate-pulse">
+      <CardHeader>
+        <div className="h-5 bg-secondary rounded w-1/3 mb-2"></div>
+        <div className="h-4 bg-secondary rounded w-2/3"></div>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-2">
+          <div className="h-4 bg-secondary rounded"></div>
+          <div className="h-4 bg-secondary rounded"></div>
+          <div className="h-4 bg-secondary rounded w-5/6"></div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 export default function Presets(_props: Props): JSX.Element {
   const { user } = useAuth();
   const {
@@ -36,6 +55,8 @@ export default function Presets(_props: Props): JSX.Element {
   const [newPresetName, setNewPresetName] = useState<string>('');
   const [newPresetDescription, setNewPresetDescription] = useState<string>('');
   const [isCreating, setIsCreating] = useState<boolean>(false);
+  const [isImporting, setIsImporting] = useState<boolean>(false);
+  const [isDeleting, setIsDeleting] = useState<string | null>(null);
 
   const handleCreatePreset = () => {
     if (!newPresetName.trim()) {
@@ -47,67 +68,82 @@ export default function Presets(_props: Props): JSX.Element {
       return;
     }
 
-    addPreset({
-      name: newPresetName.trim(),
-      description: newPresetDescription.trim(),
-      config: {
-        types: [
-          'feat',
-          'fix',
-          'docs',
-          'style',
-          'refactor',
-          'perf',
-          'test',
-          'build',
-          'ci',
-          'chore',
-          'revert',
-        ],
-        requireScope: false,
-        maxHeaderLength: 72,
-        maxLineLength: 100,
-        subjectCase: 'lower',
-      },
-    });
+    try {
+      const newPreset = addPreset({
+        name: newPresetName.trim(),
+        description: newPresetDescription.trim(),
+        config: {
+          types: [
+            'feat',
+            'fix',
+            'docs',
+            'style',
+            'refactor',
+            'perf',
+            'test',
+            'build',
+            'ci',
+            'chore',
+            'revert',
+          ],
+          requireScope: false,
+          maxHeaderLength: 72,
+          maxLineLength: 100,
+          subjectCase: 'lower',
+        },
+      });
 
-    setNewPresetName('');
-    setNewPresetDescription('');
-    setIsCreating(false);
+      setNewPresetName('');
+      setNewPresetDescription('');
+      setIsCreating(false);
 
-    toast({
-      variant: 'success',
-      title: 'Preset created',
-      description: `"${newPresetName.trim()}" has been saved`,
-    });
+      toast({
+        title: 'Preset created',
+        description: `"${newPreset.name}" has been saved successfully`,
+      });
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        title: 'Failed to create preset',
+        description: error instanceof Error ? error.message : 'An unexpected error occurred',
+      });
+    }
   };
 
-  const handleDeletePreset = (id: string) => {
+  const handleDeletePreset = async (id: string) => {
     const preset = presets.find((p) => p.id === id);
     if (!preset) return;
 
-    deletePreset(id);
-
-    toast({
-      variant: 'default',
-      title: 'Preset deleted',
-      description: `"${preset.name}" has been removed`,
-    });
+    setIsDeleting(id);
+    try {
+      deletePreset(id);
+      toast({
+        title: 'Preset deleted',
+        description: `"${preset.name}" has been removed`,
+      });
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        title: 'Failed to delete preset',
+        description: error instanceof Error ? error.message : 'An unexpected error occurred',
+      });
+    } finally {
+      setIsDeleting(null);
+    }
   };
 
   const handleExportPresets = () => {
     try {
       exportPresets();
       toast({
-        variant: 'success',
         title: 'Presets exported',
-        description: 'Your presets have been downloaded',
+        description: 'Your presets have been downloaded successfully',
       });
     } catch (error) {
       toast({
         variant: 'destructive',
         title: 'Export failed',
-        description: 'Could not export presets',
+        description: error instanceof Error ? error.message : 'Could not export presets',
       });
     }
   };
@@ -121,12 +157,12 @@ export default function Presets(_props: Props): JSX.Element {
       const file = (e.target as HTMLInputElement).files?.[0];
       if (!file) return;
 
+      setIsImporting(true);
       try {
         const count = await importPresets(file);
         toast({
-          variant: 'success',
           title: 'Presets imported',
-          description: `${count} preset(s) added`,
+          description: `Successfully imported ${count} preset${count !== 1 ? 's' : ''}`,
         });
       } catch (error) {
         toast({
@@ -134,6 +170,8 @@ export default function Presets(_props: Props): JSX.Element {
           title: 'Import failed',
           description: error instanceof Error ? error.message : 'Invalid preset file format',
         });
+      } finally {
+        setIsImporting(false);
       }
     };
 
@@ -160,30 +198,33 @@ export default function Presets(_props: Props): JSX.Element {
             </Button>
             <div className="h-4 w-px bg-border" />
             <h2 className="text-xl font-bold font-display text-foreground">Presets</h2>
-            {isLoading && (
-              <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" aria-label="Loading presets" />
-            )}
           </div>
           <div className="flex items-center gap-2">
-            {!user && (
-              <span className="text-xs text-muted-foreground mr-2">
-                Sign in to sync across devices
-              </span>
-            )}
             <Button
               variant="outline"
               size="sm"
               onClick={handleImportPresets}
-              disabled={isLoading}
+              disabled={isImporting}
+              aria-label="Import presets from file"
             >
-              <Upload className="h-4 w-4 mr-1" />
-              <span className="hidden sm:inline">Import</span>
+              {isImporting ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                  Importing...
+                </>
+              ) : (
+                <>
+                  <Upload className="h-4 w-4 mr-1" />
+                  <span className="hidden sm:inline">Import</span>
+                </>
+              )}
             </Button>
             <Button
               variant="outline"
               size="sm"
               onClick={handleExportPresets}
-              disabled={presets.length === 0 || isLoading}
+              disabled={presets.length === 0}
+              aria-label="Export presets to file"
             >
               <Download className="h-4 w-4 mr-1" />
               <span className="hidden sm:inline">Export</span>
@@ -192,7 +233,8 @@ export default function Presets(_props: Props): JSX.Element {
               variant="primary"
               size="sm"
               onClick={() => setIsCreating(!isCreating)}
-              disabled={isLoading}
+              aria-label={isCreating ? 'Cancel creating preset' : 'Create new preset'}
+              aria-expanded={isCreating}
             >
               <Plus className="h-4 w-4 mr-1" />
               <span className="hidden sm:inline">New Preset</span>
@@ -213,7 +255,7 @@ export default function Presets(_props: Props): JSX.Element {
               <CardContent>
                 <div className="space-y-4">
                   <div>
-                    <Label htmlFor="preset-name" required>
+                    <Label htmlFor="preset-name" className="required">
                       Preset Name
                     </Label>
                     <Input
@@ -222,7 +264,12 @@ export default function Presets(_props: Props): JSX.Element {
                       onChange={(e) => setNewPresetName(e.target.value)}
                       placeholder="My Custom Preset"
                       className="mt-2"
+                      aria-required="true"
+                      aria-describedby="preset-name-hint"
                     />
+                    <span id="preset-name-hint" className="sr-only">
+                      Enter a unique name for your preset
+                    </span>
                   </div>
                   <div>
                     <Label htmlFor="preset-description">Description</Label>
@@ -232,16 +279,30 @@ export default function Presets(_props: Props): JSX.Element {
                       onChange={(e) => setNewPresetDescription(e.target.value)}
                       placeholder="Describe this preset..."
                       className="mt-2"
+                      aria-describedby="preset-description-hint"
                     />
+                    <span id="preset-description-hint" className="sr-only">
+                      Optional: Describe what this preset is used for
+                    </span>
                   </div>
                 </div>
               </CardContent>
               <CardFooter>
                 <div className="flex gap-2 ml-auto">
-                  <Button variant="outline" size="sm" onClick={() => setIsCreating(false)}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setIsCreating(false)}
+                    aria-label="Cancel creating preset"
+                  >
                     Cancel
                   </Button>
-                  <Button variant="primary" size="sm" onClick={handleCreatePreset}>
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    onClick={handleCreatePreset}
+                    aria-label="Create preset"
+                  >
                     <CheckCircle2 className="h-4 w-4 mr-1" />
                     Create Preset
                   </Button>
@@ -256,9 +317,26 @@ export default function Presets(_props: Props): JSX.Element {
               <h3 className="text-lg font-semibold text-foreground">
                 Saved Presets ({presets.length})
               </h3>
+              {user && (
+                <span className="text-xs text-muted-foreground" aria-label="User account info">
+                  Saved to: {user.email}
+                </span>
+              )}
             </div>
 
-            {sortedPresets.length === 0 ? (
+            {/* Loading State */}
+            {isLoading && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4" role="status" aria-label="Loading presets">
+                <PresetSkeleton />
+                <PresetSkeleton />
+                <PresetSkeleton />
+                <PresetSkeleton />
+                <span className="sr-only">Loading presets...</span>
+              </div>
+            )}
+
+            {/* Empty State */}
+            {!isLoading && sortedPresets.length === 0 && (
               <Card>
                 <CardContent className="py-12">
                   <div className="flex flex-col items-center justify-center text-center">
@@ -269,17 +347,25 @@ export default function Presets(_props: Props): JSX.Element {
                     <p className="text-muted-foreground text-sm max-w-md mb-4">
                       Create your first preset or import existing ones
                     </p>
-                    <Button variant="primary" size="sm" onClick={() => setIsCreating(true)}>
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      onClick={() => setIsCreating(true)}
+                      aria-label="Create your first preset"
+                    >
                       <Plus className="h-4 w-4 mr-1" />
                       Create Preset
                     </Button>
                   </div>
                 </CardContent>
               </Card>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            )}
+
+            {/* Presets Grid */}
+            {!isLoading && sortedPresets.length > 0 && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4" role="list" aria-label="Presets list">
                 {sortedPresets.map((preset) => (
-                  <Card key={preset.id}>
+                  <Card key={preset.id} role="listitem">
                     <CardHeader>
                       <div className="flex items-start justify-between">
                         <div>
@@ -292,9 +378,15 @@ export default function Presets(_props: Props): JSX.Element {
                           variant="ghost"
                           size="sm"
                           onClick={() => handleDeletePreset(preset.id)}
+                          disabled={isDeleting === preset.id}
                           className="h-8 w-8 p-0"
+                          aria-label={`Delete ${preset.name} preset`}
                         >
-                          <Trash2 className="h-4 w-4 text-muted-foreground hover:text-destructive" />
+                          {isDeleting === preset.id ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <Trash2 className="h-4 w-4 text-muted-foreground hover:text-destructive transition-colors" />
+                          )}
                         </Button>
                       </div>
                     </CardHeader>
