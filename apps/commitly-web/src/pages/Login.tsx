@@ -1,6 +1,6 @@
 // Login page with social auth
-import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { Check, Github, Loader2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -9,17 +9,35 @@ import { toast } from '@/hooks/use-toast';
 
 export default function Login(): JSX.Element {
   const navigate = useNavigate();
-  const { signInWithGoogle, signInWithGithub, user } = useAuth();
+  const location = useLocation();
+  const { signInWithGoogle, signInWithGithub, user, error, clearError } = useAuth();
   const [loading, setLoading] = useState<'google' | 'github' | null>(null);
 
+  // Get redirect path from location state or default to dashboard
+  const from = (location.state as { from?: string })?.from || '/dashboard';
+
   // Redirect if already logged in
-  if (user) {
-    navigate('/dashboard');
-    return <></>;
-  }
+  useEffect(() => {
+    if (user) {
+      navigate(from, { replace: true });
+    }
+  }, [user, navigate, from]);
+
+  // Show error toast when auth error occurs
+  useEffect(() => {
+    if (error) {
+      toast({
+        variant: 'destructive',
+        title: 'Authentication Error',
+        description: error,
+      });
+      setLoading(null);
+    }
+  }, [error]);
 
   const handleGoogleSignIn = async () => {
     setLoading('google');
+    clearError();
     try {
       await signInWithGoogle();
       toast({
@@ -27,19 +45,16 @@ export default function Login(): JSX.Element {
         title: 'Welcome!',
         description: 'Successfully signed in with Google',
       });
-      navigate('/dashboard');
+      // Navigation will be handled by useEffect when user state updates
     } catch (error) {
-      toast({
-        variant: 'destructive',
-        title: 'Sign in failed',
-        description: 'Could not sign in with Google. Please try again.',
-      });
+      // Error handling is done in AuthContext and shown via useEffect above
       setLoading(null);
     }
   };
 
   const handleGithubSignIn = async () => {
     setLoading('github');
+    clearError();
     try {
       await signInWithGithub();
       toast({
@@ -47,13 +62,9 @@ export default function Login(): JSX.Element {
         title: 'Welcome!',
         description: 'Successfully signed in with GitHub',
       });
-      navigate('/dashboard');
+      // Navigation will be handled by useEffect when user state updates
     } catch (error) {
-      toast({
-        variant: 'destructive',
-        title: 'Sign in failed',
-        description: 'Could not sign in with GitHub. Please try again.',
-      });
+      // Error handling is done in AuthContext and shown via useEffect above
       setLoading(null);
     }
   };
