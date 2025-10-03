@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import {
-  FeatureFlag,
+  type FeatureFlag,
   isFeatureEnabled,
   enableFeature,
   disableFeature,
