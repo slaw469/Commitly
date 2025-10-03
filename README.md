@@ -20,7 +20,7 @@
 
 ## Live demo
 
-**[https://commitly.vercel.app](https://commitly.vercel.app)**
+**[https://commitly-tool.netlify.app](https://commitly-tool.netlify.app)**
 
 Try the web playground to:
 
@@ -321,6 +321,6 @@ MIT License - see [LICENSE](./LICENSE) for details.
 
 ## Links
 
-- **Live demo:** [https://commitly.vercel.app](https://commitly.vercel.app)
+- **Live demo:** [https://commitly-tool.netlify.app](https://commitly-tool.netlify.app)
 - **Issue tracker:** [GitHub Issues](https://github.com/slaw469/Commitly/issues)
 - **Repository:** [GitHub](https://github.com/slaw469/Commitly)
