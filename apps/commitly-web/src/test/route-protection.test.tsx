@@ -36,7 +36,7 @@ describe('Route Protection', () => {
 
   it('should redirect to login when accessing protected route without auth', async () => {
     // Mock no user (not authenticated)
-    mockOnAuthStateChanged.mockImplementation((auth, callback) => {
+    mockOnAuthStateChanged.mockImplementation((_auth, callback) => {
       callback(null); // No user
       return vi.fn(); // Cleanup function
     });
@@ -73,7 +73,7 @@ describe('Route Protection', () => {
       displayName: 'Test User',
     } as User;
 
-    mockOnAuthStateChanged.mockImplementation((auth, callback) => {
+    mockOnAuthStateChanged.mockImplementation((_auth, callback) => {
       callback(mockUser);
       return vi.fn();
     });
@@ -104,7 +104,7 @@ describe('Route Protection', () => {
 
   it('should show loading state while checking auth', async () => {
     // Mock delayed auth check
-    mockOnAuthStateChanged.mockImplementation((auth, callback) => {
+    mockOnAuthStateChanged.mockImplementation((_auth, callback) => {
       // Don't call callback immediately
       setTimeout(() => callback(null), 100);
       return vi.fn();
@@ -133,7 +133,7 @@ describe('Route Protection', () => {
   });
 
   it('should allow access to public routes without auth', async () => {
-    mockOnAuthStateChanged.mockImplementation((auth, callback) => {
+    mockOnAuthStateChanged.mockImplementation((_auth, callback) => {
       callback(null);
       return vi.fn();
     });
@@ -157,7 +157,7 @@ describe('Route Protection', () => {
 
   it('should preserve redirect location after login', async () => {
     // Start with no user
-    mockOnAuthStateChanged.mockImplementation((auth, callback) => {
+    mockOnAuthStateChanged.mockImplementation((_auth, callback) => {
       callback(null);
       return vi.fn();
     });
@@ -191,7 +191,7 @@ describe('Route Protection', () => {
       email: 'test@example.com',
     } as User;
 
-    mockOnAuthStateChanged.mockImplementation((auth, callback) => {
+    mockOnAuthStateChanged.mockImplementation((_auth, callback) => {
       callback(mockUser);
       return vi.fn();
     });

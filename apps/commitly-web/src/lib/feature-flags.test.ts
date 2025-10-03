@@ -1,6 +1,6 @@
 // Unit tests for feature flags system
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import {
   FeatureFlag,
   isFeatureEnabled,

@@ -274,7 +274,14 @@ export function parseFeaturesFromURL(urlString: string): FeatureFlag[] {
  * Hook-friendly feature flag checker
  * Returns a reactive function that can be called to check flags
  */
-export function createFeatureFlagChecker() {
+export function createFeatureFlagChecker(): {
+  isEnabled: typeof isFeatureEnabled;
+  enable: typeof enableFeature;
+  disable: typeof disableFeature;
+  toggle: typeof toggleFeature;
+  getAll: typeof getAllFeatureFlags;
+  reset: typeof resetFeatureFlags;
+} {
   return {
     isEnabled: isFeatureEnabled,
     enable: enableFeature,

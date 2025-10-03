@@ -86,13 +86,13 @@ export function trimExcessWhitespace(input: string): string {
   
   // Find first non-empty line
   let start = 0;
-  while (start < trimmedLines.length && trimmedLines[start].trim() === '') {
+  while (start < trimmedLines.length && trimmedLines[start]?.trim() === '') {
     start++;
   }
   
   // Find last non-empty line
   let end = trimmedLines.length - 1;
-  while (end >= 0 && trimmedLines[end].trim() === '') {
+  while (end >= 0 && trimmedLines[end]?.trim() === '') {
     end--;
   }
   
