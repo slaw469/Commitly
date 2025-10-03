@@ -1,6 +1,8 @@
 // Generic localStorage utility with error handling and uid namespacing
 // Follows 10x developer best practices for data persistence
 
+import { logger } from './logger';
+
 /**
  * Storage utility for managing localStorage with user-specific namespacing
  * Handles errors gracefully, validates data, and provides type safety
@@ -45,7 +47,7 @@ export function getStorageItem<T>(
   options: StorageOptions = {}
 ): T | null {
   if (!isStorageAvailable()) {
-    console.warn('localStorage is not available');
+    logger.warn('localStorage is not available');
     return (options.fallback as T) ?? null;
   }
 
@@ -61,13 +63,13 @@ export function getStorageItem<T>(
 
     // Validate data if validator provided
     if (options.validate && !options.validate(parsed)) {
-      console.warn(`Invalid data for key: ${storageKey}`);
+      logger.warn(`Invalid data for key: ${storageKey}`);
       return (options.fallback as T) ?? null;
     }
 
     return parsed;
   } catch (error) {
-    console.error(`Failed to get storage item for key: ${key}`, error);
+    logger.error(`Failed to get storage item for key: ${key}`, error);
     return (options.fallback as T) ?? null;
   }
 }
@@ -81,7 +83,7 @@ export function setStorageItem<T>(
   uid: string | null = null
 ): boolean {
   if (!isStorageAvailable()) {
-    console.warn('localStorage is not available');
+    logger.warn('localStorage is not available');
     return false;
   }
 
@@ -93,9 +95,9 @@ export function setStorageItem<T>(
   } catch (error) {
     // Handle quota exceeded error
     if (error instanceof Error && error.name === 'QuotaExceededError') {
-      console.error('localStorage quota exceeded');
+      logger.error('localStorage quota exceeded');
     } else {
-      console.error(`Failed to set storage item for key: ${key}`, error);
+      logger.error(`Failed to set storage item for key: ${key}`, error);
     }
     return false;
   }
@@ -114,7 +116,7 @@ export function removeStorageItem(key: string, uid: string | null = null): boole
     localStorage.removeItem(storageKey);
     return true;
   } catch (error) {
-    console.error(`Failed to remove storage item for key: ${key}`, error);
+    logger.error(`Failed to remove storage item for key: ${key}`, error);
     return false;
   }
 }
@@ -143,7 +145,7 @@ export function clearUserStorage(uid: string): boolean {
     keysToRemove.forEach((key) => localStorage.removeItem(key));
     return true;
   } catch (error) {
-    console.error('Failed to clear user storage', error);
+    logger.error('Failed to clear user storage', error);
     return false;
   }
 }
@@ -170,7 +172,7 @@ export function getUserStorageKeys(uid: string): string[] {
 
     return keys;
   } catch (error) {
-    console.error('Failed to get user storage keys', error);
+    logger.error('Failed to get user storage keys', error);
     return [];
   }
 }
@@ -197,7 +199,7 @@ export function migrateStorageKey(
 
     return false;
   } catch (error) {
-    console.error('Failed to migrate storage key', error);
+    logger.error('Failed to migrate storage key', error);
     return false;
   }
 }
@@ -227,7 +229,7 @@ export function exportUserData(uid: string): Record<string, unknown> | null {
 
     return data;
   } catch (error) {
-    console.error('Failed to export user data', error);
+    logger.error('Failed to export user data', error);
     return null;
   }
 }
@@ -247,7 +249,7 @@ export function importUserData(uid: string, data: Record<string, unknown>): bool
     });
     return true;
   } catch (error) {
-    console.error('Failed to import user data', error);
+    logger.error('Failed to import user data', error);
     return false;
   }
 }

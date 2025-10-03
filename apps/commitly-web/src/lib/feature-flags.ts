@@ -76,7 +76,7 @@ function getStoredFlags(): Record<string, boolean> {
       return JSON.parse(stored) as Record<string, boolean>;
     }
   } catch (error) {
-    console.warn('Failed to load feature flags from localStorage:', error);
+    // Silently fail - feature flags are not critical
   }
   return {};
 }
@@ -88,7 +88,7 @@ function setStoredFlags(flags: Record<string, boolean>): void {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(flags));
   } catch (error) {
-    console.warn('Failed to save feature flags to localStorage:', error);
+    // Silently fail - feature flags are not critical
   }
 }
 
@@ -123,7 +123,7 @@ function getURLFlags(): Record<string, boolean> {
       });
     });
   } catch (error) {
-    console.warn('Failed to parse feature flags from URL:', error);
+    // Silently fail - feature flags are not critical
   }
   
   return flags;
@@ -208,7 +208,7 @@ export function resetFeatureFlags(): void {
   try {
     localStorage.removeItem(STORAGE_KEY);
   } catch (error) {
-    console.warn('Failed to reset feature flags:', error);
+    // Silently fail - feature flags are not critical
   }
 }
 
@@ -264,7 +264,7 @@ export function parseFeaturesFromURL(urlString: string): FeatureFlag[] {
       });
     }
   } catch (error) {
-    console.warn('Failed to parse features from URL:', error);
+    // Silently fail - feature flags are not critical
   }
   
   return features;

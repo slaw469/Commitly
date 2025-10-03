@@ -1,6 +1,7 @@
 // File: apps/commitly-web/src/pages/Docs.tsx
 
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import {
   Check,
   Search,
@@ -108,8 +109,8 @@ export default function Docs({ initialSection = 'overview' }: Props): JSX.Elemen
         </div>
 
         <nav className="flex flex-col gap-2" role="navigation" aria-label="Main navigation">
-          <a
-            href="/"
+          <Link
+            to="/dashboard"
             className="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors"
           >
             <svg
@@ -127,10 +128,31 @@ export default function Docs({ initialSection = 'overview' }: Props): JSX.Elemen
               />
             </svg>
             Dashboard
-          </a>
+          </Link>
 
-          <a
-            href="/reports"
+          <Link
+            to="/add-project"
+            className="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors"
+          >
+            <svg
+              className="h-5 w-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 4v16m8-8H4"
+              />
+            </svg>
+            Add Project
+          </Link>
+
+          <Link
+            to="/reports"
             className="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors"
           >
             <svg
@@ -148,10 +170,10 @@ export default function Docs({ initialSection = 'overview' }: Props): JSX.Elemen
               />
             </svg>
             Reports
-          </a>
+          </Link>
 
-          <a
-            href="/formatter"
+          <Link
+            to="/formatter"
             className="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors"
           >
             <svg
@@ -169,10 +191,37 @@ export default function Docs({ initialSection = 'overview' }: Props): JSX.Elemen
               />
             </svg>
             Formatter
-          </a>
+          </Link>
 
-          <a
-            href="/settings"
+          <Link
+            to="/playground"
+            className="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors"
+          >
+            <svg
+              className="h-5 w-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+              />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            Playground
+          </Link>
+
+          <Link
+            to="/settings"
             className="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors"
           >
             <svg
@@ -196,10 +245,10 @@ export default function Docs({ initialSection = 'overview' }: Props): JSX.Elemen
               />
             </svg>
             Settings
-          </a>
+          </Link>
 
-          <a
-            href="/docs"
+          <Link
+            to="/docs"
             className="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium bg-secondary text-foreground transition-colors"
             aria-current="page"
           >
@@ -218,7 +267,7 @@ export default function Docs({ initialSection = 'overview' }: Props): JSX.Elemen
               />
             </svg>
             Docs
-          </a>
+          </Link>
         </nav>
       </aside>
 

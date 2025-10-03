@@ -1,5 +1,6 @@
 // File: apps/commitly-web/src/pages/AddProject.tsx
 
+import { Link } from 'react-router-dom';
 import { Check, Code, Terminal, Rocket, Plus } from 'lucide-react';
 
 interface GitProvider {
@@ -38,8 +39,8 @@ export default function AddProject({
         </div>
 
         <nav className="flex flex-col gap-2" role="navigation" aria-label="Main navigation">
-          <a
-            href="/"
+          <Link
+            to="/dashboard"
             className="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors"
           >
             <svg
@@ -57,19 +58,19 @@ export default function AddProject({
               />
             </svg>
             Dashboard
-          </a>
+          </Link>
 
-          <a
-            href="/add-project"
+          <Link
+            to="/add-project"
             className="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium bg-secondary text-foreground transition-colors"
             aria-current="page"
           >
             <Plus className="h-5 w-5" />
             Add Project
-          </a>
+          </Link>
 
-          <a
-            href="/reports"
+          <Link
+            to="/reports"
             className="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors"
           >
             <svg
@@ -87,10 +88,10 @@ export default function AddProject({
               />
             </svg>
             Reports
-          </a>
+          </Link>
 
-          <a
-            href="/formatter"
+          <Link
+            to="/formatter"
             className="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors"
           >
             <svg
@@ -108,10 +109,37 @@ export default function AddProject({
               />
             </svg>
             Formatter
-          </a>
+          </Link>
 
-          <a
-            href="/settings"
+          <Link
+            to="/playground"
+            className="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors"
+          >
+            <svg
+              className="h-5 w-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+              />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            Playground
+          </Link>
+
+          <Link
+            to="/settings"
             className="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors"
           >
             <svg
@@ -135,10 +163,10 @@ export default function AddProject({
               />
             </svg>
             Settings
-          </a>
+          </Link>
 
-          <a
-            href="/docs"
+          <Link
+            to="/docs"
             className="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors"
           >
             <svg
@@ -156,7 +184,7 @@ export default function AddProject({
               />
             </svg>
             Docs
-          </a>
+          </Link>
         </nav>
       </aside>
 

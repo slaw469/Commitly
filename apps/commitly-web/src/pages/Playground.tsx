@@ -1,6 +1,6 @@
 // File: apps/commitly-web/src/pages/Playground.tsx
 
-import { useMemo, useCallback, useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   Check,
   Sparkles,
@@ -10,9 +10,8 @@ import {
   CheckCircle2,
   Home,
   Keyboard,
+  Share2,
 } from 'lucide-react';
-import { validate, suggestFix } from '@commitly/core';
-import type { ValidationResult } from '@commitly/core';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -20,6 +19,9 @@ import { Textarea, Label } from '@/components/ui/input';
 import { toast } from '@/hooks/use-toast';
 import { useValidationHistory } from '@/hooks/use-validation-history';
 import { HistoryPanel } from '@/components/HistoryPanel';
+import { useValidatorWorker } from '@/hooks/use-validator-worker';
+import { RuleChips } from '@/components/RuleChips';
+import { useUrlState } from '@/lib/url-state';
 
 interface Props {
   defaultMessage?: string;
@@ -54,20 +56,38 @@ const exampleTemplates = [
 export default function Playground({ defaultMessage = demoMessage }: Props): JSX.Element {
   const [inputMessage, setInputMessage] = useState<string>(defaultMessage);
   const [copiedFixed, setCopiedFixed] = useState<boolean>(false);
+  const [copiedShareUrl, setCopiedShareUrl] = useState<boolean>(false);
   const { history, addToHistory, clearHistory, removeItem } = useValidationHistory();
+  
+  // Use Web Worker for validation with debouncing (150ms)
+  const { result: validationResult, fixedMessage, isValidating, validate } = useValidatorWorker({
+    debounceMs: 150,
+  });
 
-  const validationResult: ValidationResult = useMemo(() => {
-    const result = validate(inputMessage);
-    // Add to history when validation changes (debounced by useMemo)
-    if (inputMessage.trim()) {
-      addToHistory(inputMessage, result);
+  // URL state management for sharing
+  const { loadState, saveState, getShareUrl } = useUrlState();
+
+  // Load state from URL on mount
+  useEffect(() => {
+    const urlState = loadState();
+    if (urlState?.message) {
+      setInputMessage(urlState.message);
     }
-    return result;
-  }, [inputMessage, addToHistory]);
+  }, []); // Only run once on mount
 
-  const fixedMessage = useMemo(() => {
-    return suggestFix(inputMessage);
-  }, [inputMessage]);
+  // Validate message when it changes (debounced by worker)
+  useEffect(() => {
+    if (inputMessage.trim()) {
+      validate(inputMessage);
+    }
+  }, [inputMessage, validate]);
+
+  // Add to history when validation completes
+  useEffect(() => {
+    if (validationResult && inputMessage.trim()) {
+      addToHistory(inputMessage, validationResult);
+    }
+  }, [validationResult, inputMessage, addToHistory]);
 
   const diffLines = useMemo(() => {
     if (!fixedMessage) return [];
@@ -135,15 +155,39 @@ export default function Playground({ defaultMessage = demoMessage }: Props): JSX
     });
   }, []);
 
-  const totalIssues = validationResult.errors.length + validationResult.warnings.length;
-  const charCount = validationResult.parsed.header.length;
+  // Share URL functionality
+  const handleShareUrl = useCallback(() => {
+    const shareUrl = getShareUrl({ message: inputMessage });
+    navigator.clipboard.writeText(shareUrl);
+    setCopiedShareUrl(true);
+    setTimeout(() => setCopiedShareUrl(false), 2000);
+    toast({
+      variant: 'success',
+      title: 'Share URL copied',
+      description: 'URL copied to clipboard',
+    });
+  }, [inputMessage, getShareUrl]);
 
-  // Keyboard shortcuts
+  // Save to URL state
+  const handleSaveToUrl = useCallback(() => {
+    saveState({ message: inputMessage });
+    toast({
+      variant: 'success',
+      title: 'State saved to URL',
+      description: 'You can bookmark or share this URL',
+    });
+  }, [inputMessage, saveState]);
+
+  const totalIssues = validationResult ? validationResult.errors.length + validationResult.warnings.length : 0;
+  const charCount = validationResult ? validationResult.parsed.header.length : 0;
+
+  // Keyboard shortcuts - Updated per requirements
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Cmd/Ctrl + Enter - Show validation result
+      // Cmd/Ctrl + Enter - Validate immediately (no debounce)
       if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
         e.preventDefault();
+        validate(inputMessage);
         toast({
           variant: totalIssues === 0 ? 'success' : 'destructive',
           title: totalIssues === 0 ? 'Valid commit' : `${totalIssues} issue(s) found`,
@@ -152,16 +196,22 @@ export default function Playground({ defaultMessage = demoMessage }: Props): JSX
         });
       }
 
-      // Cmd/Ctrl + K - Apply auto-fix
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+      // Cmd/Ctrl + Shift + F - Apply auto-fix (updated shortcut)
+      if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === 'F') {
         e.preventDefault();
         handleApplyFix();
+      }
+
+      // Cmd/Ctrl + S - Save state to URL
+      if ((e.metaKey || e.ctrlKey) && e.key === 's') {
+        e.preventDefault();
+        handleSaveToUrl();
       }
     };
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [totalIssues, handleApplyFix]);
+  }, [totalIssues, handleApplyFix, handleSaveToUrl, inputMessage, validate]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -182,7 +232,22 @@ export default function Playground({ defaultMessage = demoMessage }: Props): JSX
             <Button
               variant="ghost"
               size="sm"
-              title="Keyboard shortcuts: Cmd/Ctrl+Enter to validate, Cmd/Ctrl+K to auto-fix"
+              onClick={handleShareUrl}
+              title="Copy shareable URL"
+            >
+              {copiedShareUrl ? (
+                <CheckCircle2 className="h-4 w-4 mr-1" />
+              ) : (
+                <Share2 className="h-4 w-4 mr-1" />
+              )}
+              <span className="hidden sm:inline">
+                {copiedShareUrl ? 'Copied' : 'Share'}
+              </span>
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              title="Keyboard shortcuts: Cmd/Ctrl+Enter to validate, Cmd/Ctrl+Shift+F to auto-fix, Cmd/Ctrl+S to save URL"
               className="h-9 w-9 p-0"
             >
               <Keyboard className="h-4 w-4" />
@@ -236,7 +301,12 @@ export default function Playground({ defaultMessage = demoMessage }: Props): JSX
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-muted-foreground">Validation</span>
-                    {totalIssues === 0 ? (
+                    {isValidating ? (
+                      <span className="inline-flex items-center gap-1 text-muted-foreground text-sm font-medium">
+                        <div className="animate-spin h-4 w-4 border-2 border-primary border-t-transparent rounded-full" />
+                        Checking...
+                      </span>
+                    ) : totalIssues === 0 ? (
                       <span className="inline-flex items-center gap-1 text-success text-sm font-medium">
                         <CheckCircle2 className="h-4 w-4" />
                         Pass
@@ -270,6 +340,19 @@ export default function Playground({ defaultMessage = demoMessage }: Props): JSX
                 </div>
               </CardContent>
             </Card>
+
+            {/* Live Rule Chips */}
+            {validationResult && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base">Live Validation Rules</CardTitle>
+                  <CardDescription>Real-time rule status</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <RuleChips result={validationResult} />
+                </CardContent>
+              </Card>
+            )}
 
             <HistoryPanel
               history={history}
@@ -316,12 +399,12 @@ export default function Playground({ defaultMessage = demoMessage }: Props): JSX
                       onChange={(e) => setInputMessage(e.target.value)}
                       className="min-h-[200px] font-mono text-sm mt-2"
                       placeholder="feat(scope): add amazing feature"
-                      error={validationResult.errors.length > 0}
+                      error={validationResult ? validationResult.errors.length > 0 : false}
                     />
                   </div>
 
                   {/* Issues List */}
-                  {(validationResult.errors.length > 0 || validationResult.warnings.length > 0) && (
+                  {validationResult && (validationResult.errors.length > 0 || validationResult.warnings.length > 0) && (
                     <div className="space-y-2 pt-4 border-t border-border/50">
                       {validationResult.errors.map((error, index) => (
                         <div

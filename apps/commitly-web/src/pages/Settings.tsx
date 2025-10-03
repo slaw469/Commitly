@@ -1,5 +1,6 @@
 // File: apps/commitly-web/src/pages/Settings.tsx
 
+import { Link } from 'react-router-dom';
 import { Check, ChevronDown, ChevronUp, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState, useCallback } from 'react';
@@ -222,8 +223,8 @@ export default function Settings({
         </div>
 
         <nav className="flex flex-col gap-2" role="navigation" aria-label="Main navigation">
-          <a
-            href="/"
+          <Link
+            to="/dashboard"
             className="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             aria-label="Go to dashboard"
           >
@@ -243,10 +244,10 @@ export default function Settings({
               />
             </svg>
             Dashboard
-          </a>
+          </Link>
 
-          <a
-            href="/add-project"
+          <Link
+            to="/add-project"
             className="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             aria-label="Add new project"
           >
@@ -266,10 +267,10 @@ export default function Settings({
               />
             </svg>
             Add Project
-          </a>
+          </Link>
 
-          <a
-            href="/reports"
+          <Link
+            to="/reports"
             className="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             aria-label="View reports"
           >
@@ -289,10 +290,10 @@ export default function Settings({
               />
             </svg>
             Reports
-          </a>
+          </Link>
 
-          <a
-            href="/formatter"
+          <Link
+            to="/formatter"
             className="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             aria-label="Open commit formatter"
           >
@@ -312,10 +313,39 @@ export default function Settings({
               />
             </svg>
             Formatter
-          </a>
+          </Link>
 
-          <a
-            href="/settings"
+          <Link
+            to="/playground"
+            className="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            aria-label="Open playground"
+          >
+            <svg
+              className="h-5 w-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+              />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            Playground
+          </Link>
+
+          <Link
+            to="/settings"
             className="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium bg-secondary text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             aria-current="page"
           >
@@ -341,10 +371,10 @@ export default function Settings({
               />
             </svg>
             Settings
-          </a>
+          </Link>
 
-          <a
-            href="/docs"
+          <Link
+            to="/docs"
             className="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             aria-label="View documentation"
           >
@@ -364,7 +394,7 @@ export default function Settings({
               />
             </svg>
             Docs
-          </a>
+          </Link>
         </nav>
       </aside>
 
